@@ -1,0 +1,85 @@
+# ==============================================================================
+# VIRALITY LAB: SCORING & AUDIENCE INTELLIGENCE CONFIGURATION
+# ==============================================================================
+# Note: These are initial heuristic weights, NOT scientifically proven constants.
+# They are fully configurable and designed for future calibration with empirical data.
+# All component and sub-weights are normalized to sum to 1.0.
+
+# ------------------------------------------------------------------------------
+# 1. Top-Level Component Weights (Sums to 1.0)
+# ------------------------------------------------------------------------------
+component_weights:
+  retention: 0.35      # Stop-scroll, watch duration, full completion
+  sharing: 0.30        # Direct peer forwarding, group chat sharing, reposts
+  engagement: 0.25     # Likes, comments/discussion, saves/bookmarks
+  conversion: 0.10     # Profile visits, follows, brand discovery
+
+# ------------------------------------------------------------------------------
+# 2. Metric Sub-Weights within each Component (Each block sums to 1.0)
+# ------------------------------------------------------------------------------
+metric_weights:
+  retention:
+    stop_scroll: 0.30  # First 0-3s hook stopping power
+    watch: 0.30        # Mid-video retention
+    completion: 0.40   # Full video payoff completion
+
+  sharing:
+    share: 1.00        # Organic peer-to-peer share tendency
+
+  engagement:
+    like: 0.25         # Low-friction appreciation
+    comment: 0.30      # Active discussion / debate trigger
+    save: 0.45         # Reference utility & bookmarking
+
+  conversion:
+    follow: 1.00       # Profile follow / subscriber conversion
+
+# ------------------------------------------------------------------------------
+# 3. Platform-Specific Component Modifiers
+# ------------------------------------------------------------------------------
+# Platforms place different algorithmic priorities on behavioral signals.
+# These multipliers override the generic component_weights for specific platforms.
+platform_modifiers:
+  tiktok:
+    retention: 0.40    # Watch time & completion heavily prioritized
+    sharing: 0.30
+    engagement: 0.20
+    conversion: 0.10
+
+  instagram_reels:
+    retention: 0.30
+    sharing: 0.35      # DMs & shares heavily amplified on IG
+    engagement: 0.25   # Saves/bookmarks signal high quality
+    conversion: 0.10
+
+  youtube_shorts:
+    retention: 0.45    # Viewed vs Swiped away ratio + APVD
+    sharing: 0.20
+    engagement: 0.25
+    conversion: 0.10
+
+  linkedin:
+    retention: 0.20
+    sharing: 0.30      # Professional reposts
+    engagement: 0.40   # In-depth comments & discussion prioritized
+    conversion: 0.10
+
+  x:
+    retention: 0.20
+    sharing: 0.40      # Retweets / Quotes are primary virality mechanism
+    engagement: 0.30   # Replies & quotes
+    conversion: 0.10
+
+# ------------------------------------------------------------------------------
+# 4. Default Persona Weighting (Optional custom weighting)
+# ------------------------------------------------------------------------------
+# By default, all evaluated personas receive equal weight (1.0 / N).
+# Specific campaigns can assign custom weights to focus on target segments.
+persona_weights: {}
+
+# ------------------------------------------------------------------------------
+# 5. Normalization & Scale Rules
+# ------------------------------------------------------------------------------
+normalization:
+  scale_max: 100.0
+  decimals: 1

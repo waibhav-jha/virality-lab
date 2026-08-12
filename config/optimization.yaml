@@ -1,0 +1,28 @@
+# ==============================================================================
+# VIRALITY LAB: CONTENT OPTIMIZATION CONFIGURATION (PART 6)
+# ==============================================================================
+# Controls variant generation, diagnostic mapping, stopping criteria,
+# objective prioritization, and regression protection guardrails.
+
+optimization:
+  # Iteration and variant limits
+  max_iterations: 1                # Default 1 iteration for safety and predictability
+  variants_per_iteration: 3        # Number of candidate variants per iteration
+  minimum_improvement: 2.0         # Minimum points improvement required to accept variant (0-100 scale)
+  default_objective: "overall"     # "overall", "retention", "shares", "engagement", "conversion"
+
+  # Regression Protection Guardrails
+  guardrails:
+    max_retention_drop_pct: 15.0   # Reject variant if retention drops by more than 15%
+    max_component_drop_points: 15.0 # Reject variant if any single component drops by > 15 points
+    require_positive_overall: true # Reject variant if overall score drops below baseline
+    preserve_facts: true           # Enforce no hallucinated facts or fabricated statistics
+    preserve_intent: true          # Preserve creator voice, topic identity, and platform context
+
+  # Variant Generation Strategy Preferences
+  strategy_priorities:
+    - "hook"
+    - "structure"
+    - "shareability"
+    - "caption"
+    - "cta"

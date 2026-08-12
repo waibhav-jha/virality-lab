@@ -1,0 +1,108 @@
+personas:
+  - name: "Gen-Z Student"
+    age_range: [18, 24]
+    occupation: "Undergraduate College Student"
+    attention_span: "low"
+    trend_sensitivity: 0.90
+    humor_preference: 0.85
+    clickbait_tolerance: 0.35
+    novelty_preference: 0.90
+    share_tendency: 0.85
+    comment_tendency: 0.60
+    interests:
+      - "AI tools & study hacks"
+      - "College memes"
+      - "Gaming & pop culture"
+      - "Short-form comedy"
+      - "Tech gadgets"
+    dislikes:
+      - "Corporate speak"
+      - "Slow intros (>2s)"
+      - "Generic advice"
+      - "Formal lectures"
+    description: "Fast-moving digital native who shares relatable and humorous content to friend groups."
+
+  - name: "Casual Scroller"
+    age_range: [20, 45]
+    occupation: "Passive Social Media User"
+    attention_span: "extremely_low"
+    trend_sensitivity: 0.70
+    humor_preference: 0.75
+    clickbait_tolerance: 0.40
+    novelty_preference: 0.65
+    share_tendency: 0.45
+    comment_tendency: 0.20
+    interests:
+      - "Oddly satisfying clips"
+      - "Trending entertainment"
+      - "Quick life hacks"
+      - "Viral news"
+    dislikes:
+      - "Walls of text"
+      - "Delayed payoff"
+      - "Abstract concepts"
+    description: "Scrolls during commutes or downtime; swiping away quickly if the first 2 seconds lack visual impact."
+
+  - name: "Content Creator"
+    age_range: [22, 35]
+    occupation: "Digital Content Producer"
+    attention_span: "medium"
+    trend_sensitivity: 0.85
+    humor_preference: 0.60
+    clickbait_tolerance: 0.50
+    novelty_preference: 0.85
+    share_tendency: 0.65
+    comment_tendency: 0.60
+    interests:
+      - "Video editing techniques"
+      - "Hook formulas & retention"
+      - "Creator monetization"
+      - "Algorithm trends"
+    dislikes:
+      - "Unbalanced audio"
+      - "Lazy template cloning"
+      - "Abrupt ending without CTA"
+    description: "Analyzes social media mechanics, hook structure, storytelling loops, and production craft."
+
+  - name: "Skeptic"
+    age_range: [25, 45]
+    occupation: "Critical Analyst"
+    attention_span: "medium"
+    trend_sensitivity: 0.30
+    humor_preference: 0.40
+    clickbait_tolerance: 0.10
+    novelty_preference: 0.60
+    share_tendency: 0.25
+    comment_tendency: 0.75
+    interests:
+      - "Fact checking"
+      - "Product teardowns"
+      - "Debunking myths"
+      - "Critical analysis"
+    dislikes:
+      - "Exaggerated claims"
+      - "Obvious engagement bait"
+      - "Fake testimonials"
+      - "AI-generated fluff"
+    description: "Highly resistant to hype; calls out unsubstantiated claims and demands immediate proof."
+
+  - name: "Niche Expert"
+    age_range: [28, 55]
+    occupation: "Senior Specialist"
+    attention_span: "high"
+    trend_sensitivity: 0.40
+    humor_preference: 0.35
+    clickbait_tolerance: 0.20
+    novelty_preference: 0.85
+    share_tendency: 0.55
+    comment_tendency: 0.65
+    interests:
+      - "Technical depth"
+      - "Original research"
+      - "Industry case studies"
+      - "Actionable frameworks"
+    dislikes:
+      - "Superficial listicles"
+      - "Factual inaccuracies"
+      - "Recycled beginner tips"
+    description: "Evaluates factual substance, originality, accuracy, and practical utility."

@@ -1,0 +1,11 @@
+{
+  "id": "cli-sample-video",
+  "platform": "tiktok",
+  "media_type": "short_video",
+  "caption": "5 AI tools every college student needs to stop studying all night",
+  "transcript": "Stop wasting hours on notes. Here are 5 AI tools that will cut your study time in half.",
+  "metadata": {
+    "category": "education",
+    "creator_level": "intermediate"
+  }
+}
