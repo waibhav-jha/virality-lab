@@ -215,6 +215,47 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
 
     const stopScroll = stopScrollProb >= 0.50;
 
+    // Generate authentic, content-specific persona social media comment
+    let simulatedComment = '';
+    const snippet = text.slice(0, 45).trim();
+    if (isDeficient) {
+      if (pLower.includes('gen-z') || pLower.includes('student')) {
+        simulatedComment = `bro literally typed "${text}" and expected to hit the fyp 💀😭`;
+      } else if (pLower.includes('skeptic') || pLower.includes('analyst')) {
+        simulatedComment = `Zero context or substance. Instant scroll-past in 0.1s.`;
+      } else if (pLower.includes('creator')) {
+        simulatedComment = `Missing a hook, CTA, visual cue, and retention loop. Algorithm won't distribute this.`;
+      } else if (pLower.includes('casual')) {
+        simulatedComment = `Did my feed freeze or is this literally just one word? 😂`;
+      } else {
+        simulatedComment = `Lacks any domain subject matter, educational payload, or practical utility.`;
+      }
+    } else {
+      if (pLower.includes('gen-z') || pLower.includes('student')) {
+        simulatedComment = qualityScore >= 0.70
+          ? `bro cooked with this one fr 🔥 ${hasSaveCTA || hasNumbers ? 'instant bookmark for later' : 'sending this to the gc'}`
+          : `lost me in the first 2 seconds ngl... need a faster punchline or visual cut`;
+      } else if (pLower.includes('skeptic') || pLower.includes('analyst')) {
+        simulatedComment = qualityScore >= 0.75
+          ? `Specific numbers and timeframe make this credible. Worth evaluating the full breakdown.`
+          : (lower.includes('ai') || lower.includes('tool')
+            ? `Wait, does this actually work or is it another freemium tool paywall in 2 minutes?`
+            : `Where is the empirical data to support "${snippet}"? Need to see tangible proof.`);
+      } else if (pLower.includes('creator') || pLower.includes('content')) {
+        simulatedComment = qualityScore >= 0.75
+          ? `Clean opening retention hook. The 3-second pacing + save anchor is going to perform very well on ${input.platform.toUpperCase()}.`
+          : `Good premise, but tighten the opening frame — drop the intro fluff and start right on the payoff reveal.`;
+      } else if (pLower.includes('casual') || pLower.includes('scroller')) {
+        simulatedComment = qualityScore >= 0.70
+          ? `Adding this to my saved bookmarks that I tell myself I'll check this weekend 😂`
+          : `Scrolled past after 2 seconds. Too much text to read on mobile feed.`;
+      } else {
+        simulatedComment = qualityScore >= 0.70
+          ? `Practical and actionable framework. The breakdown on "${snippet}" has strong reference utility.`
+          : `Needs to go deeper into technical implementation details rather than general surface advice.`;
+      }
+    }
+
     return {
       persona_id: pLower.replace(/[^a-z0-9]/g, '_'),
       persona_name: personaName,
@@ -229,6 +270,7 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
       follow_probability: Math.round(followProb * 100) / 100,
       emotional_response: emotion,
       reasoning,
+      simulated_comment: simulatedComment,
       strengths: strengths.length ? strengths : (isDeficient ? [] : ['Clean phrasing']),
       weaknesses: weaknesses.length ? weaknesses : ['Pacing could be tightened slightly'],
     };

@@ -44,6 +44,10 @@ SCIENTIFIC PRINCIPLE & SIMULATION BOUNDARIES:
 4. STRENGTHS & WEAKNESSES:
    - strengths: 2-3 specific content elements that successfully resonate with this persona.
    - weaknesses: 1-2 specific friction points, pacing flaws, or tone mismatches that cause drop-off or skepticism.
+
+5. SIMULATED SOCIAL MEDIA COMMENT (simulated_comment):
+   - Write an authentic, in-character social media comment (1-2 sentences) written directly in this persona's unique voice, slang, attitude, and platform culture on {platform}.
+   - The comment must directly reference the specific topic, hook, or claim in the content (e.g. enthusiastic slang quote, skeptical counter-question, creator peer tip, or expert critique).
 """
 
 SIMULATION_USER_PROMPT_TEMPLATE = """### EVALUATION ASSIGNMENT:
@@ -57,6 +61,7 @@ Evaluate this content strictly through the lens of your persona ({persona_name})
 1. How does the opening hook and format match your attention span ({attention_span}) and interests?
 2. Do you trust the claims, or does your clickbait tolerance / skepticism trigger resistance?
 3. Would you stop scrolling, watch through, like, comment, share, or save?
+4. What exact comment would you leave under this post in your authentic personal voice?
 
 Respond strictly with a valid JSON object matching the Reaction schema:
 {{
@@ -72,7 +77,8 @@ Respond strictly with a valid JSON object matching the Reaction schema:
   "emotional_response": "curious" | "entertained" | "skeptical" | "indifferent" | "amused" | "excited" | "inspired" | "annoyed" | "confused",
   "strengths": ["string", "string"],
   "weaknesses": ["string"],
-  "reasoning": "string explaining causal chain from content signals to persona behavior"
+  "reasoning": "string explaining causal chain from content signals to persona behavior",
+  "simulated_comment": "authentic in-character 1-2 sentence social media comment reacting to the specific content in your persona voice"
 }}
 """
 

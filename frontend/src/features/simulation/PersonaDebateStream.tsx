@@ -46,33 +46,40 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
       const stopScroll = typeof r.stop_scroll === 'boolean' ? r.stop_scroll : (Number(r.stop_scroll_probability || r.stop_scroll || 0) >= 0.5);
       const isPositive = stopScroll && Number(r.watch_probability || 0) > 0.6;
 
-      let commentText = '';
       let sentiment: 'positive' | 'critical' | 'neutral' = isPositive ? 'positive' : 'critical';
 
-      // Persona-specific tone synthesis
-      if (pName.toLowerCase().includes('gen-z') || pName.toLowerCase().includes('student')) {
-        commentText = isPositive
-          ? `bro cooked with this one ngl 💀 ${strength ? `the part about "${strength.slice(0, 45)}..." was spot on` : 'instant save for later'}`
-          : `lost me in the first 3 seconds ngl... ${weakness ? weakness.toLowerCase() : 'pacing felt way too slow'}`;
-      } else if (pName.toLowerCase().includes('skeptic') || pName.toLowerCase().includes('analyst')) {
-        sentiment = 'critical';
-        commentText = `Where's the empirical backing for this claim? ${weakness || 'The hook makes an outsized promise that isn\'t backed by demonstrable metrics in the second half.'}`;
-      } else if (pName.toLowerCase().includes('creator')) {
-        commentText = `From a creator standpoint: ${strength ? `Great retention hook with ${strength.toLowerCase()}.` : 'Solid visual framing.'} ${weakness ? `Watch out though: ${weakness.toLowerCase()}` : 'The pacing curve holds strong.'}`;
-      } else if (pName.toLowerCase().includes('niche') || pName.toLowerCase().includes('expert')) {
-        commentText = isPositive
-          ? `Accurate breakdown. ${strength || 'The distinction made here is often overlooked in mainstream advice.'} Worth bookmarking.`
-          : `Oversimplified. ${weakness || 'You missed the nuance on edge cases which undermines the premise for advanced practitioners.'}`;
-      } else if (pName.toLowerCase().includes('casual') || pName.toLowerCase().includes('scroller')) {
-        commentText = isPositive
-          ? `Adding this to my saved folder of 5,000 hacks I tell myself I'll do this weekend 😂`
-          : `Scrolled right past after 2 seconds. Too much text on screen at once.`;
-      } else {
-        commentText = reasoning ? `"${reasoning.slice(0, 120)}..."` : (strength || weakness || 'Evaluated specimen against audience heuristics.');
+      // 1. If LLM or simulation agent supplied an authentic simulated_comment, use it directly!
+      let commentText = r.simulated_comment || '';
+
+      // 2. Fallback dynamic synthesis if simulated_comment wasn't populated
+      if (!commentText) {
+        const snippet = caption ? `"${caption.slice(0, 40)}..."` : '';
+        if (pName.toLowerCase().includes('gen-z') || pName.toLowerCase().includes('student')) {
+          commentText = isPositive
+            ? `bro cooked with this one ngl 🔥 ${strength ? `the part about "${strength.slice(0, 45)}" was spot on` : 'instant save for later'}`
+            : `lost me in the first 2 seconds ngl... ${weakness ? weakness.toLowerCase() : 'pacing felt way too slow'}`;
+        } else if (pName.toLowerCase().includes('skeptic') || pName.toLowerCase().includes('analyst')) {
+          sentiment = 'critical';
+          commentText = `Where's the empirical backing for this claim? ${weakness || 'The hook makes an outsized promise without tangible data.'}`;
+        } else if (pName.toLowerCase().includes('creator')) {
+          commentText = `From a creator standpoint: ${strength ? `Great retention hook with ${strength.toLowerCase()}.` : 'Solid visual framing.'} ${weakness ? `Watch out though: ${weakness.toLowerCase()}` : 'The pacing curve holds strong.'}`;
+        } else if (pName.toLowerCase().includes('niche') || pName.toLowerCase().includes('expert')) {
+          commentText = isPositive
+            ? `Accurate breakdown. ${strength || 'The distinction made here is often overlooked in mainstream advice.'} Worth bookmarking.`
+            : `Oversimplified. ${weakness || 'You missed key domain nuance which undermines the premise.'}`;
+        } else if (pName.toLowerCase().includes('casual') || pName.toLowerCase().includes('scroller')) {
+          commentText = isPositive
+            ? `Adding this to my saved folder of hacks I tell myself I'll do this weekend 😂`
+            : `Scrolled right past after 2 seconds. Too much text to read on mobile.`;
+        } else {
+          commentText = reasoning ? `"${reasoning.slice(0, 120)}..."` : (strength || weakness || 'Evaluated specimen against audience heuristics.');
+        }
       }
 
       // Add structured synthetic replies for rich conversational debate
       let replies: SimulatedComment[] = [];
+      const firstPersonaFirstName = (reactions[0]?.persona_name || 'Creator').split(' ')[0];
+
       if (idx === 0 && reactions.length > 1) {
         replies.push({
           id: `reply_${idx}_1`,
@@ -80,7 +87,7 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
           avatarLabel: 'CC',
           archetype: 'PEER CREATOR',
           sentiment: 'neutral',
-          commentText: `@${pName.split(' ')[0]} Exactly why the 3-second hook structure matters so much on ${platform.toUpperCase()}.`,
+          commentText: `@${firstPersonaFirstName} Exactly why the 3-second hook structure matters so much on ${platform.toUpperCase()}.`,
           likes: 24,
           timeAgo: '4m ago',
         });
@@ -91,9 +98,20 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
           avatarLabel: 'GZ',
           archetype: 'SPEED FILTER',
           sentiment: 'positive',
-          commentText: `@Skeptic it literally works if you actually test it lol`,
+          commentText: `@${pName.split(' ')[0]} bro chill not everything needs a 40-page whitepaper it's a short form post 😭`,
           likes: 58,
           timeAgo: '1m ago',
+        });
+      } else if (pName.toLowerCase().includes('creator') && reactions.length > 3) {
+        replies.push({
+          id: `reply_${idx}_3`,
+          personaName: 'Niche Domain Expert',
+          avatarLabel: 'NE',
+          archetype: 'DOMAIN EXPERT',
+          sentiment: 'neutral',
+          commentText: `@${pName.split(' ')[0]} Agree on the pacing, but creators should make sure the educational payoff matches the initial promise.`,
+          likes: 31,
+          timeAgo: '2m ago',
         });
       }
 

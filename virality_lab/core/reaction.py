@@ -47,6 +47,7 @@ class Reaction(BaseModel):
     strengths: List[str] = Field(default_factory=list, description="Specific elements that worked well for this persona.")
     weaknesses: List[str] = Field(default_factory=list, description="Points of friction or causes for scrolling away.")
     reasoning: str = Field(..., description="In-depth explanation of why the persona exhibited these behaviors.")
+    simulated_comment: Optional[str] = Field(default=None, description="In-character simulated social media comment from this persona.")
 
     # Context & Diagnostics
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Execution diagnostics, latency, or model details.")

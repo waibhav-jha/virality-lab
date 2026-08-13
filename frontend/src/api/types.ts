@@ -70,6 +70,7 @@ export interface PersonaReaction {
   reasoning?: string;
   strengths?: string[];
   weaknesses?: string[];
+  simulated_comment?: string;
   perceived_hook_score?: number;
   perceived_pacing_score?: number;
 }

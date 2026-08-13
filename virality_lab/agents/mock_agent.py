@@ -106,6 +106,53 @@ class MockAudienceAgent(AudienceAgent):
             f"{'Likely to share with friends.' if share > 0.6 else 'Less likely to share without a stronger personal connection.'}"
         )
 
+        # In-character simulated social media comment
+        p_name = self.persona.name.lower()
+        snippet = (content.caption or "")[:40].strip()
+        simulated_comment = ""
+        if is_deficient:
+            if "gen-z" in p_name or "student" in p_name:
+                simulated_comment = f"bro literally just typed '{snippet}' and hit publish 💀😭"
+            elif "skeptic" in p_name:
+                simulated_comment = "Zero context or substance. Instant skip."
+            elif "creator" in p_name:
+                simulated_comment = "Where is the hook, visual cue, or call to action? Algorithm won't push this."
+            elif "casual" in p_name:
+                simulated_comment = "Did my feed lag or is this just one word?"
+            else:
+                simulated_comment = "Missing educational or domain subject matter."
+        else:
+            if "gen-z" in p_name or "student" in p_name:
+                simulated_comment = (
+                    f"bro cooked with this one ngl 🔥 {('saved for finals week' if 'study' in text_lower or 'tool' in text_lower else 'immediate save')}"
+                    if stop_scroll > 0.65
+                    else "lost me in the first 2 seconds ngl... need a faster punchline"
+                )
+            elif "skeptic" in p_name:
+                simulated_comment = (
+                    "Wait, does this actually work or is it another freemium tool paywall?"
+                    if ("ai" in text_lower or "tool" in text_lower)
+                    else f"Where is the empirical data to support this? Need to see tangible proof."
+                )
+            elif "creator" in p_name:
+                simulated_comment = (
+                    "Clean opening retention hook. The 3-second pacing + save anchor is going to perform very well."
+                    if stop_scroll > 0.70
+                    else "Good premise, but tighten the opening frame — drop the fluff and start right on the value reveal."
+                )
+            elif "casual" in p_name:
+                simulated_comment = (
+                    "Adding this to my saved bookmarks that I tell myself I'll check this weekend 😂"
+                    if stop_scroll > 0.60
+                    else "Scrolled past after 2 seconds. Too much text to read on mobile."
+                )
+            else:
+                simulated_comment = (
+                    f"Practical and actionable framework. The breakdown is high reference utility."
+                    if stop_scroll > 0.60
+                    else "Needs to go deeper into technical implementation details rather than general surface advice."
+                )
+
         return Reaction(
             persona_name=self.persona.name,
             stop_scroll=round(stop_scroll, 2),
@@ -120,5 +167,7 @@ class MockAudienceAgent(AudienceAgent):
             strengths=strengths,
             weaknesses=weaknesses,
             reasoning=reasoning,
+            simulated_comment=simulated_comment,
             metadata={"agent_type": "MockAudienceAgent", "calibrated": True},
         )
+
