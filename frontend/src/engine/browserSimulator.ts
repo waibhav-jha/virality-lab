@@ -12,6 +12,11 @@ import {
   Platform,
   MediaType,
   OptimizationObjective,
+  ABComparisonResult,
+  ABComparisonVariant,
+  PersonaBallot,
+  CrossPlatformMatrixResult,
+  PlatformMatrixItem,
 } from '../api/types';
 
 interface SimulationInput {
@@ -456,3 +461,192 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
     overall_improvement: improvementDelta,
   };
 }
+
+/**
+ * Run Head-to-Head Multi-Variant A/B Simulation.
+ * Compares 2 or 3 variants with persona ballot voting and win margin calculation.
+ */
+export function runABComparisonSimulation(
+  variants: { id: string; label: string; caption: string }[],
+  baseInput: Omit<SimulationInput, 'caption'>
+): ABComparisonResult {
+  const simulatedVariants: ABComparisonVariant[] = variants.map((v) => {
+    const sim = runBrowserSimulation({
+      ...baseInput,
+      caption: v.caption,
+    });
+
+    const lower = v.caption.toLowerCase();
+    let advantage = 'General audience resonance';
+    if (lower.includes('save') || lower.includes('bookmark')) advantage = 'High save/bookmark conversion';
+    else if (/\d+/.test(lower)) advantage = 'Numerical clarity & proof anchor';
+    else if (lower.includes('stop') || lower.includes('secret') || lower.includes('mistake')) advantage = 'Curiosity pattern-interrupt';
+    else if (v.caption.split(/\s+/).length < 15) advantage = 'Fast mobile comprehension velocity';
+
+    return {
+      id: v.id,
+      label: v.label,
+      caption: v.caption,
+      score: sim.score || {
+        retention_score: 50,
+        engagement_score: 50,
+        shareability_score: 50,
+        conversion_score: 50,
+        raw_virality_score: 50,
+        calibrated_virality_score: 50,
+        confidence_score: 85,
+      },
+      vote_count: 0,
+      vote_percentage: 0,
+      key_advantage: advantage,
+      reactions: sim.simulation?.reactions || [],
+    };
+  });
+
+  // Calculate persona ballot voting
+  const personaBallots: PersonaBallot[] = [];
+  const allPersonas = simulatedVariants[0]?.reactions.map((r) => r.persona_name) || [];
+
+  allPersonas.forEach((pName) => {
+    let bestVariantId = simulatedVariants[0]?.id || '';
+    let highestPersonaUtility = -1;
+    let ballotReason = '';
+
+    simulatedVariants.forEach((v) => {
+      const pReaction = v.reactions.find((r) => r.persona_name === pName);
+      if (pReaction) {
+        const utility =
+          pReaction.stop_scroll_probability * 0.4 +
+          pReaction.watch_probability * 0.3 +
+          (pReaction.save_probability + pReaction.share_probability) * 0.15;
+        if (utility > highestPersonaUtility) {
+          highestPersonaUtility = utility;
+          bestVariantId = v.id;
+          ballotReason = pReaction.reasoning || `${v.label} demonstrated superior hook velocity for this persona segment.`;
+        }
+      }
+    });
+
+    const winningVar = simulatedVariants.find((v) => v.id === bestVariantId);
+    if (winningVar) {
+      winningVar.vote_count += 1;
+    }
+
+    personaBallots.push({
+      persona_name: pName,
+      preferred_variant_id: bestVariantId,
+      reasoning: ballotReason,
+    });
+  });
+
+  const totalVotes = personaBallots.length || 1;
+  simulatedVariants.forEach((v) => {
+    v.vote_percentage = Math.round((v.vote_count / totalVotes) * 100);
+  });
+
+  const sorted = [...simulatedVariants].sort(
+    (a, b) => b.vote_count - a.vote_count || b.score.calibrated_virality_score - a.score.calibrated_virality_score
+  );
+  const winner = sorted[0];
+  const runnerUp = sorted[1];
+  const winMargin = runnerUp ? Math.max(0, winner.vote_percentage - runnerUp.vote_percentage) : 100;
+
+  const executiveSummary = `${winner.label} won the head-to-head arena with ${winner.vote_percentage}% of simulated audience segment votes (Calibrated Virality Score: ${winner.score.calibrated_virality_score}/100), leading by a +${winMargin}% margin. Core driver: ${winner.key_advantage}.`;
+
+  return {
+    variants: simulatedVariants,
+    winner_id: winner.id,
+    win_margin: winMargin,
+    persona_ballots: personaBallots,
+    executive_summary: executiveSummary,
+  };
+}
+
+/**
+ * Run Cross-Platform Matrix Simulation.
+ * Evaluates the specimen across all 5 platforms simultaneously with platform-specific algorithmic heuristics.
+ */
+export function runCrossPlatformMatrixSimulation(
+  input: SimulationInput
+): CrossPlatformMatrixResult {
+  const platforms: { platform: Platform; name: string; multiplier: string }[] = [
+    { platform: 'tiktok', name: 'TikTok', multiplier: '2.8x FYP Velocity' },
+    { platform: 'instagram', name: 'Instagram Reels', multiplier: '1.9x Explore Distribution' },
+    { platform: 'youtube', name: 'YouTube Shorts', multiplier: '2.4x Browse & Feed Weight' },
+    { platform: 'x', name: 'X / Twitter', multiplier: '1.7x Retweet & Quote Index' },
+    { platform: 'linkedin', name: 'LinkedIn', multiplier: '1.5x Professional Network Reach' },
+  ];
+
+  const items: PlatformMatrixItem[] = platforms.map((p) => {
+    const sim = runBrowserSimulation({
+      ...input,
+      platform: p.platform,
+    });
+
+    const calibrated = sim.score?.calibrated_virality_score || 50;
+    const textLower = (input.caption || '').toLowerCase();
+    const wordCount = (input.caption || '').trim().split(/\s+/).filter(Boolean).length;
+
+    let algorithmSynergy = '';
+    let platformTweak = '';
+
+    if (p.platform === 'tiktok') {
+      algorithmSynergy = 'High sensitivity to opening 1.5s hook and trending vernacular.';
+      platformTweak = wordCount > 25
+        ? 'Shorten caption text overlay and rely more on fast visual cuts and audio sync.'
+        : 'Frontload a punchy visual question in the first frame to maximize TikTok watch-through.';
+    } else if (p.platform === 'instagram') {
+      algorithmSynergy = 'Rewards high bookmark/save rates and aesthetic visual clarity.';
+      platformTweak = !textLower.includes('save')
+        ? 'Add an explicit "Save this post for later" bookmark anchor to boost Instagram Explore rank.'
+        : 'Format caption with line breaks and 3–5 high-relevance niche hashtags.';
+    } else if (p.platform === 'youtube') {
+      algorithmSynergy = 'Algorithm prioritizes >70% Average Percentage Viewed (APV) and search intent.';
+      platformTweak = 'Ensure the payoff is delivered in steps rather than all at once to sustain retention curve across the middle 10 seconds.';
+    } else if (p.platform === 'x') {
+      algorithmSynergy = 'Distribution heavily boosted by replies, controversy, and quoted reposts.';
+      platformTweak = wordCount < 8
+        ? 'Too short for standalone engagement on X. Add a provocative perspective or specific data point.'
+        : 'End with an open-ended debate question ("What’s your take?") to stimulate reply velocity.';
+    } else {
+      // linkedin
+      algorithmSynergy = 'Prioritizes educational frameworks, career insights, and clean white-space formatting.';
+      platformTweak = wordCount < 10
+        ? 'Casual single-line captions underperform on LinkedIn. Structure into a 3-bullet insight with career/ROI value.'
+        : 'Adopt an executive summary format with spaced bullet points for professional readability.';
+    }
+
+    return {
+      platform: p.platform,
+      platform_name: p.name,
+      score: calibrated,
+      tier: sim.score?.performance_tier || 'Moderate Traction',
+      retention_score: sim.score?.retention_score || 50,
+      engagement_score: sim.score?.engagement_score || 50,
+      shareability_score: sim.score?.shareability_score || 50,
+      rank: 0,
+      is_best_fit: false,
+      algorithm_synergy: algorithmSynergy,
+      platform_tweak: platformTweak,
+      reach_multiplier: p.multiplier,
+    };
+  });
+
+  // Assign ranks
+  items.sort((a, b) => b.score - a.score);
+  items.forEach((item, index) => {
+    item.rank = index + 1;
+    item.is_best_fit = index === 0;
+  });
+
+  const best = items[0];
+  const distributionStrategy = `Specimen performs best on ${best.platform_name} with a Calibrated Score of ${best.score}/100 (${best.tier}). Recommend deploying primary creative to ${best.platform_name} first, then adapting with tailored platform tweaks for secondary channels.`;
+
+  return {
+    best_platform: best.platform,
+    best_score: best.score,
+    items,
+    distribution_strategy: distributionStrategy,
+  };
+}
+

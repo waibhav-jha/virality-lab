@@ -165,3 +165,51 @@ export interface HealthResponse {
   llm_provider: string;
   timestamp: string;
 }
+
+export interface PersonaBallot {
+  persona_name: string;
+  preferred_variant_id: string;
+  reasoning: string;
+}
+
+export interface ABComparisonVariant {
+  id: string;
+  label: string;
+  caption: string;
+  score: ViralityScoreBreakdown;
+  vote_count: number;
+  vote_percentage: number;
+  key_advantage: string;
+  reactions: PersonaReaction[];
+}
+
+export interface ABComparisonResult {
+  variants: ABComparisonVariant[];
+  winner_id: string;
+  win_margin: number;
+  persona_ballots: PersonaBallot[];
+  executive_summary: string;
+}
+
+export interface PlatformMatrixItem {
+  platform: Platform;
+  platform_name: string;
+  score: number;
+  tier: string;
+  retention_score: number;
+  engagement_score: number;
+  shareability_score: number;
+  rank: number;
+  is_best_fit: boolean;
+  algorithm_synergy: string;
+  platform_tweak: string;
+  reach_multiplier: string;
+}
+
+export interface CrossPlatformMatrixResult {
+  best_platform: Platform;
+  best_score: number;
+  items: PlatformMatrixItem[];
+  distribution_strategy: string;
+}
+

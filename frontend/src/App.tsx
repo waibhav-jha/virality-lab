@@ -1,13 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   AlertCircle,
   Beaker,
-
   RotateCcw,
   X,
   ArrowRight,
   ArrowLeft,
   Sparkles,
+  Swords,
+  Globe2,
+  Layers,
+  BarChart2,
+  Cpu,
 } from 'lucide-react';
 import { useExperiment } from './hooks/useExperiment';
 import { Header } from './components/Header';
@@ -19,6 +23,8 @@ import { SimulationProgress } from './features/simulation/SimulationProgress';
 import { PersonaReactionCard } from './features/simulation/PersonaReactionCard';
 import { AudienceMap } from './features/simulation/AudienceMap';
 import { PersonaDebateStream } from './features/simulation/PersonaDebateStream';
+import { ABTestingArena } from './features/simulation/ABTestingArena';
+import { CrossPlatformMatrix } from './features/simulation/CrossPlatformMatrix';
 import { ViralityScoreSection } from './features/scoring/ViralityScoreSection';
 import { DiagnosticsSection } from './features/scoring/DiagnosticsSection';
 import { OptimizationSection } from './features/optimization/OptimizationSection';
@@ -29,6 +35,7 @@ export function App() {
   const exp = useExperiment();
   const { result } = exp;
   const resultsRef = useRef<HTMLDivElement>(null);
+  const [activeDeckTab, setActiveDeckTab] = useState<'all' | 'audit' | 'ab_arena' | 'matrix' | 'optimizer'>('all');
 
   const isSimulating = exp.status === 'running';
   const hasResults = !!result;
@@ -177,7 +184,7 @@ export function App() {
         {hasResults && result && (
           <div ref={resultsRef} className="w-full flex flex-col gap-8 pt-2" aria-label="Simulation results">
             {/* Top Quick Navigation Bar */}
-            <div className="w-full bg-[#0E1013] border border-white/15 p-4 flex flex-wrap items-center justify-between gap-4 corner-ticks">
+            <div className="w-full bg-[#0E1013] border border-white/15 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 corner-ticks">
               <div className="flex items-center gap-3">
                 <Button
                   variant="viral"
@@ -207,75 +214,180 @@ export function App() {
               </div>
             </div>
 
-            {/* 1. Virality Potential Score Master Deck */}
-            {result.score && (
-              <ViralityScoreSection
-                score={result.score}
-                optimizedScore={result.best_score || undefined}
-              />
+            {/* Sub-Module Navigation Switcher */}
+            <div className="w-full flex flex-wrap items-center gap-2 border-b border-white/15 pb-3 font-mono-tech text-xs">
+              <span className="text-[#5B6474] text-[10px] uppercase font-bold mr-2">LAB MODULE:</span>
+              
+              <button
+                type="button"
+                onClick={() => setActiveDeckTab('all')}
+                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  activeDeckTab === 'all'
+                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
+                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                ALL MODULES
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveDeckTab('audit')}
+                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  activeDeckTab === 'audit'
+                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
+                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                }`}
+              >
+                <BarChart2 className="w-3.5 h-3.5" />
+                01 // AUDIT & DEBATE
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveDeckTab('ab_arena')}
+                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  activeDeckTab === 'ab_arena'
+                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
+                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                }`}
+              >
+                <Swords className="w-3.5 h-3.5" />
+                02 // LIVE A/B ARENA
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveDeckTab('matrix')}
+                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  activeDeckTab === 'matrix'
+                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
+                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                }`}
+              >
+                <Globe2 className="w-3.5 h-3.5" />
+                03 // 5-PLATFORM MATRIX
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveDeckTab('optimizer')}
+                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  activeDeckTab === 'optimizer'
+                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
+                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                }`}
+              >
+                <Cpu className="w-3.5 h-3.5" />
+                04 // GENETIC OPTIMIZER
+              </button>
+            </div>
+
+            {/* 1. Virality Potential Score & Audit Deck */}
+            {(activeDeckTab === 'all' || activeDeckTab === 'audit') && (
+              <>
+                {result.score && (
+                  <ViralityScoreSection
+                    score={result.score}
+                    optimizedScore={result.best_score || undefined}
+                  />
+                )}
+
+                {result.score && (
+                  <DiagnosticsSection
+                    score={result.score}
+                    contentProfile={result.content_profile}
+                  />
+                )}
+
+                {result.simulation?.reactions && (
+                  <AudienceMap
+                    reactions={result.simulation.reactions}
+                    totalPersonas={result.simulation.total_personas}
+                    completedPersonas={result.simulation.completed_personas}
+                  />
+                )}
+
+                {result.simulation?.reactions && (
+                  <section className="flex flex-col gap-4 text-left" aria-label="Persona reactions">
+                    <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-2 font-mono-tech text-[10px] text-[#7E8798] uppercase tracking-widest">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#D4FF00] font-bold">04B // PERSONA DOSSIERS</span>
+                        <span>::</span>
+                        <span>GRANULAR AGENT DELIBERATION LEDGER</span>
+                      </div>
+                      <span>{result.simulation.completed_personas} DOSSIERS RECORDED</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                      {result.simulation.reactions.map((rxn, idx) => (
+                        <PersonaReactionCard key={rxn.persona_id || idx} reaction={rxn} />
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {result.simulation?.reactions && (
+                  <PersonaDebateStream
+                    reactions={result.simulation.reactions}
+                    caption={exp.caption}
+                    platform={exp.platform}
+                  />
+                )}
+              </>
             )}
 
-            {/* 2. Content Diagnostics & Root-Cause Matrix */}
-            {result.score && (
-              <DiagnosticsSection
-                score={result.score}
-                contentProfile={result.content_profile}
-              />
-            )}
-
-            {/* 3. Ranked Audience Response Spectrum */}
-            {result.simulation?.reactions && (
-              <AudienceMap
-                reactions={result.simulation.reactions}
-                totalPersonas={result.simulation.total_personas}
-                completedPersonas={result.simulation.completed_personas}
-              />
-            )}
-
-            {/* 4. Per-Persona Granular Dossier Ledger */}
-            {result.simulation?.reactions && (
-              <section className="flex flex-col gap-4 text-left" aria-label="Persona reactions">
-                <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-2 font-mono-tech text-[10px] text-[#7E8798] uppercase tracking-widest">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#D4FF00] font-bold">04B // PERSONA DOSSIERS</span>
-                    <span>::</span>
-                    <span>GRANULAR AGENT DELIBERATION LEDGER</span>
-                  </div>
-                  <span>{result.simulation.completed_personas} DOSSIERS RECORDED</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-                  {result.simulation.reactions.map((rxn, idx) => (
-                    <PersonaReactionCard key={rxn.persona_id || idx} reaction={rxn} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* 4C. Synthetic Social Feed & Persona Comment Debate Stream */}
-            {result.simulation?.reactions && (
-              <PersonaDebateStream
-                reactions={result.simulation.reactions}
-                caption={exp.caption}
+            {/* 2. Feature B: Live Multi-Variant A/B Head-to-Head Arena */}
+            {(activeDeckTab === 'all' || activeDeckTab === 'ab_arena') && (
+              <ABTestingArena
+                originalCaption={exp.caption}
+                candidateVariants={result.optimization?.candidate_variants}
                 platform={exp.platform}
+                mediaType={exp.mediaType}
+                selectedPersonas={exp.selectedPersonas}
+                objective={exp.objective}
+                onApplyVariant={(newCap) => {
+                  exp.setCaption(newCap);
+                  exp.backToStudio();
+                }}
               />
             )}
 
-            {/* 5. Before/After Story & Optimization Lift */}
-            {result.optimization && result.score && (
-              <BeforeAfterStory
-                originalScore={result.score}
-                optimizedScore={result.best_score}
-                optimization={result.optimization}
+            {/* 3. Feature C: Cross-Platform Compatibility Matrix */}
+            {(activeDeckTab === 'all' || activeDeckTab === 'matrix') && (
+              <CrossPlatformMatrix
+                caption={exp.caption}
+                transcript={exp.transcript}
+                currentPlatform={exp.platform}
+                mediaType={exp.mediaType}
+                selectedPersonas={exp.selectedPersonas}
+                objective={exp.objective}
+                onSelectPlatform={(newPlat) => {
+                  exp.setPlatform(newPlat);
+                  exp.backToStudio();
+                }}
               />
             )}
 
-            {/* 6. Candidate Variant Comparison Workbench */}
-            {result.optimization && (
-              <OptimizationSection
-                optimization={result.optimization}
-                onApplyWinner={exp.applyWinner}
-              />
+            {/* 4. Genetic Candidate Optimizer */}
+            {(activeDeckTab === 'all' || activeDeckTab === 'optimizer') && (
+              <>
+                {result.optimization && result.score && (
+                  <BeforeAfterStory
+                    originalScore={result.score}
+                    optimizedScore={result.best_score}
+                    optimization={result.optimization}
+                  />
+                )}
+
+                {result.optimization && (
+                  <OptimizationSection
+                    optimization={result.optimization}
+                    onApplyWinner={exp.applyWinner}
+                  />
+                )}
+              </>
             )}
 
             {/* Bottom Actions Bar */}
