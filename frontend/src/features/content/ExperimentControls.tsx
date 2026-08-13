@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
-import { Platform, OptimizationObjective } from '../../api/types';
+import { Platform, OptimizationObjective, CustomPersonaDefinition } from '../../api/types';
 import { MediaDropzone } from './MediaDropzone';
 import { PlatformAlgorithmTelemetry } from '../platform/PlatformAlgorithmTelemetry';
+import { ViralHookGenerator } from './ViralHookGenerator';
+import { CustomPersonaModal } from '../simulation/CustomPersonaModal';
+import { UserPlus, Trash2, Bot } from 'lucide-react';
 
 interface ExperimentControlsProps {
   platform: Platform;
@@ -25,7 +28,7 @@ interface ExperimentControlsProps {
   disabled?: boolean;
 }
 
-const ALL_PERSONAS = [
+const DEFAULT_PERSONAS = [
   { id: 'gen_z_student', name: 'Gen-Z Student', desc: 'Fast hook filter, meme-literate, high drop-off rate', archetype: '01 / SPEED FILTER' },
   { id: 'casual_scroller', name: 'Casual Scroller', desc: 'Entertainment seeker, values rapid payoff & clarity', archetype: '02 / VOLUME TRAFFIC' },
   { id: 'content_creator', name: 'Content Creator', desc: 'Analyzes pacing, framing, sound cue & retention tricks', archetype: '03 / PEER BENCHMARK' },
@@ -62,6 +65,39 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
   onMediaCleared,
   disabled = false,
 }) => {
+  const [customPersonas, setCustomPersonas] = useState<CustomPersonaDefinition[]>(() => {
+    try {
+      const saved = localStorage.getItem('virality_lab_custom_personas');
+      return saved ? JSON.parse(saved) : [];
+    } catch (_) {
+      return [];
+    }
+  });
+  const [isPersonaModalOpen, setIsPersonaModalOpen] = useState<boolean>(false);
+
+  const allPersonas = [...DEFAULT_PERSONAS, ...customPersonas];
+
+  const handleAddCustomPersona = (newPersona: CustomPersonaDefinition) => {
+    const updated = [...customPersonas, newPersona];
+    setCustomPersonas(updated);
+    try {
+      localStorage.setItem('virality_lab_custom_personas', JSON.stringify(updated));
+    } catch (_) {}
+    if (!selectedPersonas.includes(newPersona.name)) {
+      setSelectedPersonas([...selectedPersonas, newPersona.name]);
+    }
+  };
+
+  const handleDeleteCustomPersona = (pId: string, pName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = customPersonas.filter((p) => p.id !== pId);
+    setCustomPersonas(updated);
+    try {
+      localStorage.setItem('virality_lab_custom_personas', JSON.stringify(updated));
+    } catch (_) {}
+    setSelectedPersonas(selectedPersonas.filter((n) => n !== pName));
+  };
+
   const togglePersona = (pId: string) => {
     if (selectedPersonas.includes(pId)) {
       if (selectedPersonas.length === 1) return; // Keep at least one
@@ -72,7 +108,7 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
   };
 
   const selectAllPersonas = () => {
-    setSelectedPersonas(ALL_PERSONAS.map((p) => p.name));
+    setSelectedPersonas(allPersonas.map((p) => p.name));
   };
 
   const wordCount = caption.trim() ? caption.trim().split(/\s+/).length : 0;
@@ -154,27 +190,51 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
             className="w-full bg-transparent p-3 text-xs sm:text-sm text-[#F4F6F8] font-sans placeholder-[#4A5364] resize-none outline-none leading-relaxed"
           />
         </div>
+
+        {/* Feature D: In-Studio Viral Hook AI Assistant */}
+        <ViralHookGenerator
+          caption={caption}
+          platform={platform}
+          onApplyHook={(hookText) => setCaption(hookText)}
+          disabled={disabled}
+        />
       </div>
 
       {/* 4. Audience Agent Panel */}
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between font-mono-tech text-[10px] text-[#7E8798] uppercase">
+        <div className="flex flex-wrap items-center justify-between font-mono-tech text-[10px] text-[#7E8798] uppercase gap-2">
           <label className="font-semibold text-white/80 flex items-center gap-1.5">
             <span>[03 // AUDIENCE AGENT ROSTER]</span>
-            <span className="text-[#D4FF00]">({selectedPersonas.length}/5 ACTIVE)</span>
+            <span className="text-[#D4FF00]">
+              ({selectedPersonas.length}/{allPersonas.length} ACTIVE)
+            </span>
           </label>
-          <button
-            type="button"
-            onClick={selectAllPersonas}
-            className="text-[10px] text-[#D4FF00] hover:underline cursor-pointer uppercase font-bold"
-          >
-            SELECT ALL AGENTS
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsPersonaModalOpen(true)}
+              className="text-[#D4FF00] hover:underline cursor-pointer uppercase font-bold flex items-center gap-1"
+            >
+              <UserPlus className="w-3 h-3" />
+              + SYNTHESIZE AGENT
+            </button>
+            <span>|</span>
+            <button
+              type="button"
+              onClick={selectAllPersonas}
+              className="text-white/80 hover:text-white cursor-pointer uppercase font-bold"
+            >
+              SELECT ALL
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          {ALL_PERSONAS.map((persona) => {
-            const isChecked = selectedPersonas.includes(persona.name) || selectedPersonas.includes(persona.id);
+          {allPersonas.map((persona) => {
+            const isChecked =
+              selectedPersonas.includes(persona.name) || selectedPersonas.includes(persona.id);
+            const isCustom = Boolean('is_custom' in persona && persona.is_custom);
+
             return (
               <div
                 key={persona.id}
@@ -182,22 +242,46 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
                 className={clsx(
                   'p-2.5 border transition-all cursor-pointer flex items-center justify-between gap-3 select-none font-mono-tech text-xs',
                   isChecked
-                    ? 'bg-white/[0.04] border-white/20 text-white'
+                    ? isCustom
+                      ? 'bg-[#D4FF00]/[0.06] border-[#D4FF00]/40 text-white'
+                      : 'bg-white/[0.04] border-white/20 text-white'
                     : 'bg-transparent border-white/5 text-[#5B6474] opacity-50 hover:opacity-80'
                 )}
               >
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase tracking-wider">{persona.name}</span>
-                    <span className="text-[10px] text-[#7E8798]">[{persona.archetype}]</span>
+                    <span
+                      className={clsx(
+                        'text-[10px]',
+                        isCustom ? 'text-[#D4FF00] font-bold' : 'text-[#7E8798]'
+                      )}
+                    >
+                      [{persona.archetype}]
+                    </span>
                   </div>
                   <span className="text-[11px] text-[#7E8798] font-sans truncate mt-0.5">
                     {persona.desc}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className={clsx('text-xs font-bold', isChecked ? 'text-[#D4FF00]' : 'text-white/20')}>
+                <div className="flex items-center gap-2 shrink-0">
+                  {isCustom ? (
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteCustomPersona(persona.id, persona.name, e)}
+                      className="p-1 text-[#7E8798] hover:text-red-400 cursor-pointer transition-colors"
+                      title="Remove synthesized agent"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  ) : null}
+                  <span
+                    className={clsx(
+                      'text-xs font-bold',
+                      isChecked ? 'text-[#D4FF00]' : 'text-white/20'
+                    )}
+                  >
                     {isChecked ? '[ ACTIVE ]' : '[ OFF ]'}
                   </span>
                 </div>
@@ -206,6 +290,13 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
           })}
         </div>
       </div>
+
+      {/* Feature E: Custom Persona Synthesis Modal */}
+      <CustomPersonaModal
+        isOpen={isPersonaModalOpen}
+        onClose={() => setIsPersonaModalOpen(false)}
+        onSavePersona={handleAddCustomPersona}
+      />
 
       {/* 5. Optimization Target Matrix */}
       <div className="flex flex-col gap-2">

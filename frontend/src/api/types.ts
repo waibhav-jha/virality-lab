@@ -213,3 +213,23 @@ export interface CrossPlatformMatrixResult {
   distribution_strategy: string;
 }
 
+export interface CustomPersonaDefinition {
+  id: string;
+  name: string;
+  desc: string;
+  archetype: string;
+  attention_span_seconds: number;
+  skepticism_level: number; // 0 to 100
+  comment_style: string;
+  is_custom?: boolean;
+}
+
+export interface ViralHookCandidate {
+  id: string;
+  archetype: 'contrarian' | 'curiosity_framework' | 'story_transformation';
+  archetype_label: string;
+  hook_text: string;
+  predicted_stop_scroll: number;
+  angle_summary: string;
+}
+

@@ -224,12 +224,14 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
     let simulatedComment = '';
     const snippet = text.slice(0, 45).trim();
     if (isDeficient) {
-      if (pLower.includes('gen-z') || pLower.includes('student')) {
+      if (pLower.includes('gen-z') || pLower.includes('student') || pLower.includes('alpha') || pLower.includes('gamer')) {
         simulatedComment = `bro literally typed "${text}" and expected to hit the fyp 💀😭`;
-      } else if (pLower.includes('skeptic') || pLower.includes('analyst')) {
+      } else if (pLower.includes('skeptic') || pLower.includes('analyst') || pLower.includes('quant')) {
         simulatedComment = `Zero context or substance. Instant scroll-past in 0.1s.`;
       } else if (pLower.includes('creator')) {
         simulatedComment = `Missing a hook, CTA, visual cue, and retention loop. Algorithm won't distribute this.`;
+      } else if (pLower.includes('recruiter') || pLower.includes('career')) {
+        simulatedComment = `Empty application/specimen. Zero demonstrated competency or value.`;
       } else if (pLower.includes('casual')) {
         simulatedComment = `Did my feed freeze or is this literally just one word? 😂`;
       } else {
@@ -240,6 +242,22 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
         simulatedComment = qualityScore >= 0.70
           ? `bro cooked with this one fr 🔥 ${hasSaveCTA || hasNumbers ? 'instant bookmark for later' : 'sending this to the gc'}`
           : `lost me in the first 2 seconds ngl... need a faster punchline or visual cut`;
+      } else if (pLower.includes('alpha') || pLower.includes('gamer')) {
+        simulatedComment = qualityScore >= 0.70
+          ? `nah this is actually valid 🔥 saving for later`
+          : `sub-second scroll past 💀 skipped in 0.5s literally fell asleep`;
+      } else if (pLower.includes('recruiter') || pLower.includes('career')) {
+        simulatedComment = qualityScore >= 0.70
+          ? `Clear actionable skillset demonstration. Candidates who lead with concrete outcomes like "${snippet}" stand out immediately.`
+          : `Lacks specific deliverables or tangible proof of work. Too generic to showcase competence.`;
+      } else if (pLower.includes('quant') || pLower.includes('investor') || pLower.includes('finance') || pLower.includes('vc')) {
+        simulatedComment = qualityScore >= 0.75
+          ? `Compelling hook efficiency and structured delivery. The value proposition is backed by tangible signals.`
+          : `Where are the underlying metrics and verifiable data points? Need quantitative proof over anecdotal claims.`;
+      } else if (pLower.includes('prof') || pLower.includes('academic')) {
+        simulatedComment = qualityScore >= 0.70
+          ? `Sound pedagogical structure. The progression from problem statement to resolution is well-formulated.`
+          : `Lacks methodological citations and structural depth. Claims require empirical references.`;
       } else if (pLower.includes('skeptic') || pLower.includes('analyst')) {
         simulatedComment = qualityScore >= 0.75
           ? `Specific numbers and timeframe make this credible. Worth evaluating the full breakdown.`
