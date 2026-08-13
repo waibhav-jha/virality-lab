@@ -12,7 +12,7 @@ import {
   UploadResponse,
 } from './types';
 
-const BASE_URL = ''; // Relative path, Vite proxy forwards /api and /health to http://127.0.0.1:8000
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') || '';
 
 export class ApiError extends Error {
   constructor(
