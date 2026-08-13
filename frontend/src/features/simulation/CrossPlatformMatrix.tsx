@@ -85,36 +85,36 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
       aria-label="Cross-Platform Algorithmic Compatibility Matrix"
     >
       {/* Section Masthead */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-[#00FF41]/20 pb-4 font-mechanismo text-[11px] text-[#8E9E90] uppercase tracking-widest gap-2">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-4 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-[#00FF41] font-black bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40 shadow-[0_0_6px_rgba(0,255,65,0.2)]">
+          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
             04C // CROSS-PLATFORM COMPATIBILITY MATRIX
           </span>
           <span className="text-white/40">::</span>
-          <span className="text-white/90 font-bold">5-CHANNEL SIMULTANEOUS ALGORITHM AUDIT</span>
+          <span className="text-white/80 font-bold">5-CHANNEL SIMULTANEOUS ALGORITHM AUDIT</span>
         </div>
-        <div className="flex items-center gap-2 bg-[#000000] px-2 py-1 border border-[#00FF41]/30 shadow-[2px_2px_0px_0px_#000]">
-          <Globe2 className="w-3.5 h-3.5 text-[#00FF41]" />
+        <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
+          <Globe2 className="w-3.5 h-3.5 text-[#D4FF00]" />
           <span className="font-bold text-white">ALL 5 PLATFORMS EVALUATED</span>
         </div>
       </div>
 
       {/* Top Best Match Callout Banner */}
-      <div className="bg-gradient-to-r from-[#00FF41]/20 via-[#050805] to-black border-2 border-[#00FF41] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[0_0_25px_rgba(0,255,65,0.25)]">
+      <div className="bg-gradient-to-r from-[#D4FF00]/15 via-[#0A0D14] to-black border-2 border-[#D4FF00] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[4px_4px_0px_0px_#D4FF00]">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-[#00FF41] border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_#000]">
-            <Trophy className="w-6 h-6 text-[#000000]" />
+          <div className="w-12 h-12 bg-[#D4FF00] border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_#000]">
+            <Trophy className="w-6 h-6 text-[#060709]" />
           </div>
           <div>
-            <div className="flex items-center gap-2 font-mechanismo text-[11px] text-[#00FF41] uppercase font-black tracking-wider">
-              <span className="bg-[#00FF41]/20 px-1.5 py-0.5 border border-[#00FF41]/50 shadow-[0_0_6px_rgba(0,255,65,0.3)]">HIGHEST ALGORITHMIC SYNERGY</span>
+            <div className="flex items-center gap-2 font-mechanismo text-[11px] text-[#D4FF00] uppercase font-black tracking-wider">
+              <span className="bg-[#D4FF00]/20 px-1.5 py-0.5 border border-[#D4FF00]/50">HIGHEST ALGORITHMIC SYNERGY</span>
               <span className="text-white/40">·</span>
               <span className="text-[#00F0FF]">RANK #1: {bestItem.platform_name.toUpperCase()}</span>
             </div>
             <p className="font-csmigrate text-base text-white font-black mt-1">
               Score: {bestItem.score}/100 ({bestItem.tier}) · {bestItem.reach_multiplier}
             </p>
-            <p className="font-mechanismo text-xs text-[#8E9E90] mt-0.5 leading-relaxed">
+            <p className="font-mechanismo text-xs text-[#A2ABB9] mt-0.5 leading-relaxed">
               {result.distribution_strategy}
             </p>
           </div>
@@ -146,10 +146,10 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
               className={clsx(
                 'border-2 p-4 flex flex-col justify-between gap-3 transition-all relative shadow-[3px_3px_0px_0px_#000]',
                 isBest
-                  ? 'border-[#00FF41] bg-[#050805] shadow-[0_0_20px_rgba(0,255,65,0.3)]'
+                  ? 'border-[#D4FF00] bg-[#07080A] shadow-[4px_4px_0px_0px_#D4FF00]'
                   : isCurrent
-                  ? 'border-[#00F0FF] bg-[#050805] shadow-[0_0_15px_rgba(0,240,255,0.25)]'
-                  : 'border-[#00FF41]/20 bg-[#000000] hover:border-[#00FF41]/60'
+                  ? 'border-[#00F0FF] bg-[#07080A] shadow-[3px_3px_0px_0px_#00F0FF]'
+                  : 'border-white/15 bg-[#07080A] hover:border-[#D4FF00]/50'
               )}
             >
               <div>
@@ -160,10 +160,10 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
                     className={clsx(
                       'px-2 py-0.5 font-black uppercase border text-[10px] font-mechanismo',
                       isBest
-                        ? 'border-[#00FF41] bg-[#00FF41] text-[#000000]'
+                        ? 'border-[#D4FF00] bg-[#D4FF00] text-[#060709]'
                         : isCurrent
                         ? 'border-[#00F0FF] bg-[#00F0FF]/20 text-[#00F0FF]'
-                        : 'border-white/20 text-[#8E9E90]'
+                        : 'border-white/20 text-[#8E98AA]'
                     )}
                   >
                     RANK #{item.rank}
@@ -171,65 +171,65 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
                 </div>
 
                 {/* Score Big Display */}
-                <div className="flex items-baseline justify-between pb-2 border-b border-[#00FF41]/20">
+                <div className="flex items-baseline justify-between pb-2 border-b border-white/15">
                   <div>
-                    <span className="font-mechanismo text-[9px] text-[#526355] block uppercase font-bold">
+                    <span className="font-mechanismo text-[9px] text-[#646E82] block uppercase font-bold">
                       VIRALITY INDEX
                     </span>
                     <span
                       className={clsx(
                         'text-3xl font-black font-mechanismo',
                         item.score >= 80
-                          ? 'text-[#00FF41]'
+                          ? 'text-[#D4FF00]'
                           : item.score >= 60
                           ? 'text-white'
-                          : 'text-[#FF0055]'
+                          : 'text-[#EF4444]'
                       )}
                     >
                       {item.score}
-                      <span className="text-xs text-[#526355] font-mechanismo">/100</span>
+                      <span className="text-xs text-[#646E82] font-mechanismo">/100</span>
                     </span>
                   </div>
 
-                  <span className="font-mechanismo text-[10px] text-[#8E9E90] font-bold uppercase text-right max-w-[90px] leading-tight">
+                  <span className="font-mechanismo text-[10px] text-[#8E98AA] font-bold uppercase text-right max-w-[90px] leading-tight">
                     {item.tier}
                   </span>
                 </div>
 
                 {/* Multiplier Tag */}
-                <div className="mt-2 font-mechanismo text-[11px] text-[#00FF41] font-black">
+                <div className="mt-2 font-mechanismo text-[11px] text-[#D4FF00] font-black">
                   {item.reach_multiplier}
                 </div>
 
                 {/* Sub Score Meters */}
                 <div className="flex flex-col gap-1.5 mt-3 font-mechanismo text-[10px]">
-                  <div className="flex justify-between text-[#8E9E90]">
+                  <div className="flex justify-between text-[#8E98AA]">
                     <span>RETENTION:</span>
                     <span className="text-white font-bold">{item.retention_score}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#000000] border border-[#00FF41]/20 overflow-hidden">
+                  <div className="w-full h-1.5 bg-[#0E1015] border border-white/15 overflow-hidden">
                     <div
                       style={{ width: `${item.retention_score}%` }}
-                      className="h-full bg-[#00FF41] shadow-[0_0_6px_#00FF41]"
+                      className="h-full bg-[#D4FF00] shadow-[0_0_6px_#D4FF00]"
                     />
                   </div>
 
-                  <div className="flex justify-between text-[#8E9E90] mt-1">
+                  <div className="flex justify-between text-[#8E98AA] mt-1">
                     <span>ENGAGEMENT:</span>
                     <span className="text-white font-bold">{item.engagement_score}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#000000] border border-[#00FF41]/20 overflow-hidden">
+                  <div className="w-full h-1.5 bg-[#0E1015] border border-white/15 overflow-hidden">
                     <div
                       style={{ width: `${item.engagement_score}%` }}
                       className="h-full bg-[#00F0FF] shadow-[0_0_6px_#00F0FF]"
                     />
                   </div>
 
-                  <div className="flex justify-between text-[#8E9E90] mt-1">
+                  <div className="flex justify-between text-[#8E98AA] mt-1">
                     <span>SHAREABILITY:</span>
                     <span className="text-white font-bold">{item.shareability_score}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#000000] border border-[#00FF41]/20 overflow-hidden">
+                  <div className="w-full h-1.5 bg-[#0E1015] border border-white/15 overflow-hidden">
                     <div
                       style={{ width: `${item.shareability_score}%` }}
                       className="h-full bg-[#FF0055] shadow-[0_0_6px_#FF0055]"
@@ -238,8 +238,8 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
                 </div>
 
                 {/* Tailored Platform Tweak */}
-                <div className="mt-3 bg-[#000000] p-2.5 border border-[#00FF41]/20 font-sans text-xs text-[#8E9E90] leading-relaxed shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
-                  <span className="font-mechanismo text-[9px] text-[#526355] uppercase block font-bold mb-0.5">
+                <div className="mt-3 bg-[#060709] p-2.5 border border-white/10 font-sans text-xs text-[#A2ABB9] leading-relaxed shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+                  <span className="font-mechanismo text-[9px] text-[#646E82] uppercase block font-bold mb-0.5">
                     PLATFORM TWEAK:
                   </span>
                   {item.platform_tweak}
@@ -247,11 +247,11 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
 
                 {/* Adapted Specimen Preview */}
                 {item.adapted_specimen && (
-                  <div className="mt-2 bg-[#050805] p-2 border-l-2 border-[#00F0FF] font-sans text-[11px] text-white/90 leading-snug">
+                  <div className="mt-2 bg-[#0C0F15] p-2 border-l-2 border-[#00F0FF] font-sans text-[11px] text-white/90 leading-snug">
                     <span className="font-mechanismo text-[8px] text-[#00F0FF] uppercase block font-bold mb-0.5">
                       ADAPTED SPECIMEN:
                     </span>
-                    <p className="line-clamp-3 italic text-[#FFFFFF]">{item.adapted_specimen}</p>
+                    <p className="line-clamp-3 italic text-[#DDE2EA]">{item.adapted_specimen}</p>
                   </div>
                 )}
               </div>
@@ -264,8 +264,8 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
                   className={clsx(
                     'w-full py-2 font-csmigrate text-xs uppercase font-black border-2 transition-all flex items-center justify-center gap-1 cursor-pointer shadow-[2px_2px_0px_0px_#000]',
                     isApplied
-                      ? 'border-[#00FF41] bg-[#00FF41] text-[#000000]'
-                      : 'border-[#00F0FF] bg-[#00F0FF]/15 text-[#00F0FF] hover:bg-[#00F0FF] hover:text-[#000000]'
+                      ? 'border-[#D4FF00] bg-[#D4FF00] text-[#060709]'
+                      : 'border-[#00F0FF] bg-[#00F0FF]/15 text-[#00F0FF] hover:bg-[#00F0FF] hover:text-[#060709]'
                   )}
                 >
                   <Sparkles className="w-3 h-3" />
@@ -275,7 +275,7 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectPlatform(item.platform)}
-                  className="w-full py-1 font-mechanismo text-[10px] uppercase font-bold border border-[#00FF41]/20 bg-[#000000] text-[#8E9E90] hover:text-white hover:border-[#00FF41]/50"
+                  className="w-full py-1 font-mechanismo text-[10px] uppercase font-bold border border-white/15 bg-[#0A0D14] text-[#8E98AA] hover:text-white hover:border-white/40"
                 >
                   {isCurrent ? 'ACTIVE TARGET' : 'TARGET CHANNEL ONLY'}
                 </button>

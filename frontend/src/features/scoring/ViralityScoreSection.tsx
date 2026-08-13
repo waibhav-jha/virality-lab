@@ -91,15 +91,15 @@ export const ViralityScoreSection: React.FC<ViralityScoreSectionProps> = ({
       aria-label="Virality potential score and breakdown"
     >
       {/* Section Header */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-[#00FF41]/20 pb-3 font-mechanismo text-[11px] text-[#8E9E90] uppercase tracking-widest">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest">
         <div className="flex items-center gap-2">
-          <span className="text-[#00FF41] font-black bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40 shadow-[0_0_6px_rgba(0,255,65,0.2)]">
+          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
             02 // AUDIENCE CALIBRATION
           </span>
           <span className="text-white/40">::</span>
-          <span className="text-white/90 font-bold">VIRALITY POTENTIAL REPORT</span>
+          <span className="text-white/80 font-bold">VIRALITY POTENTIAL REPORT</span>
         </div>
-        <div className="flex items-center gap-2 bg-[#000000] px-2 py-1 border border-[#00FF41]/30 shadow-[2px_2px_0px_0px_#000]">
+        <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
           <span className="text-[#00F0FF] font-black font-csmigrate">TIER: {performanceTier}</span>
         </div>
       </div>
@@ -107,7 +107,7 @@ export const ViralityScoreSection: React.FC<ViralityScoreSectionProps> = ({
       {/* Main Score & Dimension Ledger */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left 5 Columns: Massive Master Gauge */}
-        <div className="lg:col-span-5 border-2 border-[#00FF41]/30 bg-[#000000] flex flex-col justify-between shadow-[3px_3px_0px_0px_#000]">
+        <div className="lg:col-span-5 border-2 border-white/20 bg-[#07080A] flex flex-col justify-between shadow-[3px_3px_0px_0px_#000]">
           <ScoreGauge
             score={calibratedScore}
             confidence={confidence}
@@ -115,17 +115,17 @@ export const ViralityScoreSection: React.FC<ViralityScoreSectionProps> = ({
             tier={performanceTier}
             size="lg"
           />
-          <div className="p-4 border-t-2 border-[#00FF41]/20 font-mechanismo text-xs text-[#8E9E90] bg-[#050805]">
-            <span className="text-[#526355] block uppercase text-[10px] font-bold">PRIMARY PERFORMANCE VECTORS:</span>
-            <span className="text-[#00FF41] font-black uppercase font-csmigrate text-sm">{topDrivers.join(' + ')}</span>
+          <div className="p-4 border-t-2 border-white/15 font-mechanismo text-xs text-[#A2ABB9] bg-[#0A0D14]">
+            <span className="text-[#646E82] block uppercase text-[10px] font-bold">PRIMARY PERFORMANCE VECTORS:</span>
+            <span className="text-[#D4FF00] font-black uppercase font-csmigrate text-sm">{topDrivers.join(' + ')}</span>
           </div>
         </div>
 
         {/* Right 7 Columns: Core Performance Vectors */}
-        <div className="lg:col-span-7 flex flex-col justify-between gap-4 p-5 sm:p-6 bg-[#000000] border-2 border-[#00FF41]/30 shadow-[3px_3px_0px_0px_#000]">
-          <div className="flex items-center justify-between border-b-2 border-[#00FF41]/20 pb-2 font-mechanismo font-bold">
+        <div className="lg:col-span-7 flex flex-col justify-between gap-4 p-5 sm:p-6 bg-[#07080A] border-2 border-white/20 shadow-[3px_3px_0px_0px_#000]">
+          <div className="flex items-center justify-between border-b-2 border-white/15 pb-2 font-mechanismo font-bold">
             <span className="text-xs text-white/90 font-csmigrate uppercase tracking-wider">DIMENSION VECTORS</span>
-            <span className="text-[10px] text-[#8E9E90]">SCALE 00–100</span>
+            <span className="text-[10px] text-[#8E98AA]">SCALE 00–100</span>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -160,20 +160,20 @@ export const ViralityScoreSection: React.FC<ViralityScoreSectionProps> = ({
           </div>
 
           {/* Polarization & Consensus Telemetry */}
-          <div className="pt-3 border-t-2 border-[#00FF41]/20 flex flex-col gap-2 font-mechanismo">
+          <div className="pt-3 border-t-2 border-white/15 flex flex-col gap-2 font-mechanismo">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[#8E9E90] uppercase font-bold">
+              <span className="text-[#A2ABB9] uppercase font-bold">
                 {polarization > 40 ? 'POLARIZATION INDEX' : 'COHORT CONSENSUS'}
               </span>
-              <span className="font-black text-[#00FF41]">{agreement}% AGREEMENT</span>
+              <span className="font-black text-[#D4FF00]">{agreement}% AGREEMENT</span>
             </div>
-            <div className="relative h-2 w-full bg-[#000000] border border-[#00FF41]/30 overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+            <div className="relative h-2 w-full bg-[#0E1015] border border-white/20 overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
               <div
-                className="h-full bg-[#00FF41] shadow-[0_0_8px_#00FF41] transition-all duration-500"
+                className="h-full bg-[#D4FF00] shadow-[0_0_8px_#D4FF00] transition-all duration-500"
                 style={{ width: `${agreement}%` }}
               />
             </div>
-            <span className="text-[11px] text-[#8E9E90] font-sans leading-tight">
+            <span className="text-[11px] text-[#8E98AA] font-sans leading-tight">
               {polarization > 40
                 ? 'High audience polarization: Content divides cohorts, driving debate at the cost of unified reach.'
                 : 'Broad cross-persona consensus: Similar retention signals across diverse audience demographics.'}

@@ -14,12 +14,12 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  viral: 'bg-[#00FF41] hover:bg-[#FFFFFF] text-[#000000] font-black border-2 border-[#00FF41] hover:border-[#FFFFFF] font-csmigrate tracking-wide shadow-[3px_3px_0px_0px_#000,3px_3px_0px_1.5px_#00FF41] hover:shadow-[4px_4px_0px_0px_#000,0_0_20px_rgba(0,255,65,0.6)] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]',
-  primary: 'bg-[#00FF41] hover:bg-[#FFFFFF] text-[#000000] font-bold border-2 border-[#00FF41] hover:border-[#FFFFFF] font-csmigrate tracking-wide shadow-[3px_3px_0px_0px_#000,3px_3px_0px_1.5px_#00FF41] hover:shadow-[4px_4px_0px_0px_#000,0_0_20px_rgba(0,255,65,0.6)] hover:-translate-x-0.5 hover:-translate-y-0.5',
-  secondary: 'bg-[#050805] hover:bg-[#0D160F] text-[#FFFFFF] border border-[#00FF41]/30 font-mono-tech tracking-wide shadow-[2px_2px_0px_0px_rgba(0,0,0,0.9)] hover:border-[#00FF41] hover:text-[#00FF41] hover:shadow-[3px_3px_0px_0px_#00FF41]',
-  outline: 'bg-transparent hover:bg-[#00FF41]/[0.06] text-[#E2E6EC] border border-[#00FF41]/30 hover:border-[#00FF41] hover:text-[#00FF41] font-mono-tech tracking-wide hover:shadow-[2px_2px_0px_0px_#00FF41]',
-  ghost: 'bg-transparent hover:bg-white/[0.06] text-[#8E9E90] hover:text-[#FFFFFF] border border-transparent font-mono-tech',
-  danger: 'bg-red-500/10 hover:bg-red-500/20 text-[#FF0055] border border-[#FF0055]/40 font-mono-tech shadow-[2px_2px_0px_0px_#FF0055]',
+  viral: 'bg-[#D4FF00] hover:bg-[#E2FF44] text-[#060709] font-black border-2 border-[#D4FF00] font-csmigrate tracking-wide shadow-[3px_3px_0px_0px_#000,3px_3px_0px_1.5px_#FFFFFF] hover:shadow-[4px_4px_0px_0px_#000,4px_4px_0px_1.5px_#D4FF00] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]',
+  primary: 'bg-[#D4FF00] hover:bg-[#E2FF44] text-[#060709] font-bold border-2 border-[#D4FF00] font-csmigrate tracking-wide shadow-[3px_3px_0px_0px_#000,3px_3px_0px_1.5px_#D4FF00] hover:shadow-[4px_4px_0px_0px_#000,4px_4px_0px_1.5px_#E2FF44] hover:-translate-x-0.5 hover:-translate-y-0.5',
+  secondary: 'bg-[#0E1015] hover:bg-[#161A22] text-[#F4F6F8] border border-white/20 font-mono-tech tracking-wide shadow-[2px_2px_0px_0px_rgba(0,0,0,0.8)] hover:border-[#D4FF00]/60 hover:text-white hover:shadow-[3px_3px_0px_0px_#D4FF00]',
+  outline: 'bg-transparent hover:bg-white/[0.04] text-[#E2E6EC] border border-white/25 hover:border-[#D4FF00] hover:text-[#D4FF00] font-mono-tech tracking-wide hover:shadow-[2px_2px_0px_0px_#D4FF00]',
+  ghost: 'bg-transparent hover:bg-white/[0.06] text-[#9DA7B8] hover:text-[#F4F6F8] border border-transparent font-mono-tech',
+  danger: 'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/40 font-mono-tech shadow-[2px_2px_0px_0px_#EF4444]',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

@@ -40,3 +40,6 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# Test Side Project
+landing_page_test/
