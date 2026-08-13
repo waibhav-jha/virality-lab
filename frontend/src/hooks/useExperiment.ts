@@ -311,9 +311,21 @@ export function useExperiment() {
     setError(null);
   };
 
+  const backToStudio = () => {
+    clearAllTimers();
+    completedJobRef.current = null;
+    setStatus('idle' as JobStatus);
+    setStage('queued');
+    setProgress(0);
+    setMessage('');
+    setResult(null);
+    setError(null);
+  };
+
   const applyWinner = (variant: CandidateVariant) => {
     if (variant.caption) setCaption(variant.caption);
     else if (variant.hook) setCaption(variant.hook);
+    backToStudio();
   };
 
   const resetExperiment = () => {
@@ -371,6 +383,7 @@ export function useExperiment() {
     isHistoryOpen, setIsHistoryOpen,
     isDemo, phase,
     startSimulation, runDemoSimulation,
-    loadSample, applyWinner, resetExperiment, loadPastRun,
+    loadSample, applyWinner, backToStudio, resetExperiment, loadPastRun,
   };
 }
+

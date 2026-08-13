@@ -2,9 +2,12 @@ import React, { useRef } from 'react';
 import {
   AlertCircle,
   Beaker,
+
   RotateCcw,
   X,
   ArrowRight,
+  ArrowLeft,
+  Sparkles,
 } from 'lucide-react';
 import { useExperiment } from './hooks/useExperiment';
 import { Header } from './components/Header';
@@ -46,6 +49,8 @@ export function App() {
       <Header
         health={exp.health}
         historyCount={exp.history.length}
+        showBack={hasResults}
+        onBackToStudio={exp.backToStudio}
         onOpenHistory={() => exp.setIsHistoryOpen(true)}
         onReset={exp.resetExperiment}
       />
@@ -171,6 +176,37 @@ export function App() {
         {/* ───── Results Section ───── */}
         {hasResults && result && (
           <div ref={resultsRef} className="w-full flex flex-col gap-8 pt-2" aria-label="Simulation results">
+            {/* Top Quick Navigation Bar */}
+            <div className="w-full bg-[#0E1013] border border-white/15 p-4 flex flex-wrap items-center justify-between gap-4 corner-ticks">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="viral"
+                  size="sm"
+                  leftIcon={<ArrowLeft className="w-4 h-4" />}
+                  onClick={exp.backToStudio}
+                  className="font-bold tracking-wider"
+                >
+                  ← BACK TO STUDIO / EDIT SPECIMEN
+                </Button>
+                <span className="hidden sm:inline-block w-px h-4 bg-white/20" />
+                <span className="font-mono-tech text-xs text-[#9DA7B8] uppercase">
+                  PLATFORM: <span className="text-white font-bold">{exp.platform.toUpperCase()}</span> ·{' '}
+                  <span className="text-[#D4FF00] font-bold">{result.score?.performance_tier || 'COMPLETED'}</span>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+                  onClick={exp.resetExperiment}
+                >
+                  CLEAR ALL
+                </Button>
+              </div>
+            </div>
+
             {/* 1. Virality Potential Score Master Deck */}
             {result.score && (
               <ViralityScoreSection
@@ -242,10 +278,23 @@ export function App() {
               />
             )}
 
-            {/* Reset / New Specimen Trigger */}
-            <div className="flex items-center justify-center gap-3 pt-4 pb-8">
-              <Button variant="outline" size="md" leftIcon={<RotateCcw className="w-3.5 h-3.5" />} onClick={exp.resetExperiment}>
-                INITIATE NEW SPECIMEN EXPERIMENT
+            {/* Bottom Actions Bar */}
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-4 pb-8">
+              <Button
+                variant="viral"
+                size="md"
+                leftIcon={<ArrowLeft className="w-4 h-4" />}
+                onClick={exp.backToStudio}
+              >
+                ← BACK TO STUDIO / EDIT SPECIMEN
+              </Button>
+              <Button
+                variant="outline"
+                size="md"
+                leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
+                onClick={exp.resetExperiment}
+              >
+                CLEAR & START NEW SPECIMEN
               </Button>
             </div>
           </div>

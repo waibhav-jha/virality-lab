@@ -50,21 +50,27 @@ class MockAudienceAgent(AudienceAgent):
 
         # Content feature awareness for realistic variant testing
         text_lower = ((content.caption or "") + " " + (content.transcript or "")).lower()
-        hook_boost = 0.10 if any(k in text_lower for k in ["still doing", "wait until", "i replaced", "?", "secret", "hack", "changed my", "warning"]) else 0.0
-        share_boost = 0.12 if any(k in text_lower for k in ["send this", "share this", "study group", "friends", "finals"]) else 0.0
-        save_boost = 0.12 if any(k in text_lower for k in ["save this", "checklist", "guide", "step 1", "save for later", "save for reference"]) else 0.0
-        comp_boost = 0.08 if any(k in text_lower for k in ["here is the exact", "3-step", "cut 4 hours", "immediate"]) else 0.0
+        words = text_lower.split()
+        is_deficient = len(words) <= 2
+        is_minimal = 3 <= len(words) <= 6
+        length_penalty = -0.48 if is_deficient else (-0.20 if is_minimal else 0.0)
 
-        # Baseline probabilities computed from traits and content signals
-        stop_scroll = max(0.05, min(0.98, 0.65 + (self.persona.novelty_preference * 0.20) + span_mod + hook_boost))
-        watch = max(0.05, min(0.95, 0.60 + span_mod + (self.persona.trend_sensitivity * 0.15) + (hook_boost * 0.5)))
-        completion = max(0.05, min(0.95, watch * 0.85 + (span_mod * 0.5) + comp_boost))
+        hook_boost = 0.12 if any(k in text_lower for k in ["still doing", "wait until", "i replaced", "?", "secret", "hack", "changed my", "warning", "save this", "step-by-step", "framework"]) else 0.0
+        share_boost = 0.12 if any(k in text_lower for k in ["send this", "share this", "study group", "friends", "finals", "went up", "shocking"]) else 0.0
+        save_boost = 0.15 if any(k in text_lower for k in ["save this", "checklist", "guide", "step 1", "save for later", "save for reference", "tools", "framework"]) else 0.0
+        comp_boost = 0.08 if any(k in text_lower for k in ["here is the exact", "3-step", "cut 4 hours", "immediate", "in 60 seconds"]) else 0.0
 
-        like = max(0.05, min(0.95, (self.persona.humor_preference * 0.4) + (self.persona.novelty_preference * 0.3) + 0.1))
-        share = max(0.05, min(0.98, self.persona.share_tendency * 0.90 + (0.05 if self.persona.trend_sensitivity > 0.7 else -0.05) + share_boost))
-        comment = max(0.05, min(0.95, self.persona.comment_tendency * 0.85 + (0.10 if self.persona.clickbait_tolerance < 0.3 else 0.0)))
-        save = max(0.05, min(0.95, 0.30 + (0.35 if self.persona.attention_span in [AttentionSpan.MEDIUM, AttentionSpan.HIGH] else 0.0) + save_boost))
+        # Baseline probabilities computed from traits, length, and content signals
+        stop_scroll = max(0.05, min(0.98, 0.65 + (self.persona.novelty_preference * 0.20) + span_mod + hook_boost + length_penalty))
+        watch = max(0.05, min(0.95, 0.60 + span_mod + (self.persona.trend_sensitivity * 0.15) + (hook_boost * 0.5) + length_penalty))
+        completion = max(0.05, min(0.95, watch * 0.85 + (span_mod * 0.5) + comp_boost + (length_penalty * 0.5)))
+
+        like = max(0.05, min(0.95, (self.persona.humor_preference * 0.4) + (self.persona.novelty_preference * 0.3) + 0.1 + length_penalty))
+        share = max(0.05, min(0.98, self.persona.share_tendency * 0.90 + (0.05 if self.persona.trend_sensitivity > 0.7 else -0.05) + share_boost + length_penalty))
+        comment = max(0.05, min(0.95, self.persona.comment_tendency * 0.85 + (0.10 if self.persona.clickbait_tolerance < 0.3 else 0.0) + (length_penalty * 0.5)))
+        save = max(0.05, min(0.95, 0.30 + (0.35 if self.persona.attention_span in [AttentionSpan.MEDIUM, AttentionSpan.HIGH] else 0.0) + save_boost + length_penalty))
         follow = max(0.05, min(0.90, (like * 0.4) + (save * 0.3)))
+
 
         # Qualitative synthesis
         strengths: List[str] = []

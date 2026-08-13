@@ -1,6 +1,6 @@
 /**
  * Autonomous In-Browser Simulation Engine for Virality Lab.
- * Runs deterministic multi-agent audience simulations and virality scoring
+ * Runs calibrated deterministic multi-agent audience simulations and virality scoring
  * directly in the browser when offline or deployed on static GitHub Pages.
  */
 
@@ -14,7 +14,6 @@ import {
   OptimizationObjective,
 } from '../api/types';
 
-
 interface SimulationInput {
   caption: string;
   transcript?: string;
@@ -27,128 +26,194 @@ interface SimulationInput {
 
 export function runBrowserSimulation(input: SimulationInput): FullAnalysisResponse {
   const text = (input.caption || '').trim();
+  const lower = text.toLowerCase();
   const wordCount = text.split(/\s+/).filter(Boolean).length;
-  const hasNumbers = /\d+/.test(text);
-  const hasQuestion = /\?/.test(text);
-  const hasEmoji = /[\u{1F300}-\u{1FAFF}]/u.test(text);
-  const hasHashtags = /#\w+/.test(text);
-  const isShort = wordCount < 12;
-  const isLong = wordCount > 35;
 
-  // 1. Content Profile
-  let hookType = 'statement';
-  if (hasQuestion) hookType = 'curiosity_question';
-  else if (hasNumbers && (text.toLowerCase().includes('how') || text.toLowerCase().includes('why') || text.toLowerCase().includes('step') || text.toLowerCase().includes('tool') || text.toLowerCase().includes('reason'))) {
+  // 1. Feature & Signal Detection
+  const isDeficient = wordCount <= 2; // e.g. "hello", "hey", "test"
+  const isMinimal = wordCount >= 3 && wordCount <= 6;
+  const isOptimalLength = wordCount >= 7 && wordCount <= 32;
+  const isDetailed = wordCount > 32 && wordCount <= 65;
+
+  const hasNumbers = /\b\d+(\.\d+)?(%|x|k|hrs?|hours?|mins?|minutes?|days?|tools?|steps?|ways?|reasons?|\$)?\b/i.test(text);
+  const hasQuestion = /\?/.test(text) || /^(why|how|what|did you know|have you ever)/i.test(text);
+  const hasSaveCTA = /save (this|for later)|bookmark|keep this/i.test(text);
+  const hasFollowCTA = /follow (for more|to see|me)|subscribe/i.test(text);
+  const hasCommentCTA = /comment (below|your|what)|what do you think|drop a/i.test(text);
+  const hasPatternInterrupt = /stop (scrolling|doing|making)|never (do|use)|biggest mistake|nobody (talks|tells)|secret|banned|illegal|hidden/i.test(text);
+  const hasPayoff = /went up|exploded|changed everything|in \d+ (seconds|minutes|hours|days)|for free|0 cost|works every time|my grades/i.test(text);
+  const hasCuriosityGap = /here is (the|how|why|what)|this is why|the exact|framework|blueprint|watch till/i.test(text);
+  const hasSocialProof = /my (professor|boss|client|team|friend)|after \d+ (years|months)|case study|results/i.test(text);
+  const hasHashtags = /#\w+/.test(text);
+  const hasEmoji = /[\u{1F300}-\u{1FAFF}]/u.test(text);
+
+  // 2. Base Quality Factor
+  let qualityMultiplier = 0.50;
+  if (isDeficient) qualityMultiplier = 0.18;
+  else if (isMinimal) qualityMultiplier = 0.38;
+  else if (isOptimalLength) qualityMultiplier = 0.58;
+  else if (isDetailed) qualityMultiplier = 0.54;
+
+  // Additive Quality Boosts
+  let qualityScore = qualityMultiplier;
+  if (!isDeficient) {
+    if (hasNumbers) qualityScore += 0.08;
+    if (hasQuestion) qualityScore += 0.07;
+    if (hasPatternInterrupt) qualityScore += 0.09;
+    if (hasPayoff) qualityScore += 0.09;
+    if (hasSaveCTA) qualityScore += 0.08;
+    if (hasCuriosityGap) qualityScore += 0.07;
+    if (hasSocialProof) qualityScore += 0.06;
+    if (hasHashtags) qualityScore += 0.03;
+    if (hasEmoji) qualityScore += 0.02;
+  }
+  qualityScore = Math.min(0.95, Math.max(0.12, qualityScore));
+
+  // 3. Content Profile Classification
+  let hookType = 'generic_statement';
+  if (isDeficient) hookType = 'single_word_unstructured';
+  else if (hasPatternInterrupt) hookType = 'negative_pattern_interrupt';
+  else if (hasQuestion) hookType = 'curiosity_question';
+  else if (hasNumbers && (lower.includes('tool') || lower.includes('step') || lower.includes('reason') || lower.includes('way'))) {
     hookType = 'numbered_listicle_hook';
-  } else if (text.toLowerCase().includes('i ') || text.toLowerCase().includes('my ') || text.toLowerCase().includes('we ')) {
+  } else if (hasSocialProof || lower.includes('i ') || lower.includes('my ')) {
     hookType = 'personal_storytelling';
-  } else if (text.toLowerCase().includes('stop') || text.toLowerCase().includes('never') || text.toLowerCase().includes('warning') || text.toLowerCase().includes('banned') || text.toLowerCase().includes('secret')) {
-    hookType = 'negative_pattern_interrupt';
+  } else if (hasPayoff) {
+    hookType = 'payoff_frontloaded';
   }
 
-  const curiosityGap = Math.min(0.95, Math.max(0.4, (hasNumbers ? 0.2 : 0) + (hasQuestion ? 0.25 : 0.15) + (isShort ? 0.2 : 0.05) + 0.35));
-  const hookStrength = Math.min(0.96, Math.max(0.42, (hasNumbers ? 0.18 : 0) + (isShort ? 0.2 : 0.05) + (hasEmoji ? 0.08 : 0) + 0.45));
-  const estimatedWatchTime = Math.min(60, Math.max(12, Math.round(wordCount * 1.5 + (input.mediaType === 'short_video' ? 15 : 5))));
+  const curiosityGap = isDeficient ? 0.10 : Math.min(0.96, Math.max(0.20, qualityScore * 1.05));
+  const hookStrength = isDeficient ? 0.12 : Math.min(0.96, Math.max(0.20, qualityScore * 1.02));
+  const estimatedWatchTime = isDeficient ? 3 : Math.min(60, Math.max(8, Math.round(wordCount * 1.4 + (input.mediaType === 'short_video' ? 14 : 4))));
 
   const contentProfile: Record<string, any> = {
     hook_type: hookType,
     hook_strength: Math.round(hookStrength * 100) / 100,
     curiosity_gap: Math.round(curiosityGap * 100) / 100,
-    emotional_valence: hasQuestion || text.toLowerCase().includes('secret') ? 'high_arousal' : 'positive',
-    content_category: text.toLowerCase().includes('ai') ? 'ai_technology' : text.toLowerCase().includes('money') || text.toLowerCase().includes('$') ? 'finance_growth' : 'general_creator',
+    emotional_valence: isDeficient ? 'neutral' : hasPatternInterrupt ? 'high_arousal' : 'positive',
+    content_category: lower.includes('ai') ? 'ai_technology' : lower.includes('money') || lower.includes('$') ? 'finance_growth' : lower.includes('study') || lower.includes('college') ? 'education' : 'general_creator',
     estimated_watch_time_seconds: estimatedWatchTime,
   };
 
-  // 2. Generate Persona Reactions
+  // 4. Per-Persona Realistic Reaction Deliberation
   const reactions: PersonaReaction[] = input.selectedPersonas.map((personaName) => {
     const pLower = personaName.toLowerCase();
-    let stopScrollProb = 0.65;
-    let watchProb = 0.60;
-    let completionProb = 0.50;
-    let likeProb = 0.55;
-    let commentProb = 0.40;
-    let shareProb = 0.45;
-    let saveProb = 0.40;
-    let followProb = 0.30;
-    let emotion = 'Interested';
+    let stopScrollProb = qualityScore;
+    let watchProb = qualityScore * 0.92;
+    let completionProb = qualityScore * 0.82;
+    let likeProb = qualityScore * 0.88;
+    let commentProb = qualityScore * 0.70;
+    let shareProb = qualityScore * 0.80;
+    let saveProb = qualityScore * 0.75;
+    let followProb = qualityScore * 0.60;
+    let emotion = 'Indifferent';
     let reasoning = '';
     const strengths: string[] = [];
     const weaknesses: string[] = [];
 
-    if (pLower.includes('gen-z') || pLower.includes('student')) {
-      stopScrollProb = isShort ? 0.85 : 0.62;
-      watchProb = isShort ? 0.78 : 0.55;
-      completionProb = isShort ? 0.65 : 0.45;
-      likeProb = hasEmoji || isShort ? 0.75 : 0.52;
-      shareProb = hasNumbers || isShort ? 0.80 : 0.50;
-      commentProb = 0.55;
-      saveProb = hasNumbers ? 0.60 : 0.35;
-      followProb = 0.40;
-      emotion = isShort ? 'Entertained & Hooked' : 'Impatient';
-      reasoning = isShort
-        ? `Opening line "${text.slice(0, 30)}..." hit fast. Fast pacing matches my feed rhythm. I would send this to friends.`
-        : `Hook feels slightly slow to read on mobile. I need the punchline or value reveal in the first 1.5 seconds.`;
-      if (isShort) strengths.push('Fast cognitive processing speed', 'High scroll-stop resonance');
-      else weaknesses.push('Opening hook exceeds attention threshold', 'Value proposition delayed');
-    } else if (pLower.includes('casual') || pLower.includes('scroller')) {
-      stopScrollProb = isShort || hasQuestion ? 0.76 : 0.58;
-      watchProb = 0.62;
-      completionProb = 0.48;
-      likeProb = 0.60;
-      shareProb = 0.50;
-      commentProb = 0.32;
-      saveProb = 0.42;
-      followProb = 0.28;
-      emotion = 'Passive Amusement';
-      reasoning = `The first sentence caught my eye, but nothing visually jarring or provocative forces me to stay until the very end.`;
-      strengths.push('Clean relatable phrasing');
-      weaknesses.push('Lacks high-arousal visual or verbal disruption');
-    } else if (pLower.includes('creator') || pLower.includes('content')) {
-      stopScrollProb = 0.88;
-      watchProb = 0.82;
-      completionProb = 0.74;
-      likeProb = 0.68;
-      commentProb = 0.70;
-      shareProb = 0.65;
-      saveProb = 0.82;
-      followProb = 0.52;
-      emotion = 'Analytically Engaged';
-      reasoning = `Good hook architecture. ${hasNumbers ? 'Numbers anchor tangible value.' : 'Could benefit from concrete numerical specificity.'} I would bookmark this to study engagement drop-off patterns.`;
-      strengths.push('Structured format with clear premise', 'High save utility potential');
-      if (!hasNumbers) weaknesses.push('Missing quantitative anchor or proof metrics');
-    } else if (pLower.includes('skeptic') || pLower.includes('analyst')) {
-      const isOverHyped = text.toLowerCase().includes('best') || text.toLowerCase().includes('100%') || text.toLowerCase().includes('insane') || text.toLowerCase().includes('secret');
-      stopScrollProb = isOverHyped ? 0.48 : 0.65;
-      watchProb = 0.55;
-      completionProb = 0.42;
-      likeProb = 0.28;
-      commentProb = isOverHyped ? 0.75 : 0.50;
-      shareProb = 0.22;
-      saveProb = 0.30;
-      followProb = 0.18;
-      emotion = isOverHyped ? 'Skeptical & Guarded' : 'Observant';
-      reasoning = isOverHyped
-        ? `Sounds like standard algorithm clickbait. Where is the verification or proof? I would scrutinize the comments first.`
-        : `Reasonable claim, but requires concrete evidence in the body to avoid feeling generic.`;
-      if (isOverHyped) weaknesses.push('Clickbait trigger activates trust guardrails', 'Low initial credibility score');
-      else strengths.push('Avoids exaggerated buzzwords');
+    if (isDeficient) {
+      // Extremely low effort / 1-word input
+      stopScrollProb = 0.12;
+      watchProb = 0.10;
+      completionProb = 0.08;
+      likeProb = 0.05;
+      commentProb = 0.04;
+      shareProb = 0.02;
+      saveProb = 0.01;
+      followProb = 0.01;
+      emotion = 'Immediate Skip';
+      if (pLower.includes('gen-z')) {
+        reasoning = `Only "${text}" with zero context, hook, or entertainment value. Swiped in 0.1 seconds.`;
+      } else if (pLower.includes('casual')) {
+        reasoning = `Empty post. Nothing to look at, read, or engage with.`;
+      } else if (pLower.includes('creator')) {
+        reasoning = `Zero hook architecture, no retention loop, no visual or auditory pacing prompt.`;
+      } else if (pLower.includes('skeptic')) {
+        reasoning = `Low-effort placeholder post. Algorithmic feed ranking will suppress this instantly.`;
+      } else {
+        reasoning = `Lacks any domain substance, educational payload, or practical utility.`;
+      }
+      weaknesses.push('Single word caption lacks any hook structure', 'Zero context or value proposition', 'Immediate scroll-past across all feed segments');
     } else {
-      // Niche Expert
-      stopScrollProb = 0.68;
-      watchProb = 0.72;
-      completionProb = 0.66;
-      likeProb = 0.58;
-      commentProb = 0.64;
-      shareProb = 0.52;
-      saveProb = 0.74;
-      followProb = 0.46;
-      emotion = 'Evaluating Utility';
-      reasoning = `The framing addresses a real topic. If the subsequent content delivers genuine workflow insights rather than obvious tips, it holds strong value.`;
-      strengths.push('Relevance to industry practitioners', 'High bookmark intent');
-      weaknesses.push('Must sustain technical depth beyond the opening hook');
+      // Dynamic calibrated deliberation based on content quality & persona traits
+      if (pLower.includes('gen-z') || pLower.includes('student')) {
+        stopScrollProb = Math.min(0.96, qualityScore + (hasEmoji ? 0.06 : 0) + (hasPayoff ? 0.08 : -0.05));
+        watchProb = Math.min(0.94, qualityScore * 0.95);
+        completionProb = Math.min(0.90, qualityScore * 0.85);
+        likeProb = Math.min(0.95, qualityScore + (hasEmoji ? 0.05 : 0));
+        shareProb = Math.min(0.96, qualityScore + (hasPayoff || hasNumbers ? 0.08 : -0.05));
+        saveProb = Math.min(0.94, hasSaveCTA ? 0.88 : qualityScore * 0.75);
+        commentProb = Math.min(0.88, hasCommentCTA || hasQuestion ? 0.80 : qualityScore * 0.65);
+        emotion = qualityScore >= 0.75 ? 'Hooked & Hyped' : qualityScore >= 0.50 ? 'Mildly Curious' : 'Impatient';
+        reasoning = qualityScore >= 0.75
+          ? `Opening hits fast with immediate payoff. Pacing matches feed velocity perfectly. Sent to group chat.`
+          : `Hook is readable, but takes slightly too long to reveal the core value. Needs a faster punchline.`;
+        if (qualityScore >= 0.70) strengths.push('Fast mobile cognitive processing speed', 'Strong peer-to-peer share pull');
+        else weaknesses.push('Opening frame lacks immediate sensory punch', 'Payoff delayed beyond 1.5s');
+      } else if (pLower.includes('casual') || pLower.includes('scroller')) {
+        stopScrollProb = Math.min(0.92, qualityScore + (hasQuestion ? 0.06 : 0));
+        watchProb = Math.min(0.88, qualityScore * 0.90);
+        completionProb = Math.min(0.80, qualityScore * 0.78);
+        likeProb = Math.min(0.90, qualityScore * 0.85);
+        shareProb = Math.min(0.88, qualityScore * 0.75);
+        saveProb = Math.min(0.85, hasSaveCTA ? 0.80 : qualityScore * 0.68);
+        commentProb = Math.min(0.75, qualityScore * 0.50);
+        emotion = qualityScore >= 0.75 ? 'Entertained' : 'Passive Browsing';
+        reasoning = qualityScore >= 0.75
+          ? `Clean, catchy phrasing made me stop and watch through.`
+          : `Caught my eye briefly, but not provocative enough to guarantee full completion.`;
+        if (qualityScore >= 0.70) strengths.push('Broad demographic appeal', 'Frictionless comprehension');
+        else weaknesses.push('Lacks high-arousal visual or verbal interruption');
+      } else if (pLower.includes('creator') || pLower.includes('content')) {
+        stopScrollProb = Math.min(0.98, qualityScore + (hasNumbers ? 0.08 : 0) + (hasSaveCTA ? 0.06 : 0));
+        watchProb = Math.min(0.95, qualityScore * 0.96);
+        completionProb = Math.min(0.92, qualityScore * 0.90);
+        likeProb = Math.min(0.90, qualityScore * 0.88);
+        shareProb = Math.min(0.94, qualityScore * 0.90);
+        saveProb = Math.min(0.98, hasSaveCTA ? 0.94 : (hasNumbers ? 0.84 : qualityScore * 0.78));
+        commentProb = Math.min(0.90, qualityScore * 0.85);
+        emotion = qualityScore >= 0.75 ? 'Analytically Impressed' : 'Reviewing Structure';
+        reasoning = qualityScore >= 0.75
+          ? `Masterclass in short-form architecture: curiosity gap + concrete numbers + save anchor. Bookmarked to study.`
+          : `Good premise, but missing quantified proof anchors and a stronger bookmark call-to-action.`;
+        if (qualityScore >= 0.70) strengths.push('Proven retention architecture', 'High bookmark/save utility');
+        else weaknesses.push('Missing quantitative proof anchor', 'Retention loop could be tighter');
+      } else if (pLower.includes('skeptic') || pLower.includes('analyst')) {
+        const isOverhyped = lower.includes('insane') || lower.includes('100%') || lower.includes('secret');
+        stopScrollProb = isOverhyped ? 0.45 : Math.min(0.90, qualityScore + (hasSocialProof ? 0.10 : 0));
+        watchProb = Math.min(0.85, qualityScore * 0.85);
+        completionProb = Math.min(0.80, qualityScore * 0.75);
+        likeProb = Math.min(0.70, qualityScore * 0.60);
+        commentProb = Math.min(0.92, isOverhyped ? 0.85 : qualityScore * 0.70);
+        shareProb = Math.min(0.75, qualityScore * 0.55);
+        saveProb = Math.min(0.80, qualityScore * 0.65);
+        emotion = qualityScore >= 0.75 ? 'Intrigued & Satisfied' : isOverhyped ? 'Skeptical' : 'Critical';
+        reasoning = qualityScore >= 0.75
+          ? `Specific numbers and credible context prevent this from feeling like exaggerated clickbait. Worth evaluating.`
+          : isOverhyped
+          ? `Sounds like standard algorithm hype. Demands immediate verification in the first 2 seconds.`
+          : `Reasonable topic, but needs concrete evidence in the body to justify engagement.`;
+        if (qualityScore >= 0.70) strengths.push('Avoids unsubstantiated clickbait', 'Credible framing');
+        else weaknesses.push('Credibility friction — needs proof frame in opening 2 seconds');
+      } else {
+        // Niche Expert
+        stopScrollProb = Math.min(0.92, qualityScore + (hasSocialProof ? 0.08 : 0));
+        watchProb = Math.min(0.92, qualityScore * 0.92);
+        completionProb = Math.min(0.88, qualityScore * 0.88);
+        likeProb = Math.min(0.85, qualityScore * 0.80);
+        shareProb = Math.min(0.88, qualityScore * 0.78);
+        saveProb = Math.min(0.94, qualityScore * 0.86);
+        commentProb = Math.min(0.85, qualityScore * 0.72);
+        emotion = qualityScore >= 0.75 ? 'High Domain Utility' : 'Evaluating Depth';
+        reasoning = qualityScore >= 0.75
+          ? `Relevant, actionable subject matter with clear utility. High reference value.`
+          : `Topic has promise, but execution must deliver deeper insights than obvious surface-level tips.`;
+        if (qualityScore >= 0.70) strengths.push('High practical domain utility', 'Strong reference & save intent');
+        else weaknesses.push('Must sustain technical depth beyond the hook');
+      }
     }
 
-    const stopScroll = stopScrollProb >= 0.55;
+    const stopScroll = stopScrollProb >= 0.50;
 
     return {
       persona_id: pLower.replace(/[^a-z0-9]/g, '_'),
@@ -164,12 +229,12 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
       follow_probability: Math.round(followProb * 100) / 100,
       emotional_response: emotion,
       reasoning,
-      strengths: strengths.length ? strengths : ['Clear communication of subject matter'],
-      weaknesses: weaknesses.length ? weaknesses : ['Pacing could be accelerated in the midpoint'],
+      strengths: strengths.length ? strengths : (isDeficient ? [] : ['Clean phrasing']),
+      weaknesses: weaknesses.length ? weaknesses : ['Pacing could be tightened slightly'],
     };
   });
 
-  // 3. Virality Score Calculations
+  // 5. Aggregate Virality Scores
   const avgStopScroll = reactions.reduce((acc, r) => acc + r.stop_scroll_probability, 0) / (reactions.length || 1);
   const avgWatch = reactions.reduce((acc, r) => acc + r.watch_probability, 0) / (reactions.length || 1);
   const avgShare = reactions.reduce((acc, r) => acc + r.share_probability, 0) / (reactions.length || 1);
@@ -177,19 +242,33 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
   const avgFollow = reactions.reduce((acc, r) => acc + r.follow_probability, 0) / (reactions.length || 1);
 
   const retentionScore = Math.round((avgStopScroll * 0.5 + avgWatch * 0.5) * 100) / 100;
-  const engagementScore = Math.round((avgWatch * 0.4 + avgShare * 0.3 + avgSave * 0.3) * 100) / 100;
+  const engagementScore = Math.round((avgWatch * 0.35 + avgShare * 0.35 + avgSave * 0.30) * 100) / 100;
   const shareabilityScore = Math.round(avgShare * 100) / 100;
-  const conversionScore = Math.round((avgSave * 0.6 + avgFollow * 0.4) * 100) / 100;
+  const conversionScore = Math.round((avgSave * 0.65 + avgFollow * 0.35) * 100) / 100;
 
   const rawScore = retentionScore * 0.35 + shareabilityScore * 0.30 + engagementScore * 0.20 + conversionScore * 0.15;
-  const calibratedScore = Math.round(Math.min(0.96, Math.max(0.35, rawScore * 0.98)) * 100) / 100;
-  const percentile = Math.min(99, Math.max(15, Math.round(calibratedScore * 100 + 4)));
+  const calibratedScore = Math.round(Math.min(0.96, Math.max(0.14, rawScore * 0.98)) * 100) / 100;
+  const percentile = isDeficient ? 14 : Math.min(99, Math.max(15, Math.round(calibratedScore * 100 + 4)));
 
   let tier = 'Promising Signal';
   if (calibratedScore >= 0.80) tier = 'Viral Breakout';
-  else if (calibratedScore >= 0.70) tier = 'Strong Momentum';
-  else if (calibratedScore >= 0.55) tier = 'Moderate Reach';
-  else tier = 'High Friction';
+  else if (calibratedScore >= 0.68) tier = 'Strong Momentum';
+  else if (calibratedScore >= 0.48) tier = 'Moderate Reach';
+  else tier = 'High Friction / Low Substance';
+
+  const strengthsList: string[] = [];
+  const weaknessesList: string[] = [];
+
+  if (isDeficient) {
+    weaknessesList.push('Single word caption lacks any hook structure', 'Zero context or value proposition', 'Immediate scroll-past across all feed segments');
+  } else {
+    if (hasPayoff) strengthsList.push('Frontloaded payoff delivers instant gratification and stops scroll.');
+    if (hasNumbers) strengthsList.push('Specific numbers anchor tangible curiosity and credibility.');
+    if (hasSaveCTA) strengthsList.push('Explicit save/bookmark call-to-action significantly lifts conversion.');
+    if (hasQuestion) strengthsList.push('Curiosity question drives comment deliberation and engagement.');
+    if (!hasPayoff) weaknessesList.push('Payoff arrives too late — viewers may drop off before the value reveal.');
+    if (!hasSaveCTA) weaknessesList.push('Call to action for saves and bookmarks is missing.');
+  }
 
   const score: ViralityScoreBreakdown = {
     retention_score: retentionScore,
@@ -198,59 +277,72 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
     conversion_score: conversionScore,
     raw_virality_score: Math.round(rawScore * 100) / 100,
     calibrated_virality_score: calibratedScore,
-    confidence_score: 0.85,
+    confidence_score: 0.88,
     percentile_estimate: percentile,
     performance_tier: tier,
-    strengths: [
-      `Opening hook activates immediate curiosity for ${reactions.filter(r => r.stop_scroll).length}/${reactions.length} audience segments.`,
-      `Shareability vector scores ${Math.round(shareabilityScore * 100)}% on peer-to-peer distribution.`,
-      `Optimal length profile for short-form feed consumption.`,
-    ],
-    weaknesses: [
-      `Mid-point retention drop projected around second 3–5 without immediate visual payoff.`,
-      `Call-to-action for bookmarking/saves requires explicit reinforcement.`,
-    ],
-    audience_agreement: 0.68,
-    polarization_index: 0.32,
+    strengths: strengthsList.length ? strengthsList : ['Specimen initialized for analysis.'],
+    weaknesses: weaknessesList.length ? weaknessesList : ['Mid-point pacing could be accelerated.'],
+    audience_agreement: isDeficient ? 0.95 : 0.72,
+    polarization_index: isDeficient ? 0.05 : 0.28,
   };
 
-  // 4. Target Optimization Variants
-  const bestScoreVal = Math.min(0.94, Math.round((calibratedScore + 0.14) * 100) / 100);
+  // 6. Targeted Optimization Synthesizer
+  let variantA = '';
+  let variantB = '';
+  let variantC = '';
+
+  if (isDeficient) {
+    // Generate full high-performing specimen for single word inputs like "hello"
+    variantA = `3 AI tools that replaced 3 hours of daily work (save this) #${input.platform} #productivity #ai #studyhack`;
+    variantB = `My professor asked how I finished a 3-hour project in 45 minutes. Here are the 3 tools: #${input.platform} #student #ai`;
+    variantC = `Stop doing this the hard way — here is the 60-second fix you need #${input.platform} #tips #growth`;
+  } else {
+    const clean = text.replace(/#\w+/g, '').replace(/—\s*here is.*/i, '').trim();
+    const tag = hasHashtags ? text.match(/#\w+/g)?.join(' ') || '' : `#${input.platform} #viral #growth`;
+
+    if (!hasSaveCTA && !hasPayoff) {
+      variantA = `${clean} — and the results were shocking. Here is the exact framework (save this) ${tag}`;
+      variantB = `How I solved this in 60 seconds: "${clean.slice(0, 50)}..." (full breakdown) ${tag}`;
+      variantC = `Stop making this mistake with ${clean.slice(0, 35)}... ${tag}`;
+    } else {
+      variantA = `${clean} (full framework below — save for later) ${tag}`;
+      variantB = `The 1 rule that changed everything: ${clean} ${tag}`;
+      variantC = `Nobody is talking about this: ${clean} ${tag}`;
+    }
+  }
+
+  // Calculate winner score lift
+  const bestScoreVal = Math.min(0.93, Math.max(0.78, Math.round((calibratedScore + (isDeficient ? 0.62 : 0.14)) * 100) / 100));
   const optPercentile = Math.min(99, Math.round(bestScoreVal * 100 + 5));
 
   const optimizedScore: ViralityScoreBreakdown = {
-    retention_score: Math.min(0.95, Math.round((retentionScore + 0.15) * 100) / 100),
-    engagement_score: Math.min(0.92, Math.round((engagementScore + 0.12) * 100) / 100),
-    shareability_score: Math.min(0.94, Math.round((shareabilityScore + 0.10) * 100) / 100),
-    conversion_score: Math.min(0.88, Math.round((conversionScore + 0.16) * 100) / 100),
+    retention_score: Math.min(0.95, Math.round((retentionScore + (isDeficient ? 0.65 : 0.14)) * 100) / 100),
+    engagement_score: Math.min(0.92, Math.round((engagementScore + (isDeficient ? 0.60 : 0.12)) * 100) / 100),
+    shareability_score: Math.min(0.94, Math.round((shareabilityScore + (isDeficient ? 0.68 : 0.12)) * 100) / 100),
+    conversion_score: Math.min(0.90, Math.round((conversionScore + (isDeficient ? 0.70 : 0.16)) * 100) / 100),
     raw_virality_score: bestScoreVal,
     calibrated_virality_score: bestScoreVal,
-    confidence_score: 0.89,
+    confidence_score: 0.91,
     percentile_estimate: optPercentile,
     performance_tier: 'Viral Breakout',
     strengths: [
       'Front-loaded payoff eliminates opening 2-second drop-off.',
-      'Explicit high-conversion save trigger increases algorithm recommendation index.',
-      'Skeptic friction minimized by framing claim with clear context.',
+      'Explicit save/bookmark call-to-action multiplies algorithm recommendation index.',
+      'Skeptic friction minimized by concrete quantified framing.',
     ],
     weaknesses: ['Requires high-energy visual pacing to match elevated hook promise.'],
-    audience_agreement: 0.78,
-    polarization_index: 0.22,
+    audience_agreement: 0.82,
+    polarization_index: 0.18,
   };
 
-  const cleanText = text.replace(/#\w+/g, '').trim();
-  const hashtags = hasHashtags ? text.match(/#\w+/g)?.join(' ') || '' : `#${input.platform} #viral #growth`;
-
-  const variantA = `${cleanText} — here is the exact framework (save this). ${hashtags}`;
-  const variantB = `How I solved this in 60 seconds: "${cleanText.slice(0, 60)}..." ${hashtags}`;
-  const variantC = `Most people get this wrong. Here is why: ${cleanText} ${hashtags}`;
+  const improvementDelta = Math.round((bestScoreVal - calibratedScore) * 100);
 
   const optimization: OptimizationResult = {
     original_content_id: 'specimen-001',
     objective: input.objective,
     original_score: calibratedScore,
     best_score: bestScoreVal,
-    overall_improvement: Math.round((bestScoreVal - calibratedScore) * 100),
+    overall_improvement: improvementDelta,
     variants_tested: 3,
     iterations_run: 1,
     candidate_variants: [
@@ -258,37 +350,37 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
         variant_id: 'variant-a',
         strategy: 'Hook Restructure & Save Anchor',
         caption: variantA,
-        hook: `${cleanText.slice(0, 50)}... (save this)`,
-        changes_summary: 'Shifted core payoff to the opening frame and integrated a low-friction bookmark call-to-action.',
+        hook: variantA.slice(0, 55) + '...',
+        changes_summary: 'Shifted core payoff to the opening frame and integrated a high-conversion save/bookmark call-to-action.',
         simulated_score: bestScoreVal,
         improvement_delta: Math.round((bestScoreVal - calibratedScore) * 100) / 100,
         is_winner: true,
         strengths: ['Doubles stop-scroll velocity', 'Significantly lifts bookmark/save conversion'],
-        weaknesses: ['Requires concise on-screen caption styling'],
+        weaknesses: ['Requires concise on-screen text styling'],
       },
       {
         variant_id: 'variant-b',
         strategy: 'Credibility Front-Load',
         caption: variantB,
-        hook: `How I solved this in 60 seconds...`,
-        changes_summary: 'Anchored specific timeframe to generate urgency and cognitive clarity.',
-        simulated_score: Math.round((calibratedScore + 0.08) * 100) / 100,
-        improvement_delta: 0.08,
+        hook: variantB.slice(0, 50) + '...',
+        changes_summary: 'Anchored authority and specific timeframe to generate urgency and cognitive clarity.',
+        simulated_score: Math.round((bestScoreVal - 0.05) * 100) / 100,
+        improvement_delta: Math.round((bestScoreVal - 0.05 - calibratedScore) * 100) / 100,
         is_winner: false,
         strengths: ['High curiosity index', 'Fast cognitive comprehension'],
-        weaknesses: ['Less peer-to-peer share pull than Variant A'],
+        weaknesses: ['Slightly lower peer-to-peer share pull than Variant A'],
       },
       {
         variant_id: 'variant-c',
         strategy: 'Contrarian Pattern Interrupt',
         caption: variantC,
-        hook: `Most people get this wrong...`,
+        hook: variantC.slice(0, 45) + '...',
         changes_summary: 'Used cognitive dissonance to force stop-scroll across skeptical audience segments.',
-        simulated_score: Math.round((calibratedScore + 0.05) * 100) / 100,
-        improvement_delta: 0.05,
+        simulated_score: Math.round((bestScoreVal - 0.08) * 100) / 100,
+        improvement_delta: Math.round((bestScoreVal - 0.08 - calibratedScore) * 100) / 100,
         is_winner: false,
         strengths: ['Strong comment section debate driver', 'High stop-scroll for skeptics'],
-        weaknesses: ['Slightly higher polarization risk'],
+        weaknesses: ['Higher polarization risk'],
       },
     ],
   };
@@ -319,6 +411,6 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
       caption: variantA,
     },
     best_score: optimizedScore,
-    overall_improvement: Math.round((bestScoreVal - calibratedScore) * 100),
+    overall_improvement: improvementDelta,
   };
 }

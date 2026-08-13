@@ -1,11 +1,12 @@
-import React from 'react';
-import { RotateCcw, Database } from 'lucide-react';
+import { RotateCcw, Database, ArrowLeft } from 'lucide-react';
 import { Button } from '../design-system/Button';
 import { HealthResponse } from '../api/types';
 
 interface HeaderProps {
   health?: HealthResponse | null;
   historyCount: number;
+  showBack?: boolean;
+  onBackToStudio?: () => void;
   onOpenHistory: () => void;
   onReset: () => void;
 }
@@ -13,6 +14,8 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   health,
   historyCount,
+  showBack,
+  onBackToStudio,
   onOpenHistory,
   onReset,
 }) => {
@@ -39,6 +42,19 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Center / Right Technical Controls */}
       <div className="flex items-center gap-3">
+        {/* Back to Studio Button */}
+        {showBack && onBackToStudio && (
+          <Button
+            variant="viral"
+            size="sm"
+            leftIcon={<ArrowLeft className="w-3.5 h-3.5" />}
+            onClick={onBackToStudio}
+            className="font-bold uppercase tracking-wider text-[11px]"
+          >
+            ← BACK TO STUDIO
+          </Button>
+        )}
+
         {/* Engine Telemetry Status */}
         <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-white/[0.03] border border-white/10 font-mono-tech text-[11px]">
           <span
@@ -61,6 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
         >
           RESET SPECIMEN
         </Button>
+
 
         {/* History Audit Ledger Trigger */}
         <Button
