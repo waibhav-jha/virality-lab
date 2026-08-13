@@ -111,10 +111,12 @@ class MockAudienceAgent(AudienceAgent):
         snippet = (content.caption or "")[:40].strip()
         simulated_comment = ""
         if is_deficient:
-            if "gen-z" in p_name or "student" in p_name:
+            if "gen-z" in p_name or "student" in p_name or "alpha" in p_name or "gamer" in p_name:
                 simulated_comment = f"bro literally just typed '{snippet}' and hit publish 💀😭"
-            elif "skeptic" in p_name:
+            elif "skeptic" in p_name or "quant" in p_name:
                 simulated_comment = "Zero context or substance. Instant skip."
+            elif "recruiter" in p_name or "career" in p_name:
+                simulated_comment = "Empty application/specimen. Zero demonstrated competency or value."
             elif "creator" in p_name:
                 simulated_comment = "Where is the hook, visual cue, or call to action? Algorithm won't push this."
             elif "casual" in p_name:
@@ -127,6 +129,30 @@ class MockAudienceAgent(AudienceAgent):
                     f"bro cooked with this one ngl 🔥 {('saved for finals week' if 'study' in text_lower or 'tool' in text_lower else 'immediate save')}"
                     if stop_scroll > 0.65
                     else "lost me in the first 2 seconds ngl... need a faster punchline"
+                )
+            elif "alpha" in p_name or "gamer" in p_name:
+                simulated_comment = (
+                    "nah this is actually valid 🔥 saving for later"
+                    if stop_scroll > 0.65
+                    else "sub-second scroll past 💀 skipped in 0.5s literally fell asleep"
+                )
+            elif "recruiter" in p_name or "career" in p_name:
+                simulated_comment = (
+                    f"Clear actionable skillset demonstration. Candidates who lead with concrete outcomes like '{snippet}' stand out immediately."
+                    if stop_scroll > 0.65
+                    else "Lacks specific deliverables or tangible proof of work. Too generic to showcase competence."
+                )
+            elif "quant" in p_name or "investor" in p_name or "finance" in p_name:
+                simulated_comment = (
+                    "Compelling hook efficiency and structured delivery. The value proposition is backed by tangible signals."
+                    if stop_scroll > 0.70
+                    else "Where are the underlying metrics and verifiable data points? Need quantitative proof over anecdotal claims."
+                )
+            elif "prof" in p_name or "academic" in p_name:
+                simulated_comment = (
+                    "Sound pedagogical structure. The progression from problem statement to resolution is well-formulated."
+                    if stop_scroll > 0.65
+                    else "Lacks methodological citations and structural depth. Claims require empirical references."
                 )
             elif "skeptic" in p_name:
                 simulated_comment = (

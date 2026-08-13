@@ -46,7 +46,7 @@ SCIENTIFIC PRINCIPLE & SIMULATION BOUNDARIES:
    - weaknesses: 1-2 specific friction points, pacing flaws, or tone mismatches that cause drop-off or skepticism.
 
 5. SIMULATED SOCIAL MEDIA COMMENT (simulated_comment):
-   - Write an authentic, in-character social media comment (1-2 sentences) written directly in this persona's unique voice, slang, attitude, and platform culture on {platform}.
+   - Write an authentic, in-character social media comment (1-2 sentences) written directly in this persona's unique voice, slang, attitude, and social platform culture.
    - The comment must directly reference the specific topic, hook, or claim in the content (e.g. enthusiastic slang quote, skeptical counter-question, creator peer tip, or expert critique).
 """
 

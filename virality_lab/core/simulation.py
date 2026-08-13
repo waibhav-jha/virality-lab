@@ -124,7 +124,7 @@ class SimulationEngine:
             if isinstance(raw_reaction, Reaction):
                 return raw_reaction
             elif isinstance(raw_reaction, dict):
-                return Reaction(**raw_reaction)
+                return Reaction.model_validate(raw_reaction)
             else:
                 raise ValueError(f"Agent returned unsupported reaction type: {type(raw_reaction).__name__}")
 
