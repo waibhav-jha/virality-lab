@@ -281,7 +281,7 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
     };
   });
 
-  // 5. Aggregate Virality Scores
+  // 5. Aggregate Virality Scores with Platform-Specific Algorithmic Weights
   const avgStopScroll = reactions.reduce((acc, r) => acc + r.stop_scroll_probability, 0) / (reactions.length || 1);
   const avgWatch = reactions.reduce((acc, r) => acc + r.watch_probability, 0) / (reactions.length || 1);
   const avgShare = reactions.reduce((acc, r) => acc + r.share_probability, 0) / (reactions.length || 1);
@@ -293,8 +293,46 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
   const shareabilityScore = Math.round(avgShare * 100) / 100;
   const conversionScore = Math.round((avgSave * 0.65 + avgFollow * 0.35) * 100) / 100;
 
-  const rawScore = retentionScore * 0.35 + shareabilityScore * 0.30 + engagementScore * 0.20 + conversionScore * 0.15;
-  const calibratedScore = Math.round(Math.min(0.96, Math.max(0.14, rawScore * 0.98)) * 100) / 100;
+  // Platform-specific algorithmic mechanics & sensitivity
+  let rawScore = 0;
+  let platformBonus = 0;
+
+  const isCasualSlang = lower.includes('bro') || lower.includes('ngl') || lower.includes('💀') || lower.includes('fr') || lower.includes('cooked');
+  const isProfessional = lower.includes('framework') || lower.includes('strategy') || lower.includes('study') || lower.includes('tool') || lower.includes('work') || lower.includes('guide') || lower.includes('productivity') || lower.includes('project') || lower.includes('tips') || lower.includes('ai');
+
+  if (input.platform === 'tiktok') {
+    // TikTok: Retention & Hook Velocity (45%), Sharing (25%), Engagement (15%), Conversion (15%)
+    rawScore = retentionScore * 0.45 + shareabilityScore * 0.25 + engagementScore * 0.15 + conversionScore * 0.15;
+    if (hasEmoji || isCasualSlang) platformBonus += 0.08;
+    if (hasPayoff) platformBonus += 0.06;
+    if (wordCount > 35) platformBonus -= 0.10;
+  } else if (input.platform === 'instagram') {
+    // Instagram: Conversion/Bookmarks (35%), Sharing/DMs (30%), Retention (25%), Engagement (10%)
+    rawScore = conversionScore * 0.35 + shareabilityScore * 0.30 + retentionScore * 0.25 + engagementScore * 0.10;
+    if (hasSaveCTA) platformBonus += 0.12;
+    if (hasNumbers) platformBonus += 0.05;
+  } else if (input.platform === 'youtube') {
+    // YouTube Shorts: Retention/APV (50%), Engagement (25%), Conversion (15%), Sharing (10%)
+    rawScore = retentionScore * 0.50 + engagementScore * 0.25 + conversionScore * 0.15 + shareabilityScore * 0.10;
+    if (hasPayoff || hasNumbers) platformBonus += 0.08;
+    if (isDeficient) platformBonus -= 0.10;
+  } else if (input.platform === 'x') {
+    // X (Twitter): Shareability/Quotes (40%), Engagement/Replies (35%), Retention (15%), Conversion (10%)
+    rawScore = shareabilityScore * 0.40 + engagementScore * 0.35 + retentionScore * 0.15 + conversionScore * 0.10;
+    if (hasQuestion) platformBonus += 0.10;
+    if (lower.includes('secret') || lower.includes('mistake') || lower.includes('stop') || lower.includes('why') || lower.includes('truth')) platformBonus += 0.08;
+    if (wordCount < 6) platformBonus -= 0.15;
+  } else {
+    // LinkedIn: Professional Conversion (35%), Thoughtful Discussion (30%), Retention (25%), Shareability (10%)
+    rawScore = conversionScore * 0.35 + engagementScore * 0.30 + retentionScore * 0.25 + shareabilityScore * 0.10;
+    if (isProfessional) platformBonus += 0.12;
+    if (isCasualSlang) platformBonus -= 0.18; // LinkedIn penalizes low-effort slang
+    if (hasSaveCTA) platformBonus += 0.06;
+  }
+
+  const calibratedScore = isDeficient
+    ? 0.18
+    : Math.round(Math.min(0.96, Math.max(0.18, (rawScore + platformBonus) * 0.98)) * 100) / 100;
   const percentile = isDeficient ? 14 : Math.min(99, Math.max(15, Math.round(calibratedScore * 100 + 4)));
 
   let tier = 'Promising Signal';
@@ -583,7 +621,12 @@ export function runCrossPlatformMatrixSimulation(
       platform: p.platform,
     });
 
-    const calibrated = sim.score?.calibrated_virality_score || 50;
+    const rawCalibrated = sim.score?.calibrated_virality_score ?? 0.5;
+    const scoreInt = Math.round(rawCalibrated <= 1 ? rawCalibrated * 100 : rawCalibrated);
+    const retInt = Math.round((sim.score?.retention_score ?? 0.5) <= 1 ? (sim.score?.retention_score ?? 0.5) * 100 : (sim.score?.retention_score ?? 50));
+    const engInt = Math.round((sim.score?.engagement_score ?? 0.5) <= 1 ? (sim.score?.engagement_score ?? 0.5) * 100 : (sim.score?.engagement_score ?? 50));
+    const shareInt = Math.round((sim.score?.shareability_score ?? 0.5) <= 1 ? (sim.score?.shareability_score ?? 0.5) * 100 : (sim.score?.shareability_score ?? 50));
+
     const textLower = (input.caption || '').toLowerCase();
     const wordCount = (input.caption || '').trim().split(/\s+/).filter(Boolean).length;
 
@@ -619,11 +662,11 @@ export function runCrossPlatformMatrixSimulation(
     return {
       platform: p.platform,
       platform_name: p.name,
-      score: calibrated,
+      score: scoreInt,
       tier: sim.score?.performance_tier || 'Moderate Traction',
-      retention_score: sim.score?.retention_score || 50,
-      engagement_score: sim.score?.engagement_score || 50,
-      shareability_score: sim.score?.shareability_score || 50,
+      retention_score: retInt,
+      engagement_score: engInt,
+      shareability_score: shareInt,
       rank: 0,
       is_best_fit: false,
       algorithm_synergy: algorithmSynergy,
