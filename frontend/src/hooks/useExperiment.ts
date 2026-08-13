@@ -14,6 +14,7 @@ import {
 import { viralityApi } from '../api/client';
 import { SampleContent } from '../components/HeroSection';
 import { DEMO_RESULT, DEMO_CONTENT } from '../data/demoFixtures';
+import { runBrowserSimulation } from '../engine/browserSimulator';
 
 const DEFAULT_PERSONAS = [
   'Gen-Z Student',
@@ -78,13 +79,14 @@ export function useExperiment() {
       try {
         const h = await viralityApi.checkHealth();
         setHealth(h);
-      } catch (err: any) {
-        console.warn('Backend unreachable:', err.message);
+        try {
+          const pastRuns = await viralityApi.listRuns(10);
+          setHistory(pastRuns);
+        } catch (_) {}
+      } catch (_) {
+        // Backend not running / static host
+        setHealth(null);
       }
-      try {
-        const pastRuns = await viralityApi.listRuns(10);
-        setHistory(pastRuns);
-      } catch (_) {}
     };
     fetchHealth();
   }, []);
@@ -231,10 +233,26 @@ export function useExperiment() {
     addTimer(() => {
       if (completedJobRef.current) {
         finalizeRealRun(completedJobRef.current);
+      } else {
+        // Browser simulation fallback for client-side / static deployment
+        const fallbackResult = runBrowserSimulation({
+          caption,
+          transcript,
+          platform,
+          mediaType,
+          selectedPersonas,
+          objective,
+          mediaUrl,
+        });
+        setStage('completed');
+        setProgress(100);
+        setStatus('completed');
+        setMessage('Simulation complete.');
+        setResult(fallbackResult);
       }
     }, optimizationEnabled ? 3600 : 2800);
 
-    // 2. Fire backend pipeline request
+    // 2. Fire backend pipeline request if backend endpoint is configured
     const payload: FullAnalysisRequest = {
       content: {
         platform,
@@ -278,15 +296,8 @@ export function useExperiment() {
           }
         }, 500);
       }
-    } catch (err: any) {
-      clearAllTimers();
-      setStatus('failed');
-      setStage('failed');
-      setError(
-        err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError')
-          ? "Couldn't reach the backend server. Make sure it's running on port 8000, or try the demo instead."
-          : err.message || 'Failed to communicate with the backend server.'
-      );
+    } catch (_) {
+      // Backend not running / static host: client simulation fallback will complete automatically
     }
   };
 

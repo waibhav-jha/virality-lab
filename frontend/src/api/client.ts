@@ -47,21 +47,29 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     let errorDetail = `Request failed with status ${response.status}`;
     let details: any = null;
     try {
-      const errJson = await response.json();
-      if (errJson.detail) {
-        errorDetail = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
-      } else if (errJson.error && errJson.error.message) {
-        errorDetail = errJson.error.message;
+      const rawText = await response.text();
+      try {
+        const errJson = JSON.parse(rawText);
+        if (errJson.detail) {
+          errorDetail = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
+        } else if (errJson.error && errJson.error.message) {
+          errorDetail = errJson.error.message;
+        }
+        details = errJson;
+      } catch {
+        if (rawText && rawText.trim()) {
+          errorDetail = rawText.length > 200 ? `${rawText.slice(0, 200)}...` : rawText;
+        }
       }
-      details = errJson;
     } catch {
-      errorDetail = await response.text() || errorDetail;
+      // ignore
     }
     throw new ApiError(response.status, errorDetail, details);
   }
 
   return response.json();
 }
+
 
 function normalizePlatform(p?: string): string {
   if (!p) return 'generic';
