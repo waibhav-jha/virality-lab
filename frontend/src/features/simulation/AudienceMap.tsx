@@ -55,22 +55,24 @@ export const AudienceMap: React.FC<AudienceMapProps> = ({
   const pct = (v?: number) => (v !== undefined ? Math.round(v * 100) : 0);
 
   return (
-    <section className="w-full bg-[#0E1013] border border-white/15 p-6 sm:p-8 text-left flex flex-col gap-6 corner-ticks" aria-label="Audience response spectrum">
+    <section className="w-full cyber-card corner-ticks p-6 sm:p-8 text-left flex flex-col gap-6" aria-label="Audience response spectrum">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-3 font-mono-tech text-[10px] text-[#7E8798] uppercase tracking-widest">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest">
         <div className="flex items-center gap-2">
-          <span className="text-[#D4FF00] font-bold">04 // AUDIENCE OBSERVATION</span>
-          <span>::</span>
-          <span>MULTI-AGENT RESPONSE SPECTRUM</span>
+          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
+            04 // AUDIENCE OBSERVATION
+          </span>
+          <span className="text-white/40">::</span>
+          <span className="text-white/80 font-bold">MULTI-AGENT RESPONSE SPECTRUM</span>
         </div>
-        <div className="flex items-center gap-3">
-          <span>{completedPersonas || reactions.length} OF {totalPersonas || reactions.length} PERSONAS EVALUATED</span>
+        <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
+          <span className="font-bold text-white">{completedPersonas || reactions.length} OF {totalPersonas || reactions.length} PERSONAS EVALUATED</span>
         </div>
       </div>
 
       {/* Ranked Audience Response Matrix */}
-      <div className="flex flex-col gap-2 font-mono-tech">
-        <div className="flex items-center justify-between text-xs text-[#5B6474] pb-1 border-b border-white/5 uppercase">
+      <div className="flex flex-col gap-2.5 font-mechanismo">
+        <div className="flex items-center justify-between text-xs text-[#8E98AA] pb-1 border-b border-white/10 uppercase font-bold">
           <span>RANK // AGENT PERSONA</span>
           <span>RESPONSE SPECTRUM (00–100)</span>
           <span>HOOK ACTION</span>
@@ -82,21 +84,21 @@ export const AudienceMap: React.FC<AudienceMapProps> = ({
           const isLow = persona.overallScore < 45;
 
           return (
-            <div key={persona.persona_id || rk} className="flex flex-col border border-white/10 bg-white/[0.01]">
+            <div key={persona.persona_id || rk} className="flex flex-col border-2 border-white/15 bg-[#07080A]/80 shadow-[2px_2px_0px_0px_#000]">
               <button
                 type="button"
                 onClick={() => setExpandedId(isExpanded ? null : persona.persona_id)}
-                className="p-3 sm:p-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.04] transition-colors text-left"
+                className="p-3 sm:p-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-[#121620] transition-colors text-left"
                 aria-expanded={isExpanded}
               >
                 {/* Left Persona ID & Name */}
                 <div className="flex items-center gap-3 min-w-0 w-48 sm:w-64">
-                  <span className="text-[10px] text-white/40">[{String(rk + 1).padStart(2, '0')}]</span>
+                  <span className="text-xs text-[#D4FF00] font-black">[{String(rk + 1).padStart(2, '0')}]</span>
                   <div className="flex flex-col truncate">
-                    <span className="font-bold text-white text-xs sm:text-sm uppercase tracking-wide truncate">
+                    <span className="font-black text-white text-xs sm:text-sm uppercase tracking-wide font-csmigrate truncate">
                       {persona.persona_name}
                     </span>
-                    <span className="text-[10px] text-[#7E8798]">
+                    <span className="text-[10px] text-[#8E98AA] font-bold">
                       {persona.emotional_response || 'Neutral'}
                     </span>
                   </div>
@@ -104,15 +106,15 @@ export const AudienceMap: React.FC<AudienceMapProps> = ({
 
                 {/* Center Linear Reaction Bar */}
                 <div className="flex-1 max-w-xs sm:max-w-md hidden sm:flex flex-col gap-1">
-                  <div className="flex justify-between text-[10px] text-[#9DA7B8]">
-                    <span>INDEX: {persona.overallScore}/100</span>
-                    <span>WATCH: {pct(persona.watch_probability)}%</span>
+                  <div className="flex justify-between text-[10px] text-[#A2ABB9] font-bold">
+                    <span>INDEX: <strong className="text-white">{persona.overallScore}/100</strong></span>
+                    <span>WATCH: <strong className="text-[#00F0FF]">{pct(persona.watch_probability)}%</strong></span>
                   </div>
-                  <div className="h-1.5 w-full bg-white/10 overflow-hidden">
+                  <div className="h-2 w-full bg-[#0E1015] border border-white/20 overflow-hidden">
                     <div
                       className={clsx(
                         'h-full transition-all duration-500',
-                        isHigh ? 'bg-[#D4FF00]' : isLow ? 'bg-red-400' : 'bg-white'
+                        isHigh ? 'bg-[#D4FF00] shadow-[0_0_6px_#D4FF00]' : isLow ? 'bg-[#EF4444]' : 'bg-[#00F0FF]'
                       )}
                       style={{ width: `${persona.overallScore}%` }}
                     />
@@ -123,15 +125,15 @@ export const AudienceMap: React.FC<AudienceMapProps> = ({
                 <div className="flex items-center gap-2">
                   <span
                     className={clsx(
-                      'text-[10px] px-2 py-0.5 font-bold uppercase border',
+                      'text-[10px] px-2.5 py-1 font-black uppercase border-2 shadow-[2px_2px_0px_0px_#000]',
                       persona.stop_scroll_bool
-                        ? 'text-[#D4FF00] border-[#D4FF00]/40 bg-[#D4FF00]/10'
-                        : 'text-red-400 border-red-400/40 bg-red-400/10'
+                        ? 'text-[#060709] border-[#D4FF00] bg-[#D4FF00]'
+                        : 'text-white border-[#EF4444] bg-[#EF4444]'
                     )}
                   >
                     {persona.stop_scroll_bool ? '[ SCROLL HALTED ]' : '[ SWIPE-AWAY ]'}
                   </span>
-                  {isExpanded ? <ChevronUp className="w-3.5 h-3.5 text-white/40" /> : <ChevronDown className="w-3.5 h-3.5 text-white/40" />}
+                  {isExpanded ? <ChevronUp className="w-4 h-4 text-[#D4FF00]" /> : <ChevronDown className="w-4 h-4 text-white/40" />}
                 </div>
               </button>
 

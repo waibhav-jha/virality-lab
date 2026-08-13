@@ -1,27 +1,60 @@
 @import "tailwindcss";
 
+/* ──── Custom Cyber Brutalist Typography ──── */
+@font-face {
+  font-family: 'Astroda';
+  src: url('./assets/fonts/Astroda-gwraY.otf') format('opentype'),
+       url('/fonts/Astroda-gwraY.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'CsMigrate';
+  src: url('./assets/fonts/CsMigrateRegularDemo-MAjen.otf') format('opentype'),
+       url('/fonts/CsMigrateRegularDemo-MAjen.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mechanismo';
+  src: url('./assets/fonts/MechanismoRegular-p7ywa.otf') format('opentype'),
+       url('/fonts/MechanismoRegular-p7ywa.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
-    --font-display: 'Space Grotesk', 'Syne', -apple-system, sans-serif;
+    --font-astroda: 'Astroda', 'Space Grotesk', sans-serif;
+    --font-csmigrate: 'CsMigrate', 'Syne', sans-serif;
+    --font-mechanismo: 'Mechanismo', 'JetBrains Mono', monospace;
+    --font-display: 'CsMigrate', 'Space Grotesk', 'Syne', -apple-system, sans-serif;
     --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-mono: 'JetBrains Mono', 'Mechanismo', monospace;
 
-    /* Graphite / Monochrome Foundation */
-    --color-bg-base: #07080A;
-    --color-bg-surface: #0E1013;
-    --color-bg-subtle: #14171C;
-    --color-bg-elevated: #1A1E24;
+    /* Cyber Brutalist Deep Foundation */
+    --color-bg-base: #060709;
+    --color-bg-surface: #0B0D11;
+    --color-bg-subtle: #11141A;
+    --color-bg-elevated: #181C24;
 
     --color-border-hairline: rgba(255, 255, 255, 0.08);
-    --color-border-subtle: rgba(255, 255, 255, 0.14);
-    --color-border-strong: rgba(255, 255, 255, 0.28);
+    --color-border-subtle: rgba(255, 255, 255, 0.16);
+    --color-border-strong: rgba(255, 255, 255, 0.32);
 
     --color-text-primary: #F4F6F8;
     --color-text-secondary: #9DA7B8;
-    --color-text-muted: #5B6474;
+    --color-text-muted: #646E82;
 
-    /* Singular Technical Accent: High-Precision Chartreuse / Acid Lime */
+    /* Cyber Brutalist Neon Accents */
     --color-accent: #D4FF00;
+    --color-accent-cyan: #00F0FF;
+    --color-accent-magenta: #FF0055;
     --color-accent-subtle: rgba(212, 255, 0, 0.08);
     --color-accent-border: rgba(212, 255, 0, 0.35);
 
@@ -42,38 +75,53 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Editorial Display Headers */
+  /* Editorial & Cyber Brutalist Display Headers */
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
   }
 
-  /* Focus visible ring for keyboard accessibility */
+  /* High-precision focus rings */
   *:focus-visible {
-    outline: 1.5px solid var(--color-accent);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
-    border-radius: 2px;
   }
 
   /* Monochromatic Technical Scrollbar */
   ::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
+    width: 5px;
+    height: 5px;
   }
   ::-webkit-scrollbar-track {
-    background: #07080A;
+    background: #060709;
   }
   ::-webkit-scrollbar-thumb {
-    background: #20242C;
-    border-radius: 0;
+    background: #252A34;
+    border: 1px solid rgba(212, 255, 0, 0.2);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3A4250;
+    background: #D4FF00;
   }
 }
 
-/* ──── Typography Utilities ──── */
+/* ──── Custom Font Utility Classes ──── */
+.font-astroda {
+  font-family: var(--font-astroda);
+  letter-spacing: 0.04em;
+  word-spacing: 0.2em;
+}
+
+.font-csmigrate {
+  font-family: var(--font-csmigrate);
+  letter-spacing: 0.02em;
+}
+
+.font-mechanismo {
+  font-family: var(--font-mechanismo);
+  letter-spacing: 0.05em;
+}
+
 .font-display {
   font-family: var(--font-display);
 }
@@ -83,34 +131,83 @@
   font-feature-settings: 'tnum' on, 'lnum' on, 'zero' on;
 }
 
-/* ──── Editorial Frame & Grid Styles ──── */
-.editorial-border {
-  border: 1px solid var(--color-border-hairline);
+/* ──── Cyber Brutalist Surface & Shadow Styles ──── */
+.cyber-card {
+  background-color: #0B0D11;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8), 4px 4px 0px 1px rgba(255, 255, 255, 0.05);
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.editorial-border-b {
-  border-bottom: 1px solid var(--color-border-hairline);
+.cyber-card:hover {
+  border-color: rgba(212, 255, 0, 0.4);
+  box-shadow: 5px 5px 0px 0px rgba(212, 255, 0, 0.2), 5px 5px 0px 1px rgba(212, 255, 0, 0.4);
 }
 
-.editorial-border-t {
-  border-top: 1px solid var(--color-border-hairline);
+.cyber-card-active {
+  background-color: #0D1017;
+  border: 1.5px solid #D4FF00;
+  box-shadow: 4px 4px 0px 0px #D4FF00, 0 0 20px rgba(212, 255, 0, 0.15);
 }
 
-.editorial-border-r {
-  border-right: 1px solid var(--color-border-hairline);
+.brutal-border {
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
 }
 
-.editorial-surface {
-  background-color: #0E1013;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.brutal-shadow {
+  box-shadow: 3px 3px 0px 0px #D4FF00;
 }
 
-.editorial-surface-subtle {
-  background-color: #14171C;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.brutal-shadow-dark {
+  box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.9), 3px 3px 0px 1px rgba(255, 255, 255, 0.12);
 }
 
-/* Technical Corner Markings */
+.brutal-shadow-cyan {
+  box-shadow: 3px 3px 0px 0px #00F0FF;
+}
+
+/* Cyber Action Buttons */
+.cyber-btn-primary {
+  font-family: var(--font-csmigrate);
+  background-color: #D4FF00;
+  color: #060709;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  border: 1.5px solid #D4FF00;
+  box-shadow: 3px 3px 0px 0px #000, 3px 3px 0px 1.5px #FFFFFF;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cyber-btn-primary:hover:not(:disabled) {
+  background-color: #E2FF44;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px 0px #000, 5px 5px 0px 1.5px #D4FF00, 0 0 15px rgba(212, 255, 0, 0.4);
+}
+
+.cyber-btn-primary:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px 0px #000;
+}
+
+.cyber-btn-secondary {
+  font-family: var(--font-mono);
+  background-color: #11141A;
+  color: #F4F6F8;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.8);
+  transition: all 0.15s ease;
+}
+
+.cyber-btn-secondary:hover:not(:disabled) {
+  background-color: #1A1F29;
+  border-color: #D4FF00;
+  color: #FFFFFF;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px 0px #D4FF00;
+}
+
+/* ──── Cyber Brutalist Framing & HUD Elements ──── */
 .corner-ticks {
   position: relative;
 }
@@ -119,112 +216,148 @@
   position: absolute;
   top: -1px;
   left: -1px;
-  width: 6px;
-  height: 6px;
-  border-top: 1.5px solid rgba(255, 255, 255, 0.35);
-  border-left: 1.5px solid rgba(255, 255, 255, 0.35);
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid #D4FF00;
+  border-left: 2px solid #D4FF00;
   pointer-events: none;
+  z-index: 10;
 }
 .corner-ticks::after {
   content: '';
   position: absolute;
   bottom: -1px;
   right: -1px;
-  width: 6px;
-  height: 6px;
-  border-bottom: 1.5px solid rgba(255, 255, 255, 0.35);
-  border-right: 1.5px solid rgba(255, 255, 255, 0.35);
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid #D4FF00;
+  border-right: 2px solid #D4FF00;
   pointer-events: none;
+  z-index: 10;
 }
 
-/* Technical Section Label */
-.tech-label {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+.hud-crosshair {
+  position: relative;
+}
+.hud-crosshair::before {
+  content: '+';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-family: var(--font-mechanismo);
+  font-size: 10px;
+  color: #D4FF00;
+  opacity: 0.6;
 }
 
-/* Primary Editorial Action Button */
-.btn-editorial-primary {
-  font-family: var(--font-display);
-  background-color: #D4FF00;
-  color: #07080A;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  border: 1px solid #D4FF00;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+/* CRT Cathode Scanline Effect */
+.cyber-scanline {
+  position: relative;
+  overflow: hidden;
 }
-.btn-editorial-primary:hover:not(:disabled) {
-  background-color: #E2FF44;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(212, 255, 0, 0.2);
-}
-.btn-editorial-primary:active:not(:disabled) {
-  transform: translateY(0);
-}
-.btn-editorial-primary:disabled {
+.cyber-scanline::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 2;
+  pointer-events: none;
   opacity: 0.4;
-  cursor: not-allowed;
 }
 
-/* Secondary Editorial Outline Button */
-.btn-editorial-secondary {
-  font-family: var(--font-mono);
-  background-color: rgba(255, 255, 255, 0.03);
-  color: #E2E6EC;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: all 0.15s ease;
-}
-.btn-editorial-secondary:hover:not(:disabled) {
-  background-color: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
-}
-
-/* Subtle Technical Grid Background */
+/* Cyber Technical Grid */
 .tech-grid-bg {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
-/* ──── Restrained Animations ──── */
+.cyber-matrix-bg {
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(212, 255, 0, 0.03) 0%, transparent 70%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+}
+
+/* ──── Keyframe Animations ──── */
+@keyframes cyber-pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(212, 255, 0, 0.4), 0 0 10px rgba(212, 255, 0, 0.2);
+    border-color: #D4FF00;
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(212, 255, 0, 0.8), 0 0 25px rgba(212, 255, 0, 0.4);
+    border-color: #FFFFFF;
+  }
+}
+
+.animate-cyber-pulse {
+  animation: cyber-pulse 2s infinite ease-in-out;
+}
+
+@keyframes scan-sweep {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+.animate-scan-sweep {
+  animation: scan-sweep 6s linear infinite;
+}
+
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); }
+  20% { transform: skew(-2deg); }
+  40% { transform: skew(2deg); }
+  60% { transform: skew(-1deg); }
+  80% { transform: skew(1deg); }
+  100% { transform: skew(0deg); }
+}
+
+.glitch-hover:hover {
+  animation: glitch-skew 0.3s ease infinite;
+  text-shadow: 1.5px 0 #D4FF00, -1.5px 0 #00F0FF;
+}
+
 @keyframes tech-fade {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-tech-fade {
-  animation: tech-fade 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: tech-fade 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes metric-reveal {
-  from { opacity: 0; transform: scale(0.96); }
+  from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
 .animate-metric-reveal {
-  animation: metric-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: metric-reveal 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes bar-expand {
   from { width: 0%; }
 }
 .animate-bar-expand {
-  animation: bar-expand 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: bar-expand 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* ──── Reduced Motion Accessibility ──── */
 @media (prefers-reduced-motion: reduce) {
   .animate-tech-fade,
   .animate-metric-reveal,
-  .animate-bar-expand {
+  .animate-bar-expand,
+  .animate-cyber-pulse,
+  .animate-scan-sweep,
+  .glitch-hover:hover {
     animation: none !important;
   }
 
-  .btn-editorial-primary:hover,
-  .btn-editorial-secondary:hover {
+  .cyber-btn-primary:hover,
+  .cyber-btn-secondary:hover {
     transform: none !important;
   }
 
@@ -232,17 +365,4 @@
     transition-duration: 0.001ms !important;
     animation-duration: 0.001ms !important;
   }
-}
-
-/* ──── Screen-Reader Accessibility ──── */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }

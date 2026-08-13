@@ -646,35 +646,43 @@ export function runCrossPlatformMatrixSimulation(
     const shareInt = Math.round((sim.score?.shareability_score ?? 0.5) <= 1 ? (sim.score?.shareability_score ?? 0.5) * 100 : (sim.score?.shareability_score ?? 50));
 
     const textLower = (input.caption || '').toLowerCase();
-    const wordCount = (input.caption || '').trim().split(/\s+/).filter(Boolean).length;
+    const textRaw = (input.caption || '').trim();
+    const cleanCore = textRaw.replace(/#\w+/g, '').replace(/—\s*here is.*/i, '').trim() || 'Accelerate content virality with calibrated feedback';
+    const wordCount = textRaw.split(/\s+/).filter(Boolean).length;
 
     let algorithmSynergy = '';
     let platformTweak = '';
+    let adaptedSpecimen = textRaw;
 
     if (p.platform === 'tiktok') {
       algorithmSynergy = 'High sensitivity to opening 1.5s hook and trending vernacular.';
       platformTweak = wordCount > 25
         ? 'Shorten caption text overlay and rely more on fast visual cuts and audio sync.'
         : 'Frontload a punchy visual question in the first frame to maximize TikTok watch-through.';
+      adaptedSpecimen = `POV: ${cleanCore.slice(0, 65)} (wait till the end 🔥) #tiktokgrowth #viral #foryou`;
     } else if (p.platform === 'instagram') {
       algorithmSynergy = 'Rewards high bookmark/save rates and aesthetic visual clarity.';
       platformTweak = !textLower.includes('save')
         ? 'Add an explicit "Save this post for later" bookmark anchor to boost Instagram Explore rank.'
         : 'Format caption with line breaks and 3–5 high-relevance niche hashtags.';
+      adaptedSpecimen = `${cleanCore}\n\n📌 Save this post so you don't lose the framework.\n\n#reels #growth #productivity #tips`;
     } else if (p.platform === 'youtube') {
       algorithmSynergy = 'Algorithm prioritizes >70% Average Percentage Viewed (APV) and search intent.';
       platformTweak = 'Ensure the payoff is delivered in steps rather than all at once to sustain retention curve across the middle 10 seconds.';
+      adaptedSpecimen = `Stop doing this the hard way: 3 steps to ${cleanCore.slice(0, 50)} (Full Breakdown) #shorts #youtube`;
     } else if (p.platform === 'x') {
       algorithmSynergy = 'Distribution heavily boosted by replies, controversy, and quoted reposts.';
       platformTweak = wordCount < 8
         ? 'Too short for standalone engagement on X. Add a provocative perspective or specific data point.'
         : 'End with an open-ended debate question ("What’s your take?") to stimulate reply velocity.';
+      adaptedSpecimen = `${cleanCore}\n\nMost people get this completely wrong. What's your take? 🧵👇`;
     } else {
       // linkedin
       algorithmSynergy = 'Prioritizes educational frameworks, career insights, and clean white-space formatting.';
       platformTweak = wordCount < 10
         ? 'Casual single-line captions underperform on LinkedIn. Structure into a 3-bullet insight with career/ROI value.'
         : 'Adopt an executive summary format with spaced bullet points for professional readability.';
+      adaptedSpecimen = `3 key frameworks on ${cleanCore.slice(0, 55)}:\n\n1. Frontload the value proposition\n2. Eliminate cognitive friction\n3. Anchor with deterministic data\n\nSave this for your next workflow review. #leadership #productivity #ai`;
     }
 
     return {
@@ -690,6 +698,7 @@ export function runCrossPlatformMatrixSimulation(
       algorithm_synergy: algorithmSynergy,
       platform_tweak: platformTweak,
       reach_multiplier: p.multiplier,
+      adapted_specimen: adaptedSpecimen,
     };
   });
 

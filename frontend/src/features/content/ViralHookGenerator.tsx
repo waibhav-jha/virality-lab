@@ -89,14 +89,14 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-3 font-mono-tech">
+    <div className="w-full flex flex-col gap-3 font-mechanismo">
       {/* Trigger Button */}
       <div className="flex items-center justify-between">
         <button
           type="button"
           disabled={disabled || isGenerating}
           onClick={generateHooks}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#D4FF00]/10 border border-[#D4FF00]/40 text-[#D4FF00] hover:bg-[#D4FF00]/20 hover:border-[#D4FF00] transition-colors text-xs font-bold uppercase cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#D4FF00] border-2 border-black text-[#060709] hover:bg-[#E2FF44] transition-all text-xs font-black uppercase font-csmigrate cursor-pointer shadow-[2px_2px_0px_0px_#000]"
         >
           <Sparkles className={clsx('w-3.5 h-3.5', isGenerating && 'animate-spin')} />
           <span>⚡ DRAFT 3 VIRAL HOOKS (AI ASSISTANT)</span>
@@ -106,7 +106,7 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="text-[10px] text-[#7E8798] hover:text-white uppercase"
+            className="text-[10px] text-[#8E98AA] hover:text-white uppercase font-bold"
           >
             [HIDE ASSISTANT]
           </button>
@@ -115,16 +115,16 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
 
       {/* Generated Hooks Drawer / Container */}
       {isOpen && (
-        <div className="bg-[#0E1013] border border-[#D4FF00]/30 p-4 flex flex-col gap-3">
-          <div className="flex items-center justify-between border-b border-white/10 pb-2 text-[10px] text-[#7E8798] uppercase">
-            <span className="text-white font-bold flex items-center gap-1.5">
-              <Zap className="w-3 h-3 text-[#D4FF00]" />
+        <div className="bg-[#07080A] border-2 border-[#D4FF00] p-4 flex flex-col gap-3.5 shadow-[3px_3px_0px_0px_#D4FF00]">
+          <div className="flex items-center justify-between border-b border-white/15 pb-2 text-[10px] text-[#8E98AA] uppercase">
+            <span className="text-white font-black flex items-center gap-1.5 font-csmigrate text-xs">
+              <Zap className="w-3.5 h-3.5 text-[#D4FF00]" />
               AI HOOK SYNTHESIZER · TARGETING {platform.toUpperCase()}
             </span>
             <button
               type="button"
               onClick={generateHooks}
-              className="text-[#D4FF00] hover:underline cursor-pointer flex items-center gap-1 font-bold"
+              className="text-[#D4FF00] hover:underline cursor-pointer flex items-center gap-1 font-black text-xs"
             >
               <RefreshCw className={clsx('w-3 h-3', isGenerating && 'animate-spin')} />
               RE-GENERATE
@@ -135,14 +135,14 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
             {hooks.map((h) => (
               <div
                 key={h.id}
-                className="bg-black/60 border border-white/10 p-3 flex flex-col justify-between gap-2.5 hover:border-white/20 transition-all"
+                className="bg-[#0C0F16] border-2 border-white/15 p-3.5 flex flex-col justify-between gap-2.5 hover:border-[#D4FF00]/60 transition-all shadow-[2px_2px_0px_0px_#000]"
               >
                 <div>
                   <div className="flex items-center justify-between mb-1.5 text-[10px]">
-                    <span className="font-bold text-[#D4FF00] uppercase bg-[#D4FF00]/10 px-1.5 py-0.2 border border-[#D4FF00]/20">
+                    <span className="font-black text-[#D4FF00] uppercase bg-[#D4FF00]/10 px-2 py-0.5 border border-[#D4FF00]/30 font-csmigrate">
                       {h.archetype_label}
                     </span>
-                    <span className="text-[#9DA7B8] font-bold">
+                    <span className="text-[#00F0FF] font-black">
                       ⚡ {h.predicted_stop_scroll}% STOP-SCROLL
                     </span>
                   </div>
@@ -151,16 +151,16 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
                     "{h.hook_text}"
                   </p>
 
-                  <p className="font-sans text-[10px] text-[#7E8798] mt-1.5">
-                    <span className="font-mono-tech text-[#5B6474] uppercase">TACTIC:</span> {h.angle_summary}
+                  <p className="font-sans text-[11px] text-[#8E98AA] mt-1.5">
+                    <span className="font-mechanismo text-[#646E82] uppercase font-bold">TACTIC:</span> {h.angle_summary}
                   </p>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-1 border-t border-white/5">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
                   <button
                     type="button"
                     onClick={() => handleCopy(h.hook_text, h.id)}
-                    className="px-2 py-1 text-[10px] bg-white/5 border border-white/10 text-[#9DA7B8] hover:text-white flex items-center gap-1 cursor-pointer"
+                    className="px-2.5 py-1 text-xs bg-[#11141C] border border-white/20 text-[#A2ABB9] hover:text-white flex items-center gap-1 cursor-pointer font-csmigrate font-bold"
                   >
                     {copiedId === h.id ? (
                       <>
@@ -176,7 +176,7 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
                   <button
                     type="button"
                     onClick={() => onApplyHook(h.hook_text)}
-                    className="px-2.5 py-1 text-[10px] bg-[#D4FF00] text-black font-bold hover:bg-[#bce300] flex items-center gap-1 cursor-pointer"
+                    className="px-3 py-1 text-xs bg-[#D4FF00] text-[#060709] font-black hover:bg-[#E2FF44] flex items-center gap-1 cursor-pointer font-csmigrate shadow-[1px_1px_0px_0px_#000]"
                   >
                     <ArrowRight className="w-3 h-3" /> INSERT INTO STUDIO
                   </button>

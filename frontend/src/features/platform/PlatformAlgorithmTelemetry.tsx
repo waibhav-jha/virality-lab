@@ -112,17 +112,17 @@ export const PlatformAlgorithmTelemetry: React.FC<PlatformAlgorithmTelemetryProp
 
   return (
     <div
-      className="w-full bg-[#07080A] border border-white/10 p-4 font-mono-tech flex flex-col gap-3.5 transition-all text-left"
+      className="w-full bg-[#07080A] border-2 border-white/15 p-4 font-mechanismo flex flex-col gap-3.5 transition-all text-left shadow-[2px_2px_0px_0px_#000]"
       aria-label="Platform Algorithm Weight Telemetry"
     >
       {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
         <div className="flex items-center gap-2">
           <Cpu className="w-3.5 h-3.5 text-[#D4FF00]" />
-          <span className="text-xs font-bold text-white uppercase tracking-wider">
+          <span className="text-xs font-black text-white uppercase tracking-wider font-csmigrate">
             {algo.name}
           </span>
-          <span className="text-[10px] text-[#D4FF00] bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/30 font-semibold uppercase">
+          <span className="text-[10px] text-[#D4FF00] bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40 font-black uppercase">
             {algo.codename}
           </span>
         </div>
@@ -130,36 +130,36 @@ export const PlatformAlgorithmTelemetry: React.FC<PlatformAlgorithmTelemetryProp
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-1 text-[10px] text-[#7E8798] hover:text-white cursor-pointer uppercase transition-colors"
+          className="flex items-center gap-1 text-[10px] text-[#8E98AA] hover:text-[#D4FF00] cursor-pointer uppercase transition-colors font-bold"
         >
           <span>{isExpanded ? '[ HIDE SPEC SHEET ]' : '[ INSPECT WEIGHT MATRIX ]'}</span>
-          {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          {isExpanded ? <ChevronUp className="w-3 h-3 text-[#D4FF00]" /> : <ChevronDown className="w-3 h-3" />}
         </button>
       </div>
 
       {/* Primary Archetype & Focus Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#5B6474] uppercase tracking-wider">ALGORITHMIC ARCHETYPE</span>
-          <span className="text-white font-bold text-xs">{algo.archetype}</span>
+          <span className="text-[9px] text-[#646E82] uppercase tracking-wider font-bold">ALGORITHMIC ARCHETYPE</span>
+          <span className="text-white font-black text-xs font-csmigrate">{algo.archetype}</span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[9px] text-[#5B6474] uppercase tracking-wider">INITIAL SEED BATCH</span>
-          <span className="text-[#D4FF00] font-bold text-xs">{algo.seedBatchSize}</span>
+          <span className="text-[9px] text-[#646E82] uppercase tracking-wider font-bold">INITIAL SEED BATCH</span>
+          <span className="text-[#00F0FF] font-bold text-xs">{algo.seedBatchSize}</span>
         </div>
       </div>
 
       {/* Algorithmic Weight Distribution Bar Strip */}
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between text-[10px] text-[#7E8798] uppercase">
+        <div className="flex items-center justify-between text-[10px] text-[#8E98AA] uppercase font-bold">
           <span>ALGORITHM SCORING WEIGHTS</span>
           <span>100% COMPOSITE VECTOR</span>
         </div>
 
         {/* Stacked Percentage Bar */}
-        <div className="h-2 w-full flex bg-white/10 overflow-hidden border border-white/10">
+        <div className="h-2.5 w-full flex bg-[#0E1015] overflow-hidden border-2 border-white/20 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
           {algo.weights.map((w, idx) => {
-            const colors = ['bg-[#D4FF00]', 'bg-white', 'bg-[#7E8798]', 'bg-[#3A4250]'];
+            const colors = ['bg-[#D4FF00]', 'bg-[#00F0FF]', 'bg-[#FF0055]', 'bg-[#8E98AA]'];
             return (
               <div
                 key={w.label}
@@ -172,21 +172,21 @@ export const PlatformAlgorithmTelemetry: React.FC<PlatformAlgorithmTelemetryProp
         </div>
 
         {/* Weight Labels Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1.5 font-mono-tech">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1.5 font-mechanismo">
           {algo.weights.map((w, idx) => {
-            const dotColors = ['text-[#D4FF00]', 'text-white', 'text-[#7E8798]', 'text-[#4A5364]'];
+            const dotColors = ['text-[#D4FF00]', 'text-[#00F0FF]', 'text-[#FF0055]', 'text-[#8E98AA]'];
             return (
               <div
                 key={w.label}
-                className="flex items-start gap-1.5 p-1.5 bg-white/[0.02] border border-white/5 text-[10px]"
+                className="flex items-start gap-1.5 p-2 bg-[#060709] border border-white/10 text-[10px] shadow-[1px_1px_0px_0px_#000]"
               >
-                <span className={clsx('font-bold mt-0.5', dotColors[idx % dotColors.length])}>●</span>
+                <span className={clsx('font-black mt-0.5', dotColors[idx % dotColors.length])}>●</span>
                 <div className="flex flex-col min-w-0">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-white font-bold">{w.pct}%</span>
-                    <span className="text-[#9DA7B8] font-semibold truncate">{w.label}</span>
+                    <span className="text-white font-black">{w.pct}%</span>
+                    <span className="text-[#A2ABB9] font-bold truncate">{w.label}</span>
                   </div>
-                  <span className="text-[9px] text-[#5B6474] font-sans line-clamp-1 leading-tight">
+                  <span className="text-[9px] text-[#646E82] font-sans line-clamp-1 leading-tight mt-0.5">
                     {w.desc}
                   </span>
                 </div>
@@ -198,21 +198,21 @@ export const PlatformAlgorithmTelemetry: React.FC<PlatformAlgorithmTelemetryProp
 
       {/* Expanded Spec Sheet (Critical Penalty & Optimization Focus) */}
       {isExpanded && (
-        <div className="flex flex-col gap-2.5 pt-3 border-t border-white/10 text-xs">
+        <div className="flex flex-col gap-2.5 pt-3 border-t-2 border-white/15 text-xs">
           {/* Critical Algorithm Penalty Alert */}
-          <div className="p-2.5 bg-red-950/20 border-l-2 border-red-400 flex items-start gap-2">
-            <ShieldAlert className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
+          <div className="p-3 bg-[#1A0505] border-l-2 border-[#EF4444] flex items-start gap-2 shadow-[2px_2px_0px_0px_#000]">
+            <ShieldAlert className="w-3.5 h-3.5 text-[#EF4444] shrink-0 mt-0.5" />
             <div className="flex flex-col gap-0.5">
-              <span className="text-[10px] text-red-400 font-bold uppercase">CRITICAL ALGORITHMIC PENALTY:</span>
+              <span className="text-[10px] text-[#EF4444] font-black uppercase">CRITICAL ALGORITHMIC PENALTY:</span>
               <span className="text-[#E2E6EC] font-sans text-xs">{algo.primaryPenalty}</span>
             </div>
           </div>
 
           {/* Optimization Focus */}
-          <div className="p-2.5 bg-[#D4FF00]/5 border-l-2 border-[#D4FF00] flex items-start gap-2">
+          <div className="p-3 bg-[#0E1508] border-l-2 border-[#D4FF00] flex items-start gap-2 shadow-[2px_2px_0px_0px_#000]">
             <Zap className="w-3.5 h-3.5 text-[#D4FF00] shrink-0 mt-0.5" />
             <div className="flex flex-col gap-0.5">
-              <span className="text-[10px] text-[#D4FF00] font-bold uppercase">ALGORITHM OPTIMIZATION TARGET:</span>
+              <span className="text-[10px] text-[#D4FF00] font-black uppercase">ALGORITHM OPTIMIZATION TARGET:</span>
               <span className="text-[#E2E6EC] font-sans text-xs">{algo.optimizationFocus}</span>
             </div>
           </div>

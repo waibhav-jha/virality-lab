@@ -43,10 +43,14 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
       const reasoning = r.reasoning || '';
       const strength = Array.isArray(r.strengths) && r.strengths.length > 0 ? r.strengths[0] : '';
       const weakness = Array.isArray(r.weaknesses) && r.weaknesses.length > 0 ? r.weaknesses[0] : '';
-      const stopScroll = typeof r.stop_scroll === 'boolean' ? r.stop_scroll : (Number(r.stop_scroll_probability || r.stop_scroll || 0) >= 0.5);
-      const isPositive = stopScroll && Number(r.watch_probability || 0) > 0.6;
+      const stopScrollProb = Number(r.stop_scroll_probability ?? (typeof r.stop_scroll === 'number' ? r.stop_scroll : (r.stop_scroll ? 1 : 0)));
+      const stopScroll = typeof r.stop_scroll === 'boolean' ? r.stop_scroll : stopScrollProb >= 0.5;
+      const saveProb = Number(r.save_probability || 0);
+      const likeProb = Number(r.like_probability || 0);
+      const shareProb = Number(r.share_probability || 0);
+      const watchProb = Number(r.watch_probability || 0);
 
-      let sentiment: 'positive' | 'critical' | 'neutral' = isPositive ? 'positive' : 'critical';
+      const isMetricsPositive = stopScroll && (watchProb >= 0.45 || saveProb >= 0.3 || likeProb >= 0.3 || shareProb >= 0.25);
 
       // 1. If LLM or simulation agent supplied an authentic simulated_comment, use it directly!
       let commentText = r.simulated_comment || '';
@@ -55,25 +59,42 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
       if (!commentText) {
         const snippet = caption ? `"${caption.slice(0, 40)}..."` : '';
         if (pName.toLowerCase().includes('gen-z') || pName.toLowerCase().includes('student')) {
-          commentText = isPositive
+          commentText = isMetricsPositive
             ? `bro cooked with this one ngl 🔥 ${strength ? `the part about "${strength.slice(0, 45)}" was spot on` : 'instant save for later'}`
             : `lost me in the first 2 seconds ngl... ${weakness ? weakness.toLowerCase() : 'pacing felt way too slow'}`;
         } else if (pName.toLowerCase().includes('skeptic') || pName.toLowerCase().includes('analyst')) {
-          sentiment = 'critical';
-          commentText = `Where's the empirical backing for this claim? ${weakness || 'The hook makes an outsized promise without tangible data.'}`;
+          commentText = isMetricsPositive
+            ? `Specific numbers and timeframe make this credible. ${strength || 'Solid proof of concept.'}`
+            : `Where's the empirical backing for this claim? ${weakness || 'The hook makes an outsized promise without tangible data.'}`;
         } else if (pName.toLowerCase().includes('creator')) {
           commentText = `From a creator standpoint: ${strength ? `Great retention hook with ${strength.toLowerCase()}.` : 'Solid visual framing.'} ${weakness ? `Watch out though: ${weakness.toLowerCase()}` : 'The pacing curve holds strong.'}`;
         } else if (pName.toLowerCase().includes('niche') || pName.toLowerCase().includes('expert')) {
-          commentText = isPositive
+          commentText = isMetricsPositive
             ? `Accurate breakdown. ${strength || 'The distinction made here is often overlooked in mainstream advice.'} Worth bookmarking.`
             : `Oversimplified. ${weakness || 'You missed key domain nuance which undermines the premise.'}`;
         } else if (pName.toLowerCase().includes('casual') || pName.toLowerCase().includes('scroller')) {
-          commentText = isPositive
-            ? `Adding this to my saved folder of hacks I tell myself I'll do this weekend 😂`
+          commentText = isMetricsPositive
+            ? `Adding this to my saved bookmarks that I tell myself I'll check this weekend 😂`
             : `Scrolled right past after 2 seconds. Too much text to read on mobile.`;
         } else {
           commentText = reasoning ? `"${reasoning.slice(0, 120)}..."` : (strength || weakness || 'Evaluated specimen against audience heuristics.');
         }
+      }
+
+      // Check explicit text sentiment triggers
+      const commentLower = commentText.toLowerCase();
+      const hasPositiveCue = /bookmark|saved|saving|cooked|fire|🔥|😂|spot on|love|worth|great|good|clean|pedagogical|compelling|actionable|practical|useful|accurate|agree|solid|subscrib/.test(commentLower);
+      const hasCriticalCue = /scrolled past|scrolled right past|lost me|too much text|too slow|where('s| is) the empirical|paywall|lacks|oversimplified|boring|unrealistic/.test(commentLower);
+
+      let sentiment: 'positive' | 'critical' | 'neutral' = 'neutral';
+      if (hasCriticalCue) {
+        sentiment = 'critical';
+      } else if (hasPositiveCue || isMetricsPositive) {
+        sentiment = 'positive';
+      } else if (!stopScroll) {
+        sentiment = 'critical';
+      } else {
+        sentiment = 'positive';
       }
 
       // Add structured synthetic replies for rich conversational debate
@@ -153,33 +174,35 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
 
   return (
     <section
-      className="w-full bg-[#0E1013] border border-white/15 p-6 sm:p-8 text-left flex flex-col gap-6 corner-ticks"
+      className="w-full cyber-card corner-ticks p-6 sm:p-8 text-left flex flex-col gap-6"
       aria-label="Simulated Audience Debate & Comment Thread"
     >
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between border-b border-white/10 pb-3 font-mono-tech text-[10px] text-[#7E8798] uppercase tracking-widest gap-2">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-[#D4FF00] font-bold">04C // AUDIENCE DEBATE STREAM</span>
-          <span>::</span>
-          <span>SYNTHETIC SOCIAL FEED & COMMENT CONVERSATION</span>
+          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
+            04C // AUDIENCE DEBATE STREAM
+          </span>
+          <span className="text-white/40">::</span>
+          <span className="text-white/80 font-bold">SYNTHETIC SOCIAL FEED & COMMENT CONVERSATION</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
           <MessageSquare className="w-3.5 h-3.5 text-[#D4FF00]" />
-          <span>{comments.length} AGENTS DELIBERATING</span>
+          <span className="font-bold text-white">{comments.length} AGENTS DELIBERATING</span>
         </div>
       </div>
 
       {/* Filter Tabs & Platform Badge */}
-      <div className="flex flex-wrap items-center justify-between gap-3 font-mono-tech text-xs">
-        <div className="flex items-center gap-1.5 bg-black/40 p-1 border border-white/10">
+      <div className="flex flex-wrap items-center justify-between gap-3 font-mechanismo text-xs">
+        <div className="flex items-center gap-1.5 bg-[#07080A] p-1 border-2 border-white/15 shadow-[2px_2px_0px_0px_#000]">
           <button
             type="button"
             onClick={() => setActiveFilter('all')}
             className={clsx(
-              'px-2.5 py-1 uppercase text-[10px] font-bold transition-colors cursor-pointer',
+              'px-3 py-1 uppercase text-[11px] font-bold transition-all cursor-pointer font-csmigrate',
               activeFilter === 'all'
-                ? 'bg-[#D4FF00] text-[#07080A]'
-                : 'text-[#7E8798] hover:text-white'
+                ? 'bg-[#D4FF00] text-[#060709] shadow-[1px_1px_0px_0px_#000]'
+                : 'text-[#8E98AA] hover:text-white'
             )}
           >
             ALL DELIBERATION ({comments.length})
@@ -188,10 +211,10 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
             type="button"
             onClick={() => setActiveFilter('positive')}
             className={clsx(
-              'px-2.5 py-1 uppercase text-[10px] font-bold transition-colors cursor-pointer',
+              'px-3 py-1 uppercase text-[11px] font-bold transition-all cursor-pointer font-csmigrate',
               activeFilter === 'positive'
-                ? 'bg-[#D4FF00] text-[#07080A]'
-                : 'text-[#7E8798] hover:text-white'
+                ? 'bg-[#D4FF00] text-[#060709] shadow-[1px_1px_0px_0px_#000]'
+                : 'text-[#8E98AA] hover:text-white'
             )}
           >
             [+] RESONANCE
@@ -200,23 +223,23 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
             type="button"
             onClick={() => setActiveFilter('critical')}
             className={clsx(
-              'px-2.5 py-1 uppercase text-[10px] font-bold transition-colors cursor-pointer',
+              'px-3 py-1 uppercase text-[11px] font-bold transition-all cursor-pointer font-csmigrate',
               activeFilter === 'critical'
-                ? 'bg-amber-400 text-[#07080A]'
-                : 'text-[#7E8798] hover:text-white'
+                ? 'bg-[#EF4444] text-white shadow-[1px_1px_0px_0px_#000]'
+                : 'text-[#8E98AA] hover:text-white'
             )}
           >
             [-] FRICTION & SKEPTICISM
           </button>
         </div>
 
-        <span className="text-[10px] text-[#5B6474] uppercase">
-          SIMULATED FEED FOR: <strong className="text-white">{platform.toUpperCase()}</strong>
+        <span className="text-[11px] text-[#8E98AA] uppercase font-bold">
+          SIMULATED FEED FOR: <strong className="text-[#00F0FF] bg-[#00F0FF]/10 px-1.5 py-0.5 border border-[#00F0FF]/40">{platform.toUpperCase()}</strong>
         </span>
       </div>
 
       {/* Comment Stream List */}
-      <div className="flex flex-col gap-3 font-mono-tech" role="feed" aria-label="Persona comments">
+      <div className="flex flex-col gap-3.5 font-mechanismo" role="feed" aria-label="Persona comments">
         {filteredComments.map((c) => {
           const isLiked = !!likedComments[c.id];
           const likesCount = getLikeCount(c.id, c.likes);
@@ -225,28 +248,28 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
             <div
               key={c.id}
               className={clsx(
-                'border p-4 sm:p-5 flex flex-col gap-3 transition-all',
+                'border-2 p-4 sm:p-5 flex flex-col gap-3 transition-all shadow-[3px_3px_0px_0px_#000]',
                 c.isPinned
-                  ? 'bg-white/[0.03] border-[#D4FF00]/40'
-                  : 'bg-white/[0.01] border-white/10 hover:border-white/20'
+                  ? 'bg-[#0D1017] border-[#D4FF00] shadow-[3px_3px_0px_0px_#D4FF00]'
+                  : 'bg-[#07080A]/90 border-white/15 hover:border-[#D4FF00]/60'
               )}
             >
               {/* Top Row: Avatar, Persona, Tag, Timestamp */}
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-7 h-7 bg-white/10 border border-white/20 flex items-center justify-center font-bold text-xs text-white">
+                  <div className="w-8 h-8 bg-[#11141B] border-2 border-white/20 flex items-center justify-center font-black font-csmigrate text-xs text-[#D4FF00] shadow-[2px_2px_0px_0px_#000]">
                     {c.avatarLabel}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs sm:text-sm text-white uppercase tracking-wide">
+                    <span className="font-black text-sm text-white uppercase font-csmigrate tracking-wide">
                       {c.personaName}
                     </span>
                     <span
                       className={clsx(
-                        'text-[9px] px-1.5 py-0.2 uppercase font-bold border',
+                        'text-[10px] px-2 py-0.5 uppercase font-bold border',
                         c.sentiment === 'positive'
-                          ? 'border-[#D4FF00]/40 text-[#D4FF00] bg-[#D4FF00]/10'
-                          : 'border-amber-400/40 text-amber-400 bg-amber-400/10'
+                          ? 'border-[#D4FF00]/60 text-[#D4FF00] bg-[#D4FF00]/10'
+                          : 'border-[#EF4444]/60 text-[#EF4444] bg-[#EF4444]/10'
                       )}
                     >
                       {c.sentiment === 'positive' ? 'RESONANT' : 'FRICTION'}

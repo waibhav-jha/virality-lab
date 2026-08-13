@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   AlertCircle,
   Beaker,
@@ -37,15 +37,24 @@ export function App() {
   const resultsRef = useRef<HTMLDivElement>(null);
   const [activeDeckTab, setActiveDeckTab] = useState<'all' | 'audit' | 'ab_arena' | 'matrix' | 'optimizer'>('all');
 
+  // Automatically reset to 'all' modules whenever a new run or rerun starts or results arrive
+  useEffect(() => {
+    if (exp.status === 'running' || exp.result) {
+      setActiveDeckTab('all');
+    }
+  }, [exp.currentRunId, exp.status]);
+
   const isSimulating = exp.status === 'running';
   const hasResults = !!result;
 
   const handleStart = async () => {
+    setActiveDeckTab('all');
     await exp.startSimulation();
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
   };
 
   const handleDemo = () => {
+    setActiveDeckTab('all');
     exp.runDemoSimulation();
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
   };
@@ -116,14 +125,14 @@ export function App() {
         {exp.phase === 'setup' && (
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" aria-label="Content workspace">
             {/* Left 7 Cols: Experiment Parameter Controls */}
-            <div className="lg:col-span-7 bg-[#0E1013] border border-white/15 p-5 sm:p-7 corner-ticks flex flex-col gap-5">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3 font-mono-tech text-[10px] text-[#7E8798] uppercase tracking-widest">
+            <div className="lg:col-span-7 cyber-card corner-ticks p-5 sm:p-7 flex flex-col gap-5">
+              <div className="flex items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest">
                 <div className="flex items-center gap-2">
-                  <span className="text-[#D4FF00] font-bold">01 // PARAMETERS</span>
-                  <span>::</span>
+                  <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">01 // PARAMETERS</span>
+                  <span className="text-white/40">::</span>
                   <span className="text-white font-bold">SPECIMEN & AUDIENCE CONFIGURATION</span>
                 </div>
-                <span>CONFIG MODE</span>
+                <span className="bg-[#07080A] px-2 py-0.5 border border-white/15 text-[#00F0FF] font-bold text-[10px]">CONFIG MODE</span>
               </div>
 
               <ExperimentControls
@@ -147,7 +156,7 @@ export function App() {
                 <Button
                   variant="viral"
                   size="xl"
-                  className="w-full"
+                  className="w-full font-csmigrate text-sm font-black shadow-[4px_4px_0px_0px_#000]"
                   isLoading={isSimulating}
                   rightIcon={<ArrowRight className="w-4 h-4" />}
                   onClick={handleStart}
@@ -158,7 +167,7 @@ export function App() {
                     ? 'DELIBERATING AUDIENCE PANEL...'
                     : `EXECUTE EXPERIMENT (${exp.selectedPersonas.length} AGENTS)`}
                 </Button>
-                <div className="flex items-center justify-between font-mono-tech text-[9px] text-[#5B6474] px-1 uppercase">
+                <div className="flex items-center justify-between font-mechanismo text-[10px] text-[#646E82] px-1 uppercase font-bold">
                   <span>MULTIMODAL EXTRACTION</span>
                   <span>·</span>
                   <span>5 AGENT DELIBERATION</span>
@@ -184,21 +193,21 @@ export function App() {
         {hasResults && result && (
           <div ref={resultsRef} className="w-full flex flex-col gap-8 pt-2" aria-label="Simulation results">
             {/* Top Quick Navigation Bar */}
-            <div className="w-full bg-[#0E1013] border border-white/15 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 corner-ticks">
-              <div className="flex items-center gap-3">
+            <div className="w-full cyber-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 corner-ticks">
+              <div className="flex items-center gap-3 font-mechanismo">
                 <Button
                   variant="viral"
                   size="sm"
                   leftIcon={<ArrowLeft className="w-4 h-4" />}
                   onClick={exp.backToStudio}
-                  className="font-bold tracking-wider"
+                  className="font-csmigrate font-black tracking-wider text-xs shadow-[2px_2px_0px_0px_#000]"
                 >
                   ← BACK TO STUDIO / EDIT SPECIMEN
                 </Button>
-                <span className="hidden sm:inline-block w-px h-4 bg-white/20" />
-                <span className="font-mono-tech text-xs text-[#9DA7B8] uppercase">
-                  PLATFORM: <span className="text-white font-bold">{exp.platform.toUpperCase()}</span> ·{' '}
-                  <span className="text-[#D4FF00] font-bold">{result.score?.performance_tier || 'COMPLETED'}</span>
+                <span className="hidden sm:inline-block w-px h-5 bg-white/20" />
+                <span className="text-xs text-[#8E98AA] uppercase font-bold">
+                  PLATFORM: <span className="text-white font-black">{exp.platform.toUpperCase()}</span> ·{' '}
+                  <span className="text-[#D4FF00] font-black">{result.score?.performance_tier || 'COMPLETED'}</span>
                 </span>
               </div>
 
@@ -208,6 +217,7 @@ export function App() {
                   size="sm"
                   leftIcon={<RotateCcw className="w-3.5 h-3.5" />}
                   onClick={exp.resetExperiment}
+                  className="font-csmigrate text-xs"
                 >
                   CLEAR ALL
                 </Button>
@@ -215,16 +225,16 @@ export function App() {
             </div>
 
             {/* Sub-Module Navigation Switcher */}
-            <div className="w-full flex flex-wrap items-center gap-2 border-b border-white/15 pb-3 font-mono-tech text-xs">
-              <span className="text-[#5B6474] text-[10px] uppercase font-bold mr-2">LAB MODULE:</span>
+            <div className="w-full flex flex-wrap items-center gap-2 border-b-2 border-white/15 pb-3 font-mechanismo text-xs">
+              <span className="text-[#8E98AA] text-[10px] uppercase font-bold mr-2">LAB MODULE:</span>
               
               <button
                 type="button"
                 onClick={() => setActiveDeckTab('all')}
-                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 uppercase font-black font-csmigrate border-2 transition-all flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
                   activeDeckTab === 'all'
-                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
-                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                    ? 'bg-[#D4FF00] text-[#060709] border-[#D4FF00]'
+                    : 'bg-[#07080A] text-[#8E98AA] border-white/15 hover:text-white hover:border-white/30'
                 }`}
               >
                 <Layers className="w-3.5 h-3.5" />
@@ -234,10 +244,10 @@ export function App() {
               <button
                 type="button"
                 onClick={() => setActiveDeckTab('audit')}
-                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 uppercase font-black font-csmigrate border-2 transition-all flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
                   activeDeckTab === 'audit'
-                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
-                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                    ? 'bg-[#D4FF00] text-[#060709] border-[#D4FF00]'
+                    : 'bg-[#07080A] text-[#8E98AA] border-white/15 hover:text-white hover:border-white/30'
                 }`}
               >
                 <BarChart2 className="w-3.5 h-3.5" />
@@ -247,10 +257,10 @@ export function App() {
               <button
                 type="button"
                 onClick={() => setActiveDeckTab('ab_arena')}
-                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 uppercase font-black font-csmigrate border-2 transition-all flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
                   activeDeckTab === 'ab_arena'
-                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
-                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                    ? 'bg-[#D4FF00] text-[#060709] border-[#D4FF00]'
+                    : 'bg-[#07080A] text-[#8E98AA] border-white/15 hover:text-white hover:border-white/30'
                 }`}
               >
                 <Swords className="w-3.5 h-3.5" />
@@ -260,10 +270,10 @@ export function App() {
               <button
                 type="button"
                 onClick={() => setActiveDeckTab('matrix')}
-                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 uppercase font-black font-csmigrate border-2 transition-all flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
                   activeDeckTab === 'matrix'
-                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
-                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                    ? 'bg-[#D4FF00] text-[#060709] border-[#D4FF00]'
+                    : 'bg-[#07080A] text-[#8E98AA] border-white/15 hover:text-white hover:border-white/30'
                 }`}
               >
                 <Globe2 className="w-3.5 h-3.5" />
@@ -273,10 +283,10 @@ export function App() {
               <button
                 type="button"
                 onClick={() => setActiveDeckTab('optimizer')}
-                className={`px-3 py-1.5 uppercase font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 uppercase font-black font-csmigrate border-2 transition-all flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_0px_#000] ${
                   activeDeckTab === 'optimizer'
-                    ? 'bg-[#D4FF00] text-black border-[#D4FF00]'
-                    : 'bg-white/5 text-[#9DA7B8] border-white/10 hover:text-white hover:border-white/30'
+                    ? 'bg-[#D4FF00] text-[#060709] border-[#D4FF00]'
+                    : 'bg-[#07080A] text-[#8E98AA] border-white/15 hover:text-white hover:border-white/30'
                 }`}
               >
                 <Cpu className="w-3.5 h-3.5" />
@@ -365,6 +375,11 @@ export function App() {
                 objective={exp.objective}
                 onSelectPlatform={(newPlat) => {
                   exp.setPlatform(newPlat);
+                  exp.backToStudio();
+                }}
+                onApplyAdaptedSpecimen={(newPlat, adaptedCaption) => {
+                  exp.setPlatform(newPlat);
+                  exp.setCaption(adaptedCaption);
                   exp.backToStudio();
                 }}
               />

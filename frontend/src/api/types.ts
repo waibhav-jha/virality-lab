@@ -204,6 +204,7 @@ export interface PlatformMatrixItem {
   algorithm_synergy: string;
   platform_tweak: string;
   reach_multiplier: string;
+  adapted_specimen?: string;
 }
 
 export interface CrossPlatformMatrixResult {

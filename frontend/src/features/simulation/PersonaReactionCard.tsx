@@ -44,46 +44,46 @@ export const PersonaReactionCard: React.FC<PersonaReactionCardProps> = ({ reacti
   const personaName = reaction.persona_name || reaction.name || 'Anonymous Persona';
 
   return (
-    <div className="bg-[#0E1013] border border-white/10 p-4 sm:p-5 flex flex-col gap-3.5 text-left font-mono-tech">
+    <div className="cyber-card corner-ticks p-4 sm:p-5 flex flex-col gap-3.5 text-left font-mechanismo">
       {/* Top Header */}
-      <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+      <div className="flex items-center justify-between gap-2 border-b border-white/15 pb-3">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <span className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
+            <span className="text-sm font-black font-csmigrate text-white uppercase tracking-wider">
               {personaName}
             </span>
           </div>
-          <span className="text-[10px] text-[#7E8798] mt-0.5">
-            STATE: {String(reaction.emotional_response || 'NEUTRAL EVALUATION').toUpperCase()}
+          <span className="text-[10px] text-[#8E98AA] mt-0.5 font-bold">
+            STATE: <span className="text-[#00F0FF]">{String(reaction.emotional_response || 'NEUTRAL EVALUATION').toUpperCase()}</span>
           </span>
         </div>
 
         {/* Persona Index Value */}
-        <div className="flex items-baseline gap-1">
-          <span className="font-display font-black text-lg sm:text-xl text-[#D4FF00]">
+        <div className="flex items-baseline gap-1 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
+          <span className="font-mechanismo font-black text-xl text-[#D4FF00]">
             {personaViralityIndex}
           </span>
-          <span className="text-[9px] text-white/40">/100</span>
+          <span className="font-mechanismo text-[10px] text-white/40 font-bold">/100</span>
         </div>
       </div>
 
       {/* Probability Ledger */}
-      <div className="grid grid-cols-3 gap-2 bg-white/[0.02] p-2 border border-white/5 text-[10px]">
+      <div className="grid grid-cols-3 gap-2 bg-[#07080A]/80 p-2.5 border border-white/10 text-[11px] shadow-[inset_0_1px_3px_rgba(0,0,0,0.6)]">
         <div className="flex flex-col">
-          <span className="text-[#5B6474]">STOP SCROLL</span>
-          <span className={clsx('font-bold', stopScrollBool ? 'text-[#D4FF00]' : 'text-red-400')}>
+          <span className="text-[#646E82] font-bold text-[10px]">STOP SCROLL</span>
+          <span className={clsx('font-black tracking-wide', stopScrollBool ? 'text-[#D4FF00]' : 'text-red-400')}>
             {stopScrollBool ? 'YES' : 'NO'} ({Math.round(stopScrollProb * 100)}%)
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[#5B6474]">WATCH</span>
-          <span className="font-bold text-white">
+          <span className="text-[#646E82] font-bold text-[10px]">WATCH</span>
+          <span className="font-black text-white">
             {Math.round(watchProb * 100)}%
           </span>
         </div>
         <div className="flex flex-col">
-          <span className="text-[#5B6474]">SHARE</span>
-          <span className="font-bold text-white">
+          <span className="text-[#646E82] font-bold text-[10px]">SHARE</span>
+          <span className="font-black text-[#00F0FF]">
             {Math.round(shareProb * 100)}%
           </span>
         </div>
@@ -93,39 +93,39 @@ export const PersonaReactionCard: React.FC<PersonaReactionCardProps> = ({ reacti
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between text-[11px] text-[#9DA7B8] hover:text-white pt-1 cursor-pointer"
+        className="flex items-center justify-between text-xs text-[#8E98AA] hover:text-[#D4FF00] font-bold pt-1 cursor-pointer transition-colors"
       >
         <span>{isExpanded ? '[ HIDE DELIBERATION DOSSIER ]' : '[ INSPECT AGENT DELIBERATION ]'}</span>
-        {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+        {isExpanded ? <ChevronUp className="w-3.5 h-3.5 text-[#D4FF00]" /> : <ChevronDown className="w-3.5 h-3.5" />}
       </button>
 
       {/* Expanded Reasoning & Breakdown */}
       {isExpanded && (
-        <div className="flex flex-col gap-3 pt-2 border-t border-white/10 text-xs font-mono-tech">
+        <div className="flex flex-col gap-3 pt-2 border-t border-white/15 text-xs font-mechanismo">
           {reaction.reasoning && (
-            <div className="p-2.5 bg-white/[0.02] border-l border-[#D4FF00] italic text-[#E2E6EC] font-sans text-xs">
+            <div className="p-3 bg-[#07080A]/90 border-l-2 border-[#D4FF00] italic text-[#E2E6EC] font-sans text-xs leading-relaxed">
               "{reaction.reasoning}"
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             {reaction.strengths && reaction.strengths.length > 0 && (
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-[#D4FF00] uppercase font-bold">[+] RESONANCE</span>
-                <ul className="text-xs text-[#9DA7B8] font-sans space-y-1">
+              <div className="flex flex-col gap-1.5 bg-[#07080A]/60 p-2.5 border border-white/10">
+                <span className="text-[10px] text-[#D4FF00] uppercase font-black tracking-wider">[+] RESONANCE</span>
+                <ul className="text-xs text-[#A2ABB9] font-sans space-y-1">
                   {reaction.strengths.map((str: string, idx: number) => (
-                    <li key={idx}>· {str}</li>
+                    <li key={idx} className="leading-snug">· {str}</li>
                   ))}
                 </ul>
               </div>
             )}
 
             {reaction.weaknesses && reaction.weaknesses.length > 0 && (
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-amber-400 uppercase font-bold">[-] FRICTION</span>
-                <ul className="text-xs text-[#9DA7B8] font-sans space-y-1">
+              <div className="flex flex-col gap-1.5 bg-[#07080A]/60 p-2.5 border border-white/10">
+                <span className="text-[10px] text-[#EF4444] uppercase font-black tracking-wider">[-] FRICTION</span>
+                <ul className="text-xs text-[#A2ABB9] font-sans space-y-1">
                   {reaction.weaknesses.map((weak: string, idx: number) => (
-                    <li key={idx}>· {weak}</li>
+                    <li key={idx} className="leading-snug">· {weak}</li>
                   ))}
                 </ul>
               </div>
