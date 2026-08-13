@@ -95,11 +95,29 @@ function normalizeMediaType(m?: string): string {
   return val;
 }
 
+export const hasBackend = (): boolean => {
+  if (BASE_URL && BASE_URL.trim() !== '') return true;
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    return hostname === 'localhost' || hostname === '127.0.0.1';
+  }
+  return false;
+};
+
 export const viralityApi = {
   /**
    * Health & System State
    */
   async checkHealth(): Promise<HealthResponse> {
+    if (!hasBackend()) {
+      return {
+        status: 'standalone',
+        version: '0.8.0',
+        simulation_mode: 'client_deterministic',
+        llm_provider: 'in_browser',
+        timestamp: new Date().toISOString(),
+      };
+    }
     return request<HealthResponse>('/health');
   },
 
@@ -107,6 +125,14 @@ export const viralityApi = {
    * File Upload (Video, Image)
    */
   async uploadMedia(file: File): Promise<UploadResponse> {
+    if (!hasBackend()) {
+      return {
+        file_path: URL.createObjectURL(file),
+        filename: file.name,
+        size_bytes: file.size,
+        mime_type: file.type,
+      };
+    }
     const formData = new FormData();
     formData.append('file', file);
     return request<UploadResponse>('/api/upload', {
@@ -121,6 +147,9 @@ export const viralityApi = {
   async runPipeline(
     payload: FullAnalysisRequest
   ): Promise<FullAnalysisResponse | JobStatusResponse> {
+    if (!hasBackend()) {
+      throw new Error('Using in-browser client simulation engine.');
+    }
     const normalizedPayload = {
       ...payload,
       content: {
@@ -141,6 +170,9 @@ export const viralityApi = {
    * Poll Status for a Running Job
    */
   async getRunStatus(runId: string): Promise<JobStatusResponse> {
+    if (!hasBackend()) {
+      throw new Error('No backend job polling needed in browser mode.');
+    }
     return request<JobStatusResponse>(`/api/runs/${encodeURIComponent(runId)}`);
   },
 
@@ -148,6 +180,9 @@ export const viralityApi = {
    * List Recent Runs
    */
   async listRuns(limit: number = 10): Promise<JobStatusResponse[]> {
+    if (!hasBackend()) {
+      return [];
+    }
     return request<JobStatusResponse[]>(`/api/runs?limit=${limit}`);
   },
 
@@ -161,9 +196,13 @@ export const viralityApi = {
     content_profile?: any;
     virality_score?: any;
   }): Promise<any> {
+    if (!hasBackend()) {
+      throw new Error('Using in-browser client optimization engine.');
+    }
     return request<any>('/api/optimize', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
   },
 };
+
