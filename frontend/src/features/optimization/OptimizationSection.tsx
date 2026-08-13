@@ -108,51 +108,51 @@ export const OptimizationSection: React.FC<OptimizationSectionProps> = ({
       aria-label="Optimization results and variant comparison"
     >
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-[#00FF41]/20 pb-3 font-mechanismo text-[11px] text-[#8E9E90] uppercase tracking-widest">
         <div className="flex items-center gap-2">
-          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
+          <span className="text-[#00FF41] font-black bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40 shadow-[0_0_6px_rgba(0,255,65,0.2)]">
             06 // VARIANT BENCHMARK
           </span>
           <span className="text-white/40">::</span>
-          <span className="text-white/80 font-bold">CANDIDATE VARIANT COMPARISON WORKBENCH</span>
+          <span className="text-white/90 font-bold">CANDIDATE VARIANT COMPARISON WORKBENCH</span>
         </div>
-        <span className="bg-[#07080A] px-2 py-1 border border-white/15 text-white font-bold text-[10px]">
+        <span className="bg-[#000000] px-2 py-1 border border-[#00FF41]/30 text-white font-bold text-[10px]">
           {allVariants.length || (winner ? 1 : 0)} SYNTHESIZED VARIANTS
         </span>
       </div>
 
       {/* Grid of Variants */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" role="list" aria-label="Content variants">
-        {/* Left Column (or 7 cols): Strongest Variant Candidate */}
+        {/* Left Column: Strongest Variant Candidate */}
         {winner && (
           <div
-            className="lg:col-span-7 bg-[#07080A] border-2 border-[#D4FF00] p-5 sm:p-6 flex flex-col justify-between gap-4 font-mechanismo relative shadow-[4px_4px_0px_0px_#D4FF00]"
+            className="lg:col-span-7 bg-[#050805] border-2 border-[#00FF41] p-5 sm:p-6 flex flex-col justify-between gap-4 font-mechanismo relative shadow-[0_0_25px_rgba(0,255,65,0.25)]"
             role="listitem"
             aria-label="Winning variant"
           >
             {/* Top Indicator */}
-            <div className="flex items-center justify-between border-b-2 border-white/15 pb-3">
+            <div className="flex items-center justify-between border-b-2 border-[#00FF41]/20 pb-3">
               <div className="flex items-center gap-2">
-                <span className="bg-[#D4FF00] text-[#060709] px-2 py-0.5 text-xs font-black uppercase font-csmigrate shadow-[1px_1px_0px_0px_#000]">
+                <span className="bg-[#00FF41] text-[#000000] px-2 py-0.5 text-xs font-black uppercase font-csmigrate shadow-[1px_1px_0px_0px_#000]">
                   OPTIMAL SPECIMEN VARIANT
                 </span>
-                <span className="text-[10px] text-white/70 font-bold">{winner.strategy || 'STRATEGY: REFINED HOOK'}</span>
+                <span className="text-[10px] text-[#8E9E90] font-bold">{winner.strategy || 'STRATEGY: REFINED HOOK'}</span>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="font-mechanismo font-black text-3xl text-[#D4FF00]">{bestScore}</span>
+                <span className="font-mechanismo font-black text-3xl text-[#00FF41]">{bestScore}</span>
                 <span className="text-xs text-[#00F0FF] font-bold">/100 (+{delta > 0 ? delta : 0})</span>
               </div>
             </div>
 
             {/* Specimen Content Text */}
-            <div className="bg-[#0D1017] border border-white/15 p-4 font-sans text-xs sm:text-sm text-[#F4F6F8] leading-relaxed shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]">
+            <div className="bg-[#000000] border border-[#00FF41]/20 p-4 font-sans text-xs sm:text-sm text-[#FFFFFF] leading-relaxed shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)]">
               {winner.caption || winner.hook || 'No preview caption available.'}
             </div>
 
             {/* Changes Summary */}
             {winner.changes_summary && (
-              <div className="p-3 bg-[#090C12] border-l-2 border-[#D4FF00] text-xs text-[#A2ABB9] font-sans">
-                <span className="font-mechanismo text-[10px] text-[#D4FF00] uppercase block font-bold mb-0.5">
+              <div className="p-3 bg-[#000000]/80 border-l-2 border-[#00FF41] text-xs text-[#8E9E90] font-sans">
+                <span className="font-mechanismo text-[10px] text-[#00FF41] uppercase block font-bold mb-0.5">
                   OPTIMIZATION HYPOTHESIS:
                 </span>
                 {winner.changes_summary}
@@ -160,11 +160,11 @@ export const OptimizationSection: React.FC<OptimizationSectionProps> = ({
             )}
 
             {/* Actions Bar */}
-            <div className="flex items-center justify-between pt-3 border-t-2 border-white/15 mt-2">
+            <div className="flex items-center justify-between pt-3 border-t-2 border-[#00FF41]/20 mt-2">
               <Button
                 variant="outline"
                 size="sm"
-                leftIcon={copiedId === winner.variant_id ? <Check className="w-3 h-3 text-[#D4FF00]" /> : <Copy className="w-3 h-3" />}
+                leftIcon={copiedId === winner.variant_id ? <Check className="w-3 h-3 text-[#00FF41]" /> : <Copy className="w-3 h-3" />}
                 onClick={() => handleCopy(winner.caption || winner.hook || '', winner.variant_id)}
                 className="font-csmigrate text-xs"
               >
@@ -185,12 +185,12 @@ export const OptimizationSection: React.FC<OptimizationSectionProps> = ({
 
         {/* Right 5 Columns: Secondary Candidate Variants */}
         <div className="lg:col-span-5 flex flex-col gap-3 font-mechanismo">
-          <div className="text-[11px] text-[#8E98AA] uppercase border-b-2 border-white/15 pb-1 font-bold">
+          <div className="text-[11px] text-[#8E9E90] uppercase border-b-2 border-[#00FF41]/20 pb-1 font-bold">
             ALTERNATIVE HYPOTHESIS VARIANTS
           </div>
 
           {otherVariants.length === 0 ? (
-            <div className="p-4 bg-[#07080A] border border-white/10 text-xs text-[#646E82]">
+            <div className="p-4 bg-[#000000] border border-[#00FF41]/20 text-xs text-[#526355]">
               NO ADDITIONAL ALTERNATIVE CANDIDATES IN CURRENT BATCH.
             </div>
           ) : (
@@ -202,7 +202,7 @@ export const OptimizationSection: React.FC<OptimizationSectionProps> = ({
               return (
                 <div
                   key={variant.variant_id || idx}
-                  className="bg-[#07080A] hover:bg-[#0E121A] border-2 border-white/15 hover:border-[#D4FF00]/50 p-4 flex flex-col gap-2 transition-all shadow-[2px_2px_0px_0px_#000]"
+                  className="bg-[#000000] hover:bg-[#050805] border-2 border-[#00FF41]/20 hover:border-[#00FF41] p-4 flex flex-col gap-2 transition-all shadow-[2px_2px_0px_0px_#000]"
                   role="listitem"
                   aria-label={`Variant: ${variant.strategy || `#${idx + 2}`}`}
                 >
@@ -211,20 +211,20 @@ export const OptimizationSection: React.FC<OptimizationSectionProps> = ({
                     <div className="flex items-baseline gap-1">
                       <span className="font-mechanismo font-bold text-white text-lg">{varScore}</span>
                       {varDelta > 0 && (
-                        <span className="text-[10px] text-[#D4FF00] font-black">+{varDelta}</span>
+                        <span className="text-[10px] text-[#00FF41] font-black">+{varDelta}</span>
                       )}
                     </div>
                   </div>
 
-                  <p className={`text-xs text-[#A2ABB9] font-sans leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
+                  <p className={`text-xs text-[#8E9E90] font-sans leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
                     {variant.caption || variant.hook}
                   </p>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-white/10 text-[10px]">
+                  <div className="flex items-center justify-between pt-2 border-t border-[#00FF41]/15 text-[10px]">
                     <button
                       type="button"
                       onClick={() => setExpandedVariant(isExpanded ? null : variant.variant_id)}
-                      className="text-[#8E98AA] hover:text-white cursor-pointer uppercase font-bold"
+                      className="text-[#8E9E90] hover:text-white cursor-pointer uppercase font-bold"
                     >
                       {isExpanded ? '[ COLLAPSE ]' : '[ INSPECT ]'}
                     </button>
@@ -232,7 +232,7 @@ export const OptimizationSection: React.FC<OptimizationSectionProps> = ({
                     <button
                       type="button"
                       onClick={() => handleApply(variant)}
-                      className="text-[#D4FF00] hover:underline cursor-pointer uppercase font-black font-csmigrate text-xs"
+                      className="text-[#00FF41] hover:underline cursor-pointer uppercase font-black font-csmigrate text-xs"
                     >
                       APPLY VARIANT →
                     </button>

@@ -84,7 +84,7 @@ export const MediaDropzone: React.FC<MediaDropzoneProps> = ({
 
   return (
     <div className="flex flex-col gap-2 w-full text-left">
-      <div className="flex items-center justify-between font-mono-tech text-[10px] text-[#7E8798] uppercase">
+      <div className="flex items-center justify-between font-mono-tech text-[10px] text-[#8E9E90] uppercase">
         <label className="font-semibold text-white/80 flex items-center gap-1.5">
           <span>[ATTACH MEDIA SPECIMEN]</span>
         </label>
@@ -92,9 +92,9 @@ export const MediaDropzone: React.FC<MediaDropzoneProps> = ({
       </div>
 
       {mediaUrl ? (
-        <div className="relative bg-white/[0.02] border border-white/15 p-3 flex items-center justify-between gap-4">
+        <div className="relative bg-[#000000] border border-[#00FF41]/30 p-3 flex items-center justify-between gap-4 shadow-[2px_2px_0px_0px_#000]">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-12 h-12 bg-[#07080A] border border-white/20 flex-shrink-0 flex items-center justify-center overflow-hidden">
+            <div className="w-12 h-12 bg-[#000000] border border-[#00FF41]/30 flex-shrink-0 flex items-center justify-center overflow-hidden">
               {mediaType === 'short_video' ? (
                 <video src={mediaUrl} className="w-full h-full object-cover" muted />
               ) : (
@@ -106,8 +106,8 @@ export const MediaDropzone: React.FC<MediaDropzoneProps> = ({
               <span className="text-xs font-bold text-white truncate">
                 {fileDetails?.name || mediaPath?.split(/[\\/]/).pop() || 'specimen_asset.mp4'}
               </span>
-              <div className="flex items-center gap-2 mt-0.5 text-[10px] text-[#7E8798]">
-                <span className="text-[#D4FF00] font-semibold">
+              <div className="flex items-center gap-2 mt-0.5 text-[10px] text-[#8E9E90]">
+                <span className="text-[#00FF41] font-semibold">
                   {mediaType === 'short_video' ? 'VIDEO SPECIMEN ATTACHED' : 'IMAGE SPECIMEN ATTACHED'}
                 </span>
                 {fileDetails && (
@@ -134,8 +134,8 @@ export const MediaDropzone: React.FC<MediaDropzoneProps> = ({
           className={clsx(
             'border border-dashed p-4 sm:p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all relative select-none font-mono-tech',
             isDragging
-              ? 'border-[#D4FF00] bg-[#D4FF00]/5'
-              : 'border-white/15 hover:border-white/30 bg-white/[0.01] hover:bg-white/[0.03]'
+              ? 'border-[#00FF41] bg-[#00FF41]/10 shadow-[0_0_15px_rgba(0,255,65,0.2)]'
+              : 'border-[#00FF41]/20 hover:border-[#00FF41]/60 bg-[#000000] hover:bg-[#050805]'
           )}
         >
           <input
@@ -147,7 +147,7 @@ export const MediaDropzone: React.FC<MediaDropzoneProps> = ({
           />
 
           {isUploading ? (
-            <div className="flex items-center gap-2 text-xs text-[#D4FF00]">
+            <div className="flex items-center gap-2 text-xs text-[#00FF41]">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>TRANSMITTING MEDIA SPECIMEN...</span>
             </div>
@@ -156,9 +156,9 @@ export const MediaDropzone: React.FC<MediaDropzoneProps> = ({
               <UploadCloud className="w-4 h-4 text-white/40" />
               <div className="text-left">
                 <span className="text-xs text-white font-semibold block">
-                  DROP VIDEO / IMAGE OR <span className="text-[#D4FF00] underline">BROWSE</span>
+                  DROP VIDEO / IMAGE OR <span className="text-[#00FF41] underline">BROWSE</span>
                 </span>
-                <span className="text-[10px] text-[#5B6474]">
+                <span className="text-[10px] text-[#526355]">
                   Multimodal frame extraction & audio cadence analysis
                 </span>
               </div>

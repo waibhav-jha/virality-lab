@@ -29,8 +29,8 @@ export const MetricBar: React.FC<MetricBarProps> = ({
     <div className="flex flex-col gap-1.5 w-full py-1">
       <div className="flex items-baseline justify-between">
         <div className="flex items-center gap-1.5 tech-label">
-          {icon && <span className="text-white/40">{icon}</span>}
-          <span className="text-[#E2E6EC] font-semibold text-xs tracking-wider">{label}</span>
+          {icon && <span className="text-[#00FF41]/60">{icon}</span>}
+          <span className="text-[#FFFFFF] font-semibold text-xs tracking-wider">{label}</span>
         </div>
 
         <div className="flex items-baseline gap-2 font-mono-tech">
@@ -39,8 +39,8 @@ export const MetricBar: React.FC<MetricBarProps> = ({
               className={clsx(
                 'inline-flex items-center text-[11px] font-bold px-1 py-0.2',
                 diff > 0
-                  ? 'text-[#D4FF00] bg-[#D4FF00]/10 border border-[#D4FF00]/30'
-                  : 'text-red-400 bg-red-500/10 border border-red-500/30'
+                  ? 'text-[#00FF41] bg-[#00FF41]/10 border border-[#00FF41]/40'
+                  : 'text-[#FF0055] bg-[#FF0055]/10 border border-[#FF0055]/30'
               )}
             >
               {diff > 0 ? (
@@ -53,13 +53,13 @@ export const MetricBar: React.FC<MetricBarProps> = ({
           )}
           <span className="font-mono-tech text-sm sm:text-base font-bold text-white">
             {currentVal}
-            <span className="text-[10px] text-white/40 font-normal ml-0.5">/100</span>
+            <span className="text-[10px] text-[#8E9E90] font-normal ml-0.5">/100</span>
           </span>
         </div>
       </div>
 
       {/* Hairline Precision Track with Scale Ticks */}
-      <div className="relative h-1.5 w-full bg-white/[0.06] overflow-hidden">
+      <div className="relative h-1.5 w-full bg-white/[0.08] overflow-hidden">
         {/* Previous Value Marker */}
         {showDiff && prevVal !== null && (
           <div
@@ -72,11 +72,13 @@ export const MetricBar: React.FC<MetricBarProps> = ({
           className={clsx(
             'h-full transition-all duration-500 ease-out relative z-10',
             color === 'accent' || color === 'emerald'
-              ? 'bg-[#D4FF00]'
+              ? 'bg-[#00FF41] shadow-[0_0_8px_#00FF41]'
+              : color === 'cyan'
+              ? 'bg-[#00F0FF] shadow-[0_0_8px_#00F0FF]'
               : color === 'amber'
-              ? 'bg-amber-400'
+              ? 'bg-[#D4FF00]'
               : color === 'rose'
-              ? 'bg-red-400'
+              ? 'bg-[#FF0055]'
               : 'bg-white'
           )}
           style={{ width: `${currentVal}%` }}
@@ -84,7 +86,7 @@ export const MetricBar: React.FC<MetricBarProps> = ({
       </div>
 
       {description && (
-        <span className="text-[11px] text-[#7E8798] leading-tight font-mono-tech">{description}</span>
+        <span className="text-[11px] text-[#8E9E90] leading-tight font-mono-tech">{description}</span>
       )}
     </div>
   );

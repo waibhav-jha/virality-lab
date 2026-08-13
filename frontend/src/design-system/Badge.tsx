@@ -12,9 +12,9 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  accent: 'bg-[#D4FF00]/10 text-[#D4FF00] border-[#D4FF00]/30',
-  emerald: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25',
-  cyan: 'bg-white/10 text-white border-white/20',
+  accent: 'bg-[#00FF41]/10 text-[#00FF41] border-[#00FF41]/30 shadow-[0_0_6px_rgba(0,255,65,0.2)]',
+  emerald: 'bg-[#00FF41]/10 text-[#00FF41] border-[#00FF41]/30',
+  cyan: 'bg-[#00F0FF]/10 text-[#00F0FF] border-[#00F0FF]/30',
   amber: 'bg-amber-500/10 text-amber-300 border-amber-500/25',
   violet: 'bg-white/5 text-[#E2E6EC] border-white/15',
   rose: 'bg-red-500/10 text-red-300 border-red-500/25',

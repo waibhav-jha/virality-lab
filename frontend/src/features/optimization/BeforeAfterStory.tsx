@@ -53,43 +53,43 @@ export const BeforeAfterStory: React.FC<BeforeAfterStoryProps> = ({
       aria-label="Optimization before and after comparison"
     >
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-[#00FF41]/20 pb-3 font-mechanismo text-[11px] text-[#8E9E90] uppercase tracking-widest">
         <div className="flex items-center gap-2">
-          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
+          <span className="text-[#00FF41] font-black bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40 shadow-[0_0_6px_rgba(0,255,65,0.2)]">
             05 // OPTIMIZATION LIFT
           </span>
           <span className="text-white/40">::</span>
-          <span className="text-white/80 font-bold">VARIANT BENCHMARK COMPARISON</span>
+          <span className="text-white/90 font-bold">VARIANT BENCHMARK COMPARISON</span>
         </div>
-        <span className="bg-[#07080A] px-2 py-1 border border-white/15 text-white font-bold text-[10px]">
+        <span className="bg-[#000000] px-2 py-1 border border-[#00FF41]/30 text-white font-bold text-[10px]">
           VARIANTS TESTED: {optimization.variants_tested || (Array.isArray(optimization.history) ? optimization.history.length : 1)}
         </span>
       </div>
 
       {/* Main Score Progression Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-[#07080A] border-2 border-white/20 p-5 font-mechanismo shadow-[3px_3px_0px_0px_#000]">
+      <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center bg-[#050805] border-2 border-[#00FF41]/30 p-5 font-mechanismo shadow-[0_0_20px_rgba(0,255,65,0.15)]">
         {/* Baseline */}
         <div className="sm:col-span-4 flex flex-col">
-          <span className="text-[10px] text-[#8E98AA] uppercase font-bold">BASELINE SPECIMEN SCORE</span>
+          <span className="text-[10px] text-[#8E9E90] uppercase font-bold">BASELINE SPECIMEN SCORE</span>
           <div className="flex items-baseline gap-1 mt-1">
-            <span className="font-mechanismo font-black text-3xl sm:text-4xl text-[#8E98AA]">{origTotal}</span>
+            <span className="font-mechanismo font-black text-3xl sm:text-4xl text-[#8E9E90]">{origTotal}</span>
             <span className="text-xs text-white/40 font-bold">/100</span>
           </div>
         </div>
 
         {/* Delta */}
-        <div className="sm:col-span-4 flex items-center justify-center gap-2 py-2 border-y sm:border-y-0 sm:border-x-2 border-white/15">
-          <ArrowRight className="w-5 h-5 text-[#D4FF00]" />
-          <span className="text-base sm:text-lg font-black text-[#D4FF00] font-csmigrate bg-[#D4FF00]/10 px-3 py-1 border border-[#D4FF00]/40">
+        <div className="sm:col-span-4 flex items-center justify-center gap-2 py-2 border-y sm:border-y-0 sm:border-x-2 border-[#00FF41]/20">
+          <ArrowRight className="w-5 h-5 text-[#00FF41]" />
+          <span className="text-base sm:text-lg font-black text-[#00FF41] font-csmigrate bg-[#00FF41]/15 px-3 py-1 border border-[#00FF41]/40 shadow-[0_0_10px_rgba(0,255,65,0.2)]">
             +{delta > 0 ? delta : 0} PTS LIFT
           </span>
         </div>
 
         {/* Optimized */}
         <div className="sm:col-span-4 flex flex-col sm:items-end">
-          <span className="text-[10px] text-[#D4FF00] uppercase font-black">OPTIMIZED VARIANT SCORE</span>
+          <span className="text-[10px] text-[#00FF41] uppercase font-black">OPTIMIZED VARIANT SCORE</span>
           <div className="flex items-baseline gap-1 mt-1">
-            <span className="font-mechanismo font-black text-3xl sm:text-4xl text-[#D4FF00]">{bestTotal}</span>
+            <span className="font-mechanismo font-black text-3xl sm:text-4xl text-[#00FF41]">{bestTotal}</span>
             <span className="text-xs text-[#00F0FF] font-bold">/100</span>
           </div>
         </div>
@@ -103,15 +103,15 @@ export const BeforeAfterStory: React.FC<BeforeAfterStoryProps> = ({
             return (
               <div
                 key={d.label}
-                className="p-3.5 bg-[#07080A] border-2 border-white/15 flex flex-col gap-1.5 shadow-[2px_2px_0px_0px_#000]"
+                className="p-3.5 bg-[#000000] border-2 border-[#00FF41]/20 flex flex-col gap-1.5 shadow-[2px_2px_0px_0px_#000]"
               >
-                <span className="text-[10px] text-[#8E98AA] font-bold uppercase">{d.label}</span>
-                <div className="flex items-center justify-between text-xs pt-1 border-t border-white/10">
-                  <span className="text-[#646E82] font-bold">{d.orig}</span>
+                <span className="text-[10px] text-[#8E9E90] font-bold uppercase">{d.label}</span>
+                <div className="flex items-center justify-between text-xs pt-1 border-t border-[#00FF41]/15">
+                  <span className="text-[#526355] font-bold">{d.orig}</span>
                   <span className="text-white/30">→</span>
                   <span className="font-black text-white font-csmigrate text-sm">{d.opt}</span>
                   {dimDelta > 0 && (
-                    <span className="text-[10px] text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.2 border border-[#D4FF00]/30">+{dimDelta}</span>
+                    <span className="text-[10px] text-[#00FF41] font-black bg-[#00FF41]/10 px-1.5 py-0.2 border border-[#00FF41]/30">+{dimDelta}</span>
                   )}
                 </div>
               </div>

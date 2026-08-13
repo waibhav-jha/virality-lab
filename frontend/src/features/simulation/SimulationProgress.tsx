@@ -45,16 +45,16 @@ export const SimulationProgress: React.FC<SimulationProgressProps> = ({
   const currentIdx = getStageIndex(stage);
 
   return (
-    <div className="w-full bg-[#0E1013] border border-white/15 p-5 sm:p-6 text-left flex flex-col gap-5 corner-ticks" aria-label="Simulation Telemetry Matrix">
+    <div className="w-full bg-[#050805] border border-[#00FF41]/30 p-5 sm:p-6 text-left flex flex-col gap-5 corner-ticks shadow-[0_0_25px_rgba(0,255,65,0.15)]" aria-label="Simulation Telemetry Matrix">
       {/* Top Header Status */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#00FF41]/20 pb-4">
         <div className="flex items-center gap-3">
           {status === 'failed' ? (
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-[#FF0055] shrink-0" />
           ) : status === 'completed' ? (
-            <Check className="w-4 h-4 text-[#D4FF00] shrink-0" />
+            <Check className="w-4 h-4 text-[#00FF41] shrink-0" />
           ) : (
-            <Loader2 className="w-4 h-4 animate-spin text-[#D4FF00] shrink-0" />
+            <Loader2 className="w-4 h-4 animate-spin text-[#00FF41] shrink-0" />
           )}
 
           <div className="flex flex-col font-mono-tech">
@@ -66,11 +66,11 @@ export const SimulationProgress: React.FC<SimulationProgressProps> = ({
                   ? 'EXPERIMENT EXECUTION COMPLETE'
                   : 'AUDIENCE SIMULATION IN PROGRESS'}
               </span>
-              <span className="text-[10px] bg-[#D4FF00]/10 text-[#D4FF00] border border-[#D4FF00]/30 px-1.5 py-0.2 uppercase font-bold">
+              <span className="text-[10px] bg-[#00FF41]/10 text-[#00FF41] border border-[#00FF41]/40 px-1.5 py-0.2 uppercase font-bold shadow-[0_0_8px_rgba(0,255,65,0.2)]">
                 STAGE: {stage}
               </span>
             </div>
-            <span className="text-xs text-[#7E8798] mt-0.5 font-sans">
+            <span className="text-xs text-[#8E9E90] mt-0.5 font-sans">
               {message || 'Deliberating content against autonomous persona panel...'}
             </span>
           </div>
@@ -78,18 +78,18 @@ export const SimulationProgress: React.FC<SimulationProgressProps> = ({
 
         <div className="flex items-baseline gap-4 font-mono-tech text-xs self-end sm:self-center">
           {runId && (
-            <span className="text-[#5B6474]">
+            <span className="text-[#526355]">
               RUN_ID: <strong className="text-white">{runId.slice(0, 8)}</strong>
             </span>
           )}
-          <span className="text-base font-bold text-[#D4FF00]">{progress}%</span>
+          <span className="text-base font-bold text-[#00FF41]">{progress}%</span>
         </div>
       </div>
 
       {/* Precision Hairline Progress Bar */}
       <div className="w-full bg-white/10 h-1.5 overflow-hidden relative">
         <div
-          className="h-full bg-[#D4FF00] transition-all duration-300 ease-out"
+          className="h-full bg-[#00FF41] transition-all duration-300 ease-out shadow-[0_0_10px_#00FF41]"
           style={{ width: `${Math.max(4, progress)}%` }}
         />
       </div>
@@ -106,19 +106,19 @@ export const SimulationProgress: React.FC<SimulationProgressProps> = ({
               className={clsx(
                 'p-3 border transition-all flex flex-col justify-between gap-1.5',
                 isCurrent
-                  ? 'bg-[#D4FF00]/5 border-[#D4FF00]/50 text-white'
+                  ? 'bg-[#00FF41]/10 border-[#00FF41] text-white shadow-[0_0_15px_rgba(0,255,65,0.2)]'
                   : isDone
-                  ? 'bg-white/[0.02] border-white/20 text-white/90'
-                  : 'bg-transparent border-white/5 text-[#4A5364] opacity-50'
+                  ? 'bg-[#050805] border-[#00FF41]/30 text-white/90'
+                  : 'bg-transparent border-white/5 text-[#526355] opacity-50'
               )}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[#7E8798]">[{s.index}]</span>
+                <span className="text-[10px] text-[#8E9E90]">[{s.index}]</span>
                 <span className="text-[10px] font-bold">
                   {isDone ? (
-                    <span className="text-[#D4FF00]">[✓ DONE]</span>
+                    <span className="text-[#00FF41]">[✓ DONE]</span>
                   ) : isCurrent ? (
-                    <span className="text-[#D4FF00] animate-pulse">[● ACTIVE]</span>
+                    <span className="text-[#00FF41] animate-pulse">[● ACTIVE]</span>
                   ) : (
                     <span>[○ PENDING]</span>
                   )}
@@ -126,7 +126,7 @@ export const SimulationProgress: React.FC<SimulationProgressProps> = ({
               </div>
 
               <div className="font-bold text-xs uppercase tracking-tight">{s.label}</div>
-              <p className="text-[10px] text-[#7E8798] font-sans leading-tight mt-0.5">{s.desc}</p>
+              <p className="text-[10px] text-[#8E9E90] font-sans leading-tight mt-0.5">{s.desc}</p>
             </div>
           );
         })}

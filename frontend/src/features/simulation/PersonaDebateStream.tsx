@@ -57,7 +57,6 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
 
       // 2. Fallback dynamic synthesis if simulated_comment wasn't populated
       if (!commentText) {
-        const snippet = caption ? `"${caption.slice(0, 40)}..."` : '';
         if (pName.toLowerCase().includes('gen-z') || pName.toLowerCase().includes('student')) {
           commentText = isMetricsPositive
             ? `bro cooked with this one ngl 🔥 ${strength ? `the part about "${strength.slice(0, 45)}" was spot on` : 'instant save for later'}`
@@ -98,55 +97,35 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
       }
 
       // Add structured synthetic replies for rich conversational debate
-      let replies: SimulatedComment[] = [];
-      const firstPersonaFirstName = (reactions[0]?.persona_name || 'Creator').split(' ')[0];
-
+      const replies: SimulatedComment[] = [];
       if (idx === 0 && reactions.length > 1) {
+        const otherP = reactions[1];
+        const otherName = otherP.persona_name || otherP.name || 'Counter Agent';
         replies.push({
-          id: `reply_${idx}_1`,
-          personaName: reactions[1].persona_name || 'Content Creator',
-          avatarLabel: 'CC',
-          archetype: 'PEER CREATOR',
-          sentiment: 'neutral',
-          commentText: `@${firstPersonaFirstName} Exactly why the 3-second hook structure matters so much on ${platform.toUpperCase()}.`,
-          likes: 24,
-          timeAgo: '4m ago',
-        });
-      } else if (pName.toLowerCase().includes('skeptic') && reactions.length > 2) {
-        replies.push({
-          id: `reply_${idx}_2`,
-          personaName: 'Gen-Z Student',
-          avatarLabel: 'GZ',
-          archetype: 'SPEED FILTER',
-          sentiment: 'positive',
-          commentText: `@${pName.split(' ')[0]} bro chill not everything needs a 40-page whitepaper it's a short form post 😭`,
-          likes: 58,
+          id: `reply-${idx}-1`,
+          personaName: otherName,
+          avatarLabel: otherName.slice(0, 2).toUpperCase(),
+          archetype: 'Counter-Perspective',
+          sentiment: otherP.stop_scroll ? 'positive' : 'critical',
+          commentText: otherP.stop_scroll
+            ? `@${pName} Actually disagreed with you on drop-off. The value proposition is clear right upfront.`
+            : `@${pName} 100% agreed. Needs to get straight to the transformation before the 3s mark.`,
+          likes: Math.floor(Math.random() * 12) + 2,
           timeAgo: '1m ago',
-        });
-      } else if (pName.toLowerCase().includes('creator') && reactions.length > 3) {
-        replies.push({
-          id: `reply_${idx}_3`,
-          personaName: 'Niche Domain Expert',
-          avatarLabel: 'NE',
-          archetype: 'DOMAIN EXPERT',
-          sentiment: 'neutral',
-          commentText: `@${pName.split(' ')[0]} Agree on the pacing, but creators should make sure the educational payoff matches the initial promise.`,
-          likes: 31,
-          timeAgo: '2m ago',
         });
       }
 
       return {
-        id: r.persona_id || `comment_${idx}`,
+        id: `comment-${idx}-${r.persona_id || idx}`,
         personaName: pName,
-        avatarLabel: pName.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase(),
-        archetype: r.archetype || `AGENT ${String(idx + 1).padStart(2, '0')}`,
+        avatarLabel: pName.slice(0, 2).toUpperCase(),
+        archetype: r.persona_role || r.archetype || 'Audience Member',
         sentiment,
         commentText,
-        likes: Math.floor(Math.random() * 80) + 12,
-        timeAgo: `${(idx + 1) * 3}m ago`,
-        isPinned: idx === 2, // Pin one high-signal comment
-        replies,
+        likes: Math.floor((watchProb + shareProb) * 24) + 3,
+        timeAgo: `${(idx + 1) * 2}m ago`,
+        isPinned: idx === 0 && isMetricsPositive,
+        replies: replies.length > 0 ? replies : undefined,
       };
     });
   };
@@ -154,55 +133,56 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
   const comments = buildComments();
 
   const filteredComments = comments.filter((c) => {
+    if (activeFilter === 'all') return true;
     if (activeFilter === 'positive') return c.sentiment === 'positive';
     if (activeFilter === 'critical') return c.sentiment === 'critical';
     return true;
   });
 
-  const toggleLike = (id: string, initialLikes: number) => {
-    const isLiked = !!likedComments[id];
-    setLikedComments((prev) => ({ ...prev, [id]: !isLiked }));
-    setCustomLikes((prev) => ({
-      ...prev,
-      [id]: (prev[id] !== undefined ? prev[id] : initialLikes) + (isLiked ? -1 : 1),
-    }));
+  const toggleLike = (id: string, baseLikes: number) => {
+    setLikedComments((prev) => {
+      const isCurrentlyLiked = !!prev[id];
+      const newStatus = !isCurrentlyLiked;
+      setCustomLikes((likePrev) => ({
+        ...likePrev,
+        [id]: (likePrev[id] ?? baseLikes) + (newStatus ? 1 : -1),
+      }));
+      return { ...prev, [id]: newStatus };
+    });
   };
 
-  const getLikeCount = (id: string, initial: number) => {
-    return customLikes[id] !== undefined ? customLikes[id] : initial;
+  const getLikeCount = (id: string, baseLikes: number) => {
+    return customLikes[id] !== undefined ? customLikes[id] : baseLikes;
   };
 
   return (
-    <section
-      className="w-full cyber-card corner-ticks p-6 sm:p-8 text-left flex flex-col gap-6"
-      aria-label="Simulated Audience Debate & Comment Thread"
-    >
+    <section className="w-full cyber-card corner-ticks p-6 sm:p-8 flex flex-col gap-6 text-left" aria-label="Persona comment debate stream">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest gap-2">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-[#00FF41]/20 pb-3 font-mechanismo text-[11px] text-[#8E9E90] uppercase tracking-widest gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
+          <span className="text-[#00FF41] font-black bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40 shadow-[0_0_6px_rgba(0,255,65,0.2)]">
             04C // AUDIENCE DEBATE STREAM
           </span>
           <span className="text-white/40">::</span>
-          <span className="text-white/80 font-bold">SYNTHETIC SOCIAL FEED & COMMENT CONVERSATION</span>
+          <span className="text-white/90 font-bold">SYNTHETIC SOCIAL FEED & COMMENT CONVERSATION</span>
         </div>
-        <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
-          <MessageSquare className="w-3.5 h-3.5 text-[#D4FF00]" />
+        <div className="flex items-center gap-2 bg-[#000000] px-2 py-1 border border-[#00FF41]/30 shadow-[2px_2px_0px_0px_#000]">
+          <MessageSquare className="w-3.5 h-3.5 text-[#00FF41]" />
           <span className="font-bold text-white">{comments.length} AGENTS DELIBERATING</span>
         </div>
       </div>
 
       {/* Filter Tabs & Platform Badge */}
       <div className="flex flex-wrap items-center justify-between gap-3 font-mechanismo text-xs">
-        <div className="flex items-center gap-1.5 bg-[#07080A] p-1 border-2 border-white/15 shadow-[2px_2px_0px_0px_#000]">
+        <div className="flex items-center gap-1.5 bg-[#000000] p-1 border-2 border-[#00FF41]/30 shadow-[2px_2px_0px_0px_#000]">
           <button
             type="button"
             onClick={() => setActiveFilter('all')}
             className={clsx(
               'px-3 py-1 uppercase text-[11px] font-bold transition-all cursor-pointer font-csmigrate',
               activeFilter === 'all'
-                ? 'bg-[#D4FF00] text-[#060709] shadow-[1px_1px_0px_0px_#000]'
-                : 'text-[#8E98AA] hover:text-white'
+                ? 'bg-[#00FF41] text-[#000000] shadow-[1px_1px_0px_0px_#000]'
+                : 'text-[#8E9E90] hover:text-white'
             )}
           >
             ALL DELIBERATION ({comments.length})
@@ -213,8 +193,8 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
             className={clsx(
               'px-3 py-1 uppercase text-[11px] font-bold transition-all cursor-pointer font-csmigrate',
               activeFilter === 'positive'
-                ? 'bg-[#D4FF00] text-[#060709] shadow-[1px_1px_0px_0px_#000]'
-                : 'text-[#8E98AA] hover:text-white'
+                ? 'bg-[#00FF41] text-[#000000] shadow-[1px_1px_0px_0px_#000]'
+                : 'text-[#8E9E90] hover:text-white'
             )}
           >
             [+] RESONANCE
@@ -225,15 +205,15 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
             className={clsx(
               'px-3 py-1 uppercase text-[11px] font-bold transition-all cursor-pointer font-csmigrate',
               activeFilter === 'critical'
-                ? 'bg-[#EF4444] text-white shadow-[1px_1px_0px_0px_#000]'
-                : 'text-[#8E98AA] hover:text-white'
+                ? 'bg-[#FF0055] text-white shadow-[1px_1px_0px_0px_#000]'
+                : 'text-[#8E9E90] hover:text-white'
             )}
           >
             [-] FRICTION & SKEPTICISM
           </button>
         </div>
 
-        <span className="text-[11px] text-[#8E98AA] uppercase font-bold">
+        <span className="text-[11px] text-[#8E9E90] uppercase font-bold">
           SIMULATED FEED FOR: <strong className="text-[#00F0FF] bg-[#00F0FF]/10 px-1.5 py-0.5 border border-[#00F0FF]/40">{platform.toUpperCase()}</strong>
         </span>
       </div>
@@ -250,14 +230,14 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
               className={clsx(
                 'border-2 p-4 sm:p-5 flex flex-col gap-3 transition-all shadow-[3px_3px_0px_0px_#000]',
                 c.isPinned
-                  ? 'bg-[#0D1017] border-[#D4FF00] shadow-[3px_3px_0px_0px_#D4FF00]'
-                  : 'bg-[#07080A]/90 border-white/15 hover:border-[#D4FF00]/60'
+                  ? 'bg-[#080D09] border-[#00FF41] shadow-[0_0_15px_rgba(0,255,65,0.25)]'
+                  : 'bg-[#000000]/95 border-[#00FF41]/20 hover:border-[#00FF41]/60'
               )}
             >
               {/* Top Row: Avatar, Persona, Tag, Timestamp */}
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#11141B] border-2 border-white/20 flex items-center justify-center font-black font-csmigrate text-xs text-[#D4FF00] shadow-[2px_2px_0px_0px_#000]">
+                  <div className="w-8 h-8 bg-[#050805] border-2 border-[#00FF41]/40 flex items-center justify-center font-black font-csmigrate text-xs text-[#00FF41] shadow-[2px_2px_0px_0px_#000]">
                     {c.avatarLabel}
                   </div>
                   <div className="flex items-center gap-2">
@@ -268,8 +248,8 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
                       className={clsx(
                         'text-[10px] px-2 py-0.5 uppercase font-bold border',
                         c.sentiment === 'positive'
-                          ? 'border-[#D4FF00]/60 text-[#D4FF00] bg-[#D4FF00]/10'
-                          : 'border-[#EF4444]/60 text-[#EF4444] bg-[#EF4444]/10'
+                          ? 'border-[#00FF41]/60 text-[#00FF41] bg-[#00FF41]/10'
+                          : 'border-[#FF0055]/60 text-[#FF0055] bg-[#FF0055]/10'
                       )}
                     >
                       {c.sentiment === 'positive' ? 'RESONANT' : 'FRICTION'}
@@ -277,9 +257,9 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-[10px] text-[#5B6474]">
+                <div className="flex items-center gap-2 text-[10px] text-[#526355]">
                   {c.isPinned && (
-                    <span className="flex items-center gap-1 text-[#D4FF00] font-bold">
+                    <span className="flex items-center gap-1 text-[#00FF41] font-bold">
                       <Pin className="w-3 h-3" /> PINNED HIGH-SIGNAL
                     </span>
                   )}
@@ -293,27 +273,27 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
               </div>
 
               {/* Interaction Bar */}
-              <div className="flex items-center gap-4 pl-10 text-[10px] text-[#7E8798] pt-1">
+              <div className="flex items-center gap-4 pl-10 text-[10px] text-[#8E9E90] pt-1">
                 <button
                   type="button"
                   onClick={() => toggleLike(c.id, c.likes)}
                   className={clsx(
                     'flex items-center gap-1.5 cursor-pointer transition-colors',
-                    isLiked ? 'text-[#D4FF00] font-bold' : 'hover:text-white'
+                    isLiked ? 'text-[#00FF41] font-bold' : 'hover:text-white'
                   )}
                   aria-label="Like comment"
                 >
-                  <Heart className={clsx('w-3 h-3', isLiked && 'fill-[#D4FF00] text-[#D4FF00]')} />
+                  <Heart className={clsx('w-3 h-3', isLiked && 'fill-[#00FF41] text-[#00FF41]')} />
                   <span>{likesCount}</span>
                 </button>
 
                 <span className="text-white/20">·</span>
-                <span className="uppercase text-[9px] text-[#5B6474]">SIMULATED AGENT RESPONSE</span>
+                <span className="uppercase text-[9px] text-[#526355]">SIMULATED AGENT RESPONSE</span>
               </div>
 
               {/* Threaded Nested Replies */}
               {c.replies && c.replies.length > 0 && (
-                <div className="ml-10 mt-2 pl-3 border-l-2 border-white/10 flex flex-col gap-2.5 pt-2">
+                <div className="ml-10 mt-2 pl-3 border-l-2 border-[#00FF41]/20 flex flex-col gap-2.5 pt-2">
                   {c.replies.map((reply) => {
                     const replyLiked = !!likedComments[reply.id];
                     const replyLikes = getLikeCount(reply.id, reply.likes);
@@ -325,29 +305,29 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
                       >
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
-                            <CornerDownRight className="w-3 h-3 text-[#7E8798]" />
+                            <CornerDownRight className="w-3 h-3 text-[#8E9E90]" />
                             <span className="font-bold text-white uppercase text-[11px]">
                               {reply.personaName}
                             </span>
-                            <span className="text-[9px] text-[#5B6474]">[{reply.archetype}]</span>
+                            <span className="text-[9px] text-[#526355]">[{reply.archetype}]</span>
                           </div>
-                          <span className="text-[10px] text-[#5B6474]">{reply.timeAgo}</span>
+                          <span className="text-[10px] text-[#526355]">{reply.timeAgo}</span>
                         </div>
 
-                        <p className="font-sans text-xs text-[#9DA7B8] pl-5 leading-relaxed">
+                        <p className="font-sans text-xs text-[#8E9E90] pl-5 leading-relaxed">
                           {reply.commentText}
                         </p>
 
-                        <div className="flex items-center gap-2 pl-5 pt-1 text-[10px] text-[#7E8798]">
+                        <div className="flex items-center gap-2 pl-5 pt-1 text-[10px] text-[#8E9E90]">
                           <button
                             type="button"
                             onClick={() => toggleLike(reply.id, reply.likes)}
                             className={clsx(
                               'flex items-center gap-1 cursor-pointer transition-colors',
-                              replyLiked ? 'text-[#D4FF00] font-bold' : 'hover:text-white'
+                              replyLiked ? 'text-[#00FF41] font-bold' : 'hover:text-white'
                             )}
                           >
-                            <Heart className={clsx('w-2.5 h-2.5', replyLiked && 'fill-[#D4FF00] text-[#D4FF00]')} />
+                            <Heart className={clsx('w-2.5 h-2.5', replyLiked && 'fill-[#00FF41] text-[#00FF41]')} />
                             <span>{replyLikes}</span>
                           </button>
                         </div>

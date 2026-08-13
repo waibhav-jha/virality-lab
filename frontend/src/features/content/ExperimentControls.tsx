@@ -118,8 +118,8 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
     <div className="flex flex-col gap-6 w-full text-left" aria-label="Experiment Parameter Controls">
       {/* 1. Target Platform Matrix */}
       <div className="flex flex-col gap-2.5">
-        <div className="flex items-center justify-between font-mechanismo text-[11px] text-[#8E98AA] uppercase font-bold">
-          <span className="text-[#D4FF00] bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">[01 // TARGET ALGORITHM ENGINE]</span>
+        <div className="flex items-center justify-between font-mechanismo text-[11px] text-[#8E9E90] uppercase font-bold">
+          <span className="text-[#00FF41] bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40 shadow-[0_0_6px_rgba(0,255,65,0.2)]">[01 // TARGET ALGORITHM ENGINE]</span>
           <span>CALIBRATED WEIGHTS</span>
         </div>
 
@@ -143,11 +143,11 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
                 className={clsx(
                   'flex flex-col items-start p-3 border-2 transition-all text-left cursor-pointer shadow-[2px_2px_0px_0px_#000]',
                   isSelected
-                    ? 'bg-[#D4FF00] text-[#060709] border-[#D4FF00] font-black shadow-[3px_3px_0px_0px_#D4FF00]'
-                    : 'bg-[#07080A] border-white/15 text-[#8E98AA] hover:text-white hover:border-[#D4FF00]/50'
+                    ? 'bg-[#00FF41] text-[#000000] border-[#00FF41] font-black shadow-[0_0_15px_rgba(0,255,65,0.4)]'
+                    : 'bg-[#000000] border-[#00FF41]/20 text-[#8E9E90] hover:text-white hover:border-[#00FF41]/60'
                 )}
               >
-                <span className={clsx('text-[10px] font-mechanismo font-bold tracking-wider', isSelected ? 'text-black/70' : 'text-[#646E82]')}>{p.code}</span>
+                <span className={clsx('text-[10px] font-mechanismo font-bold tracking-wider', isSelected ? 'text-black/70' : 'text-[#526355]')}>{p.code}</span>
                 <span className="text-xs font-csmigrate font-black uppercase tracking-tight">{p.label}</span>
               </button>
             );
@@ -169,25 +169,25 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
 
       {/* 3. Caption / Script Specimen Editor */}
       <div className="flex flex-col gap-2.5">
-        <div className="flex items-center justify-between font-mechanismo text-[11px] text-[#8E98AA] uppercase font-bold">
+        <div className="flex items-center justify-between font-mechanismo text-[11px] text-[#8E9E90] uppercase font-bold">
           <label className="text-[#00F0FF] bg-[#00F0FF]/10 px-1.5 py-0.5 border border-[#00F0FF]/40 flex items-center gap-1.5">
             <span>[02 // HOOK, CAPTION & SCRIPT SPECIMEN]</span>
           </label>
-          <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/10 text-xs">
+          <div className="flex items-center gap-2 bg-[#000000] px-2 py-1 border border-[#00FF41]/20 text-xs">
             <span className="text-white font-bold">{wordCount} WORDS</span>
             <span className="text-white/30">|</span>
-            <span className="text-[#D4FF00] font-bold">{charCount} CHARS</span>
+            <span className="text-[#00FF41] font-bold">{charCount} CHARS</span>
           </div>
         </div>
 
-        <div className="relative border-2 border-white/20 bg-[#060709] focus-within:border-[#D4FF00] transition-colors shadow-[3px_3px_0px_0px_#000]">
+        <div className="relative border-2 border-[#00FF41]/30 bg-[#000000] focus-within:border-[#00FF41] transition-colors shadow-[3px_3px_0px_0px_#000]">
           <textarea
             rows={4}
             value={caption}
             disabled={disabled}
             onChange={(e) => setCaption(e.target.value)}
             placeholder="Type or paste specimen hook, script, caption, or thread text..."
-            className="w-full bg-transparent p-3.5 text-xs sm:text-sm text-[#F4F6F8] font-sans placeholder-[#4A5364] resize-none outline-none leading-relaxed"
+            className="w-full bg-transparent p-3.5 text-xs sm:text-sm text-[#FFFFFF] font-sans placeholder-[#526355] resize-none outline-none leading-relaxed"
           />
         </div>
 
@@ -201,98 +201,96 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
       </div>
 
       {/* 4. Audience Agent Panel */}
-      <div className="flex flex-col gap-2.5">
-        <div className="flex flex-wrap items-center justify-between font-mechanismo text-[11px] text-[#8E98AA] uppercase gap-2 font-bold">
-          <label className="text-[#D4FF00] bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40 flex items-center gap-1.5">
-            <span>[03 // AUDIENCE AGENT ROSTER]</span>
-            <span className="text-white">
-              ({selectedPersonas.length}/{allPersonas.length} ACTIVE)
-            </span>
-          </label>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setIsPersonaModalOpen(true)}
-              className="text-[#00F0FF] hover:underline cursor-pointer uppercase font-black flex items-center gap-1 font-csmigrate text-xs"
-            >
-              <UserPlus className="w-3.5 h-3.5" />
-              + SYNTHESIZE AGENT
-            </button>
-            <span className="text-white/30">|</span>
-            <button
-              type="button"
-              onClick={selectAllPersonas}
-              className="text-white/80 hover:text-[#D4FF00] cursor-pointer uppercase font-black font-csmigrate text-xs"
-            >
-              SELECT ALL
-            </button>
-          </div>
+      <div className="flex flex-wrap items-center justify-between font-mechanismo text-[11px] text-[#8E9E90] uppercase gap-2 font-bold">
+        <label className="text-[#00FF41] bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40 shadow-[0_0_6px_rgba(0,255,65,0.2)] flex items-center gap-1.5">
+          <span>[03 // AUDIENCE AGENT ROSTER]</span>
+          <span className="text-white">
+            ({selectedPersonas.length}/{allPersonas.length} ACTIVE)
+          </span>
+        </label>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsPersonaModalOpen(true)}
+            className="text-[#00F0FF] hover:underline cursor-pointer uppercase font-black flex items-center gap-1 font-csmigrate text-xs"
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            + SYNTHESIZE AGENT
+          </button>
+          <span className="text-white/30">|</span>
+          <button
+            type="button"
+            onClick={selectAllPersonas}
+            className="text-white/80 hover:text-[#00FF41] cursor-pointer uppercase font-black font-csmigrate text-xs"
+          >
+            SELECT ALL
+          </button>
         </div>
+      </div>
 
-        <div className="flex flex-col gap-2 font-mechanismo">
-          {allPersonas.map((persona) => {
-            const isChecked =
-              selectedPersonas.includes(persona.name) || selectedPersonas.includes(persona.id);
-            const isCustom = Boolean('is_custom' in persona && persona.is_custom);
+      <div className="flex flex-col gap-2 font-mechanismo">
+        {allPersonas.map((persona) => {
+          const isChecked =
+            selectedPersonas.includes(persona.name) || selectedPersonas.includes(persona.id);
+          const isCustom = Boolean('is_custom' in persona && persona.is_custom);
 
-            return (
-              <div
-                key={persona.id}
-                onClick={() => !disabled && togglePersona(persona.name)}
-                className={clsx(
-                  'p-3 border-2 transition-all cursor-pointer flex items-center justify-between gap-3 select-none text-xs shadow-[2px_2px_0px_0px_#000]',
-                  isChecked
-                    ? isCustom
-                      ? 'bg-[#0D1017] border-[#00F0FF] text-white shadow-[2px_2px_0px_0px_#00F0FF]'
-                      : 'bg-[#0E1219] border-[#D4FF00] text-white shadow-[2px_2px_0px_0px_#D4FF00]'
-                    : 'bg-[#07080A] border-white/15 text-[#646E82] opacity-60 hover:opacity-100 hover:border-white/30'
-                )}
-              >
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-black uppercase tracking-wider font-csmigrate text-sm">{persona.name}</span>
-                    <span
-                      className={clsx(
-                        'text-[10px] font-mechanismo font-bold px-1.5 py-0.2 border',
-                        isCustom ? 'text-[#00F0FF] border-[#00F0FF]/40 bg-[#00F0FF]/10' : 'text-[#8E98AA] border-white/10'
-                      )}
-                    >
-                      [{persona.archetype}]
-                    </span>
-                  </div>
-                  <span className="text-xs text-[#8E98AA] font-sans truncate mt-0.5">
-                    {persona.desc}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  {isCustom ? (
-                    <button
-                      type="button"
-                      onClick={(e) => handleDeleteCustomPersona(persona.id, persona.name, e)}
-                      className="p-1 text-[#8E98AA] hover:text-[#EF4444] cursor-pointer transition-colors"
-                      title="Remove synthesized agent"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  ) : null}
+          return (
+            <div
+              key={persona.id}
+              onClick={() => !disabled && togglePersona(persona.name)}
+              className={clsx(
+                'p-3 border-2 transition-all cursor-pointer flex items-center justify-between gap-3 select-none text-xs shadow-[2px_2px_0px_0px_#000]',
+                isChecked
+                  ? isCustom
+                    ? 'bg-[#050805] border-[#00F0FF] text-white shadow-[0_0_12px_rgba(0,240,255,0.25)]'
+                    : 'bg-[#050805] border-[#00FF41] text-white shadow-[0_0_12px_rgba(0,255,65,0.25)]'
+                  : 'bg-[#000000] border-[#00FF41]/15 text-[#526355] opacity-60 hover:opacity-100 hover:border-[#00FF41]/40'
+              )}
+            >
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-black uppercase tracking-wider font-csmigrate text-sm">{persona.name}</span>
                   <span
                     className={clsx(
-                      'text-xs font-black font-csmigrate px-2 py-0.5 border',
-                      isChecked
-                        ? isCustom
-                          ? 'bg-[#00F0FF] text-[#060709] border-[#00F0FF]'
-                          : 'bg-[#D4FF00] text-[#060709] border-[#D4FF00]'
-                        : 'bg-transparent text-white/30 border-white/15'
+                      'text-[10px] font-mechanismo font-bold px-1.5 py-0.2 border',
+                      isCustom ? 'text-[#00F0FF] border-[#00F0FF]/40 bg-[#00F0FF]/10' : 'text-[#8E9E90] border-[#00FF41]/20'
                     )}
                   >
-                    {isChecked ? 'ACTIVE' : 'OFF'}
+                    [{persona.archetype}]
                   </span>
                 </div>
+                <span className="text-xs text-[#8E9E90] font-sans truncate mt-0.5">
+                  {persona.desc}
+                </span>
               </div>
-            );
-          })}
-        </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {isCustom ? (
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteCustomPersona(persona.id, persona.name, e)}
+                    className="p-1 text-[#8E9E90] hover:text-[#FF0055] cursor-pointer transition-colors"
+                    title="Remove synthesized agent"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                ) : null}
+                <span
+                  className={clsx(
+                    'text-xs font-black font-csmigrate px-2 py-0.5 border',
+                    isChecked
+                      ? isCustom
+                        ? 'bg-[#00F0FF] text-[#000000] border-[#00F0FF]'
+                        : 'bg-[#00FF41] text-[#000000] border-[#00FF41]'
+                      : 'bg-transparent text-white/30 border-white/15'
+                  )}
+                >
+                  {isChecked ? 'ACTIVE' : 'OFF'}
+                </span>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Feature E: Custom Persona Synthesis Modal */}
@@ -304,7 +302,7 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
 
       {/* 5. Optimization Target Matrix */}
       <div className="flex flex-col gap-2.5">
-        <div className="flex items-center justify-between font-mechanismo text-[11px] text-[#8E98AA] uppercase font-bold">
+        <div className="flex items-center justify-between font-mechanismo text-[11px] text-[#8E9E90] uppercase font-bold">
           <label className="text-white/90">
             <span>[04 // OPTIMIZATION & VARIANT SEARCH]</span>
           </label>
@@ -314,7 +312,7 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
               type="checkbox"
               checked={optimizationEnabled}
               onChange={(e) => setOptimizationEnabled(e.target.checked)}
-              className="w-4 h-4 rounded-none border-2 border-white/30 text-[#D4FF00] bg-black accent-[#D4FF00] cursor-pointer"
+              className="w-4 h-4 rounded-none border-2 border-[#00FF41]/40 text-[#00FF41] bg-black accent-[#00FF41] cursor-pointer"
             />
           </label>
         </div>
@@ -331,17 +329,17 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
                 className={clsx(
                   'flex flex-col text-left p-3 border-2 transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] disabled:opacity-30 disabled:cursor-not-allowed',
                   isSelected && optimizationEnabled
-                    ? 'bg-[#0D1017] border-[#D4FF00] text-white shadow-[2px_2px_0px_0px_#D4FF00]'
-                    : 'bg-[#07080A] border-white/15 text-[#8E98AA] hover:border-white/30 hover:text-white'
+                    ? 'bg-[#050805] border-[#00FF41] text-white shadow-[0_0_12px_rgba(0,255,65,0.25)]'
+                    : 'bg-[#000000] border-[#00FF41]/20 text-[#8E9E90] hover:border-[#00FF41]/50 hover:text-white'
                 )}
               >
                 <div className="flex items-center justify-between w-full">
                   <span className="text-xs font-black tracking-wider font-csmigrate">{obj.label}</span>
                   {isSelected && optimizationEnabled && (
-                    <span className="w-2 h-2 bg-[#D4FF00] shadow-[0_0_6px_#D4FF00]" />
+                    <span className="w-2 h-2 bg-[#00FF41] shadow-[0_0_6px_#00FF41]" />
                   )}
                 </div>
-                <span className="text-xs text-[#8E98AA] mt-0.5 font-sans leading-tight">{obj.desc}</span>
+                <span className="text-xs text-[#8E9E90] mt-0.5 font-sans leading-tight">{obj.desc}</span>
               </button>
             );
           })}

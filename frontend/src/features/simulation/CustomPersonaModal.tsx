@@ -105,16 +105,16 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="relative w-full max-w-xl bg-[#0E1013] border border-[#D4FF00]/40 p-6 sm:p-8 flex flex-col gap-6 text-left shadow-[0_0_50px_rgba(212,255,0,0.1)] corner-ticks font-mono-tech">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div className="relative w-full max-w-xl bg-[#040604] border-2 border-[#00FF41]/40 p-6 sm:p-8 flex flex-col gap-6 text-left shadow-[0_0_50px_rgba(0,255,65,0.2)] corner-ticks font-mono-tech">
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="flex items-center justify-between border-b border-[#00FF41]/20 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#D4FF00]/20 border border-[#D4FF00]/60 flex items-center justify-center">
-              <Bot className="w-4 h-4 text-[#D4FF00]" />
+            <div className="w-8 h-8 bg-[#00FF41]/20 border border-[#00FF41]/60 flex items-center justify-center">
+              <Bot className="w-4 h-4 text-[#00FF41]" />
             </div>
             <div>
-              <span className="text-[10px] text-[#7E8798] uppercase tracking-wider block">
+              <span className="text-[10px] text-[#8E9E90] uppercase tracking-wider block">
                 03B // AGENT LAB SYNTHESIS
               </span>
               <h2 className="text-sm font-bold text-white uppercase tracking-tight">
@@ -126,7 +126,7 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-[#7E8798] hover:text-white transition-colors cursor-pointer p-1"
+            className="text-[#8E9E90] hover:text-white transition-colors cursor-pointer p-1"
           >
             <X className="w-5 h-5" />
           </button>
@@ -134,17 +134,17 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
 
         {/* Quick Presets */}
         <div className="flex flex-col gap-2">
-          <span className="text-[10px] text-[#7E8798] uppercase">QUICK PRESET ARCHETYPES:</span>
+          <span className="text-[10px] text-[#8E9E90] uppercase font-bold">QUICK PRESET ARCHETYPES:</span>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {PRESETS.map((p) => (
               <button
                 key={p.name}
                 type="button"
                 onClick={() => applyPreset(p)}
-                className="px-2.5 py-2 bg-white/[0.02] border border-white/10 hover:border-[#D4FF00]/50 hover:bg-[#D4FF00]/10 text-left transition-all cursor-pointer flex flex-col justify-between gap-1"
+                className="px-2.5 py-2 bg-[#000000] border border-[#00FF41]/20 hover:border-[#00FF41] hover:bg-[#00FF41]/10 text-left transition-all cursor-pointer flex flex-col justify-between gap-1 shadow-[2px_2px_0px_0px_#000]"
               >
                 <span className="text-xs font-bold text-white truncate">{p.name}</span>
-                <span className="text-[9px] text-[#D4FF00] uppercase truncate">{p.archetype}</span>
+                <span className="text-[9px] text-[#00FF41] uppercase truncate">{p.archetype}</span>
               </button>
             ))}
           </div>
@@ -155,7 +155,7 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
           {/* Agent Name & Archetype */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] text-[#7E8798] uppercase block mb-1">
+              <label className="text-[10px] text-[#8E9E90] uppercase block mb-1">
                 AGENT NAME / IDENTITY:
               </label>
               <input
@@ -163,12 +163,12 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Venture Capitalist"
-                className="w-full bg-black/60 border border-white/15 p-2.5 text-xs text-white focus:border-[#D4FF00] focus:outline-none"
+                className="w-full bg-[#000000] border border-[#00FF41]/30 p-2.5 text-xs text-white focus:border-[#00FF41] focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="text-[10px] text-[#7E8798] uppercase block mb-1">
+              <label className="text-[10px] text-[#8E9E90] uppercase block mb-1">
                 ARCHETYPE BADGE:
               </label>
               <input
@@ -176,14 +176,14 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
                 value={archetype}
                 onChange={(e) => setArchetype(e.target.value)}
                 placeholder="e.g. MOAT INVESTOR"
-                className="w-full bg-black/60 border border-white/15 p-2.5 text-xs text-white focus:border-[#D4FF00] focus:outline-none"
+                className="w-full bg-[#000000] border border-[#00FF41]/30 p-2.5 text-xs text-white focus:border-[#00FF41] focus:outline-none"
               />
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label className="text-[10px] text-[#7E8798] uppercase block mb-1">
+            <label className="text-[10px] text-[#8E9E90] uppercase block mb-1">
               BEHAVIORAL BIO & CRITIQUE FOCUS:
             </label>
             <textarea
@@ -191,16 +191,16 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               placeholder="What does this agent look for in the first 3 seconds?"
-              className="w-full bg-black/60 border border-white/15 p-2 text-xs text-white font-sans focus:border-[#D4FF00] focus:outline-none resize-none leading-relaxed"
+              className="w-full bg-[#000000] border border-[#00FF41]/30 p-2 text-xs text-white font-sans focus:border-[#00FF41] focus:outline-none resize-none leading-relaxed"
             />
           </div>
 
           {/* Sliders: Attention Span & Skepticism */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-black/40 p-3 border border-white/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#000000] p-3 border border-[#00FF41]/20">
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-[#7E8798] flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-[#D4FF00]" /> ATTENTION SPAN
+                <span className="text-[#8E9E90] flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-[#00FF41]" /> ATTENTION SPAN
                 </span>
                 <span className="text-white font-bold">{attentionSpan}s</span>
               </div>
@@ -211,17 +211,17 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
                 step="0.1"
                 value={attentionSpan}
                 onChange={(e) => setAttentionSpan(parseFloat(e.target.value))}
-                className="w-full accent-[#D4FF00] cursor-pointer"
+                className="w-full accent-[#00FF41] cursor-pointer"
               />
-              <span className="text-[9px] text-[#5B6474] block mt-0.5">
+              <span className="text-[9px] text-[#526355] block mt-0.5">
                 {attentionSpan <= 1.0 ? 'Sub-second scroll past' : 'Willing to watch long build'}
               </span>
             </div>
 
             <div>
               <div className="flex justify-between text-xs mb-1">
-                <span className="text-[#7E8798] flex items-center gap-1">
-                  <ShieldAlert className="w-3 h-3 text-[#D4FF00]" /> SKEPTICISM BIAS
+                <span className="text-[#8E9E90] flex items-center gap-1">
+                  <ShieldAlert className="w-3 h-3 text-[#00FF41]" /> SKEPTICISM BIAS
                 </span>
                 <span className="text-white font-bold">{skepticism}%</span>
               </div>
@@ -232,9 +232,9 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
                 step="5"
                 value={skepticism}
                 onChange={(e) => setSkepticism(parseInt(e.target.value, 10))}
-                className="w-full accent-[#D4FF00] cursor-pointer"
+                className="w-full accent-[#00FF41] cursor-pointer"
               />
-              <span className="text-[9px] text-[#5B6474] block mt-0.5">
+              <span className="text-[9px] text-[#526355] block mt-0.5">
                 {skepticism >= 80 ? 'Fact-checks all claims' : 'Easily captivated by hooks'}
               </span>
             </div>
@@ -242,7 +242,7 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
 
           {/* Comment Style / Persona Voice */}
           <div>
-            <label className="text-[10px] text-[#7E8798] uppercase block mb-1">
+            <label className="text-[10px] text-[#8E9E90] uppercase block mb-1">
               VOICE & COMMENT DELIBERATION STYLE:
             </label>
             <input
@@ -250,13 +250,13 @@ export const CustomPersonaModal: React.FC<CustomPersonaModalProps> = ({
               value={commentStyle}
               onChange={(e) => setCommentStyle(e.target.value)}
               placeholder="e.g. Evaluates ROI and unit economics"
-              className="w-full bg-black/60 border border-white/15 p-2.5 text-xs text-white focus:border-[#D4FF00] focus:outline-none"
+              className="w-full bg-[#000000] border border-[#00FF41]/30 p-2.5 text-xs text-white focus:border-[#00FF41] focus:outline-none"
             />
           </div>
         </div>
 
         {/* Modal Actions */}
-        <div className="flex items-center justify-end gap-3 pt-2 border-t border-white/10">
+        <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#00FF41]/20">
           <Button variant="outline" size="sm" onClick={onClose}>
             CANCEL
           </Button>

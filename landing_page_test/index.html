@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIRALITY LAB // BREAK THE FEED // AI AUDIENCE SIMULATION</title>
+  <meta name="description" content="Virality Lab — AI Content Intelligence & Multi-Agent Audience Simulation. Break the algorithm before you post.">
+  
+  <!-- Google Fonts for Monospace Cyberpunk Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:wght@300;400;700;800&family=Rubik+Glitch&family=Syne:wght@800;900&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- CRT Screen Glitch & Scanline Overlay -->
+  <div class="crt-overlay" aria-hidden="true"></div>
+  <div class="noise-overlay" aria-hidden="true"></div>
+  
+  <!-- Floating Background Particle Canvas -->
+  <canvas id="bgParticleCanvas" class="bg-particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- Interactive Cursor HUD -->
+  <div class="cursor-crosshair" id="cursor">
+    <div class="cursor-dot"></div>
+    <div class="cursor-hud" id="cursorHud">X:0000 Y:0000</div>
+  </div>
+
+  <!-- Scroll Progress HUD -->
+  <div class="scroll-hud-tracker" id="scrollHud">
+    <span class="scroll-bar"><span class="scroll-fill" id="scrollFill"></span></span>
+    <span class="scroll-val" id="scrollVal">DEPTH: 00%</span>
+  </div>
+
+  <!-- Audio Toggle Floating Controller -->
+  <button id="audioToggle" class="hud-audio-btn" title="Toggle Terminal Audio Feedback">
+    <span class="audio-pulse"></span>
+    <span id="audioLabel">AUDIO: [OFF]</span>
+  </button>
+
+  <div class="poster-container">
+    <!-- TOP HEADER -->
+    <header class="poster-header reveal-item">
+      <div class="header-left">
+        <div class="tag-title glitch-scramble" data-text="// VIRALITY_LAB //">// VIRALITY_LAB //</div>
+        <div class="tag-sub">AI CONTENT INTELLIGENCE</div>
+        <div class="tag-sub">MULTI-AGENT AUDIENCE ENGINE</div>
+      </div>
+
+      <nav class="header-nav">
+        <a href="#personas" class="nav-link">[PERSONAS]</a>
+        <a href="#engines" class="nav-link">[ENGINES]</a>
+        <a href="#telemetry" class="nav-link">[TELEMETRY]</a>
+        <!-- Directs straight to the active Virality Lab app -->
+        <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer" class="nav-link btn-terminal main-app-link">
+          [⚡ LAUNCH STUDIO]
+        </a>
+      </nav>
+
+      <div class="header-sys">
+        <div class="corner-brackets">
+          <div class="sys-diodes">
+            <span class="diode green"></span>
+            <span class="diode green pulse"></span>
+          </div>
+          <span class="sys-text">SYS_01 :: ONLINE</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-left reveal-item">
+        <div class="distressed-headline-wrapper">
+          <h1 class="distressed-headline glitch-scramble" data-text="BREAK THE FEED.">
+            BREAK<br>
+            THE<br>
+            FEED.
+          </h1>
+        </div>
+
+        <div class="hero-subline-box">
+          <div class="highlight-badge">SIMULATE WITHOUT GUESSWORK.</div>
+          <div class="sub-motto">PREDICT WITHOUT LIMITS.</div>
+          <div class="separator-line">_</div>
+        </div>
+
+        <div class="hero-actions">
+          <!-- Primary CTA: Redirects to actual Virality Lab Studio -->
+          <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer" class="cta-terminal-btn primary-pulse">
+            <span class="btn-prefix">&gt;</span> LAUNCH VIRALITY LAB STUDIO_
+          </a>
+          <!-- In-Page Quick Audit Modal -->
+          <button class="cta-terminal-btn secondary" id="heroAuditBtn">
+            <span class="btn-prefix">&gt;</span> QUICK SPECIMEN AUDIT_
+          </button>
+          <a href="#personas" class="cta-terminal-btn secondary">
+            <span class="btn-prefix">&gt;</span> 5-AGENT AUDIENCE COUNCIL_
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-right reveal-item delay-2">
+        <div class="hero-avatar-frame">
+          <div class="frame-corner top-left">┌</div>
+          <div class="frame-corner top-right">┐</div>
+          <div class="frame-corner bottom-left">└</div>
+          <div class="frame-corner bottom-right">┘</div>
+          
+          <div class="avatar-image-container">
+            <img src="assets/hero_agent.png" alt="Virality Lab Neural Persona Agent" class="avatar-glitch-img" id="heroAgentImg">
+            <div class="glitch-scanlines"></div>
+            <div class="glitch-slice-bar"></div>
+            <canvas id="agentWaveCanvas" class="agent-wave-canvas"></canvas>
+          </div>
+
+          <div class="hero-telemetry-pill">
+            <div class="pill-header glitch-scramble" data-text="INTERFACE IS THE MESSAGE.">INTERFACE IS THE MESSAGE.</div>
+            <div class="pill-footer">ATTENTION IS THE CURRENCY. — 2026_</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         NEW SECTION: 5 PERSONA 3D FLIP CARDS (SURVEILLANCE MATRIX DOSSIERS)
+         ===================================================================== -->
+    <div class="section-tag-bar reveal-item" id="personas">
+      <span class="section-tag glitch-scramble" data-text="_05_AUTONOMOUS_PERSONA_COUNCIL">_05_AUTONOMOUS_PERSONA_COUNCIL</span>
+      <span class="section-tag-line"></span>
+      <span class="section-tag-meta">[FLIP CARDS TO DECRYPT DOSSIER ↻]</span>
+    </div>
+
+    <section class="personas-grid">
+      <!-- Persona 1: Casual Scroller -->
+      <div class="persona-flip-card reveal-card delay-1" data-persona="casual_scroller">
+        <div class="card-inner">
+          <!-- Card Front -->
+          <div class="card-face card-front">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="persona-portrait-box">
+              <img src="assets/persona_01.png" alt="Casual Scroller" class="persona-dither-img">
+              <div class="target-reticle red-reticle"></div>
+              <div class="scan-grid-overlay"></div>
+              <div class="biometric-tag">TARGET // 01 [LOCKED]</div>
+            </div>
+
+            <div class="persona-front-info">
+              <div class="persona-id-badge">AGENT_01 // GEN-Z</div>
+              <div class="persona-front-name">CASUAL SCROLLER</div>
+              <div class="persona-mini-stats">
+                <span class="p-stat">ATTN: <strong>1.2s</strong></span>
+                <span class="p-stat">SKEP: <strong>45%</strong></span>
+              </div>
+              <div class="flip-prompt">↻ CLICK / HOVER TO DECRYPT</div>
+            </div>
+          </div>
+
+          <!-- Card Back (Dossier) -->
+          <div class="card-face card-back">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="dossier-header">
+              <span class="dossier-tag">DECLASSIFIED // AGENT_01</span>
+              <span class="dossier-status">● CRITICAL</span>
+            </div>
+
+            <div class="dossier-title">CASUAL SCROLLER</div>
+            <div class="dossier-archetype">DOOMSCROLLING FEED HUNTER</div>
+
+            <div class="dossier-traits">
+              <div class="d-trait"><span class="dt-k">BIAS:</span> <span class="dt-v">Instant visual hooks</span></div>
+              <div class="d-trait"><span class="dt-k">DROP:</span> <span class="dt-v text-red">Weak first 3 words</span></div>
+              <div class="d-trait"><span class="dt-k">ALGO:</span> <span class="dt-v text-green">FYP Loop Retention</span></div>
+            </div>
+
+            <blockquote class="dossier-quote">
+              "If you don't hook me in the first sentence, I've already swiped to the next 3 clips."
+            </blockquote>
+
+            <button class="test-persona-btn" data-preset="Stop scrolling if you are building in AI. Here is what 99% get wrong:">
+              ⚡ SIMULATE ON AGENT 01
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Persona 2: Skeptic Analyst -->
+      <div class="persona-flip-card reveal-card delay-2" data-persona="skeptic_analyst">
+        <div class="card-inner">
+          <!-- Card Front -->
+          <div class="card-face card-front">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="persona-portrait-box">
+              <img src="assets/persona_02.png" alt="Skeptic Analyst" class="persona-dither-img">
+              <div class="target-reticle cyan-reticle"></div>
+              <div class="scan-grid-overlay"></div>
+              <div class="biometric-tag">TARGET // 02 [VERIFYING]</div>
+            </div>
+
+            <div class="persona-front-info">
+              <div class="persona-id-badge">AGENT_02 // AUDITOR</div>
+              <div class="persona-front-name">SKEPTIC ANALYST</div>
+              <div class="persona-mini-stats">
+                <span class="p-stat">ATTN: <strong>2.8s</strong></span>
+                <span class="p-stat">SKEP: <strong>90%</strong></span>
+              </div>
+              <div class="flip-prompt">↻ CLICK / HOVER TO DECRYPT</div>
+            </div>
+          </div>
+
+          <!-- Card Back (Dossier) -->
+          <div class="card-face card-back">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="dossier-header">
+              <span class="dossier-tag">DECLASSIFIED // AGENT_02</span>
+              <span class="dossier-status">● VERIFIED</span>
+            </div>
+
+            <div class="dossier-title">SKEPTIC ANALYST</div>
+            <div class="dossier-archetype">LOGIC & RIGOR AUDITOR</div>
+
+            <div class="dossier-traits">
+              <div class="d-trait"><span class="dt-k">BIAS:</span> <span class="dt-v">Methodology & receipts</span></div>
+              <div class="d-trait"><span class="dt-k">DROP:</span> <span class="dt-v text-red">Clickbait exaggeration</span></div>
+              <div class="d-trait"><span class="dt-k">ALGO:</span> <span class="dt-v text-green">Debate Reply Ratio</span></div>
+            </div>
+
+            <blockquote class="dossier-quote">
+              "Show me the reproducible data, not just emotional buzzwords and fake benchmarks."
+            </blockquote>
+
+            <button class="test-persona-btn" data-preset="Why the latest benchmark numbers are technically misleading [Debate Thread 🧵]">
+              ⚡ SIMULATE ON AGENT 02
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Persona 3: Trend Hunter -->
+      <div class="persona-flip-card reveal-card delay-3" data-persona="trend_hunter">
+        <div class="card-inner">
+          <!-- Card Front -->
+          <div class="card-face card-front">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="persona-portrait-box">
+              <img src="assets/persona_03.png" alt="Trend Hunter" class="persona-dither-img">
+              <div class="target-reticle yellow-reticle"></div>
+              <div class="scan-grid-overlay"></div>
+              <div class="biometric-tag">TARGET // 03 [CATALYZING]</div>
+            </div>
+
+            <div class="persona-front-info">
+              <div class="persona-id-badge">AGENT_03 // CREATOR</div>
+              <div class="persona-front-name">TREND HUNTER</div>
+              <div class="persona-mini-stats">
+                <span class="p-stat">ATTN: <strong>1.8s</strong></span>
+                <span class="p-stat">SKEP: <strong>35%</strong></span>
+              </div>
+              <div class="flip-prompt">↻ CLICK / HOVER TO DECRYPT</div>
+            </div>
+          </div>
+
+          <!-- Card Back (Dossier) -->
+          <div class="card-face card-back">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="dossier-header">
+              <span class="dossier-tag">DECLASSIFIED // AGENT_03</span>
+              <span class="dossier-status">● VIRAL</span>
+            </div>
+
+            <div class="dossier-title">TREND HUNTER</div>
+            <div class="dossier-archetype">MEME & FORMAT RADAR</div>
+
+            <div class="dossier-traits">
+              <div class="d-trait"><span class="dt-k">BIAS:</span> <span class="dt-v">Pacing & shareability</span></div>
+              <div class="d-trait"><span class="dt-k">DROP:</span> <span class="dt-v text-red">Outdated templates</span></div>
+              <div class="d-trait"><span class="dt-k">ALGO:</span> <span class="dt-v text-green">Peer Share Multiplier</span></div>
+            </div>
+
+            <blockquote class="dossier-quote">
+              "The hook structure is electric. I'm forwarding this directly to my creator group chats."
+            </blockquote>
+
+            <button class="test-persona-btn" data-preset="The exact viral formula that drove 2.4M views in 48 hours (Save for later 📌)">
+              ⚡ SIMULATE ON AGENT 03
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Persona 4: Fast Forwarder -->
+      <div class="persona-flip-card reveal-card delay-4" data-persona="fast_forwarder">
+        <div class="card-inner">
+          <!-- Card Front -->
+          <div class="card-face card-front">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="persona-portrait-box">
+              <img src="assets/persona_04.png" alt="Fast Forwarder" class="persona-dither-img">
+              <div class="target-reticle red-reticle"></div>
+              <div class="scan-grid-overlay"></div>
+              <div class="biometric-tag">TARGET // 04 [SPEED_2X]</div>
+            </div>
+
+            <div class="persona-front-info">
+              <div class="persona-id-badge">AGENT_04 // EXECUTIVE</div>
+              <div class="persona-front-name">FAST FORWARDER</div>
+              <div class="persona-mini-stats">
+                <span class="p-stat">ATTN: <strong>1.0s</strong></span>
+                <span class="p-stat">SKEP: <strong>75%</strong></span>
+              </div>
+              <div class="flip-prompt">↻ CLICK / HOVER TO DECRYPT</div>
+            </div>
+          </div>
+
+          <!-- Card Back (Dossier) -->
+          <div class="card-face card-back">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="dossier-header">
+              <span class="dossier-tag">DECLASSIFIED // AGENT_04</span>
+              <span class="dossier-status">● HIGH_SPEED</span>
+            </div>
+
+            <div class="dossier-title">FAST FORWARDER</div>
+            <div class="dossier-archetype">SIGNAL SCRUBBER</div>
+
+            <div class="dossier-traits">
+              <div class="d-trait"><span class="dt-k">BIAS:</span> <span class="dt-v">Bullet points & ROI</span></div>
+              <div class="d-trait"><span class="dt-k">DROP:</span> <span class="dt-v text-red">Lengthy intros & fluff</span></div>
+              <div class="d-trait"><span class="dt-k">ALGO:</span> <span class="dt-v text-green">Completion Velocity</span></div>
+            </div>
+
+            <blockquote class="dossier-quote">
+              "Skip the greeting and give me the 3 actionable takeaways immediately."
+            </blockquote>
+
+            <button class="test-persona-btn" data-preset="3 AI tools that replaced 3 hours of daily work (bullet summary inside)">
+              ⚡ SIMULATE ON AGENT 04
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Persona 5: Niche Expert -->
+      <div class="persona-flip-card reveal-card delay-5" data-persona="niche_expert">
+        <div class="card-inner">
+          <!-- Card Front -->
+          <div class="card-face card-front">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="persona-portrait-box">
+              <img src="assets/persona_05.png" alt="Niche Expert" class="persona-dither-img">
+              <div class="target-reticle green-reticle"></div>
+              <div class="scan-grid-overlay"></div>
+              <div class="biometric-tag">TARGET // 05 [ARCHIVING]</div>
+            </div>
+
+            <div class="persona-front-info">
+              <div class="persona-id-badge">AGENT_05 // AUTHORITY</div>
+              <div class="persona-front-name">NICHE EXPERT</div>
+              <div class="persona-mini-stats">
+                <span class="p-stat">ATTN: <strong>3.5s</strong></span>
+                <span class="p-stat">SKEP: <strong>85%</strong></span>
+              </div>
+              <div class="flip-prompt">↻ CLICK / HOVER TO DECRYPT</div>
+            </div>
+          </div>
+
+          <!-- Card Back (Dossier) -->
+          <div class="card-face card-back">
+            <div class="frame-corner top-left">┌</div>
+            <div class="frame-corner top-right">┐</div>
+            <div class="frame-corner bottom-left">└</div>
+            <div class="frame-corner bottom-right">┘</div>
+
+            <div class="dossier-header">
+              <span class="dossier-tag">DECLASSIFIED // AGENT_05</span>
+              <span class="dossier-status">● AUTHORITY</span>
+            </div>
+
+            <div class="dossier-title">NICHE EXPERT</div>
+            <div class="dossier-archetype">DOMAIN ARCHIVIST</div>
+
+            <div class="dossier-traits">
+              <div class="d-trait"><span class="dt-k">BIAS:</span> <span class="dt-v">Deep domain insight</span></div>
+              <div class="d-trait"><span class="dt-k">DROP:</span> <span class="dt-v text-red">Superficial listicles</span></div>
+              <div class="d-trait"><span class="dt-k">ALGO:</span> <span class="dt-v text-green">Save & Bookmark Signal</span></div>
+            </div>
+
+            <blockquote class="dossier-quote">
+              "This is high-signal engineering documentation. Adding to my permanent bookmark archive."
+            </blockquote>
+
+            <button class="test-persona-btn" data-preset="Deep dive: How multi-agent simulation architectures model human algorithmic contagion:">
+              ⚡ SIMULATE ON AGENT 05
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION DIVIDER -->
+    <div class="section-tag-bar reveal-item" id="engines">
+      <span class="section-tag glitch-scramble" data-text="_CORE INTELLIGENCE ENGINES">_CORE INTELLIGENCE ENGINES</span>
+      <span class="section-tag-line"></span>
+    </div>
+
+    <!-- 4-CARD SELECTED ENGINES GRID -->
+    <section class="engines-grid">
+      <!-- Card 1 -->
+      <div class="engine-card reveal-card delay-1" data-engine="doomscroll">
+        <div class="card-media-box">
+          <div class="frame-corner top-left">┌</div>
+          <div class="frame-corner top-right">┐</div>
+          <div class="frame-corner bottom-left">└</div>
+          <div class="frame-corner bottom-right">┘</div>
+          <img src="assets/card_01.png" alt="Doomscroller Hook Radar" class="card-img">
+          <div class="card-overlay-badge badge-white">DISRUPT</div>
+        </div>
+        <div class="card-info">
+          <div class="card-title glitch-scramble" data-text="DOOMSCROLLER RADAR">DOOMSCROLLER RADAR</div>
+          <div class="card-meta">ATTENTION SPAN: 1.2S // 2026</div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="engine-card reveal-card delay-2" data-engine="council">
+        <div class="card-media-box">
+          <div class="frame-corner top-left">┌</div>
+          <div class="frame-corner top-right">┐</div>
+          <div class="frame-corner bottom-left">└</div>
+          <div class="frame-corner bottom-right">┘</div>
+          <img src="assets/card_02.png" alt="Neural Persona Council" class="card-img">
+          <div class="card-overlay-badge badge-green">NEURAL</div>
+        </div>
+        <div class="card-info">
+          <div class="card-title glitch-scramble" data-text="PERSONA DEBATE STREAM">PERSONA DEBATE STREAM</div>
+          <div class="card-meta">SYNTHETIC CONSENSUS // COGNITIVE LAB</div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="engine-card reveal-card delay-3" data-engine="matrix">
+        <div class="card-media-box">
+          <div class="frame-corner top-left">┌</div>
+          <div class="frame-corner top-right">┐</div>
+          <div class="frame-corner bottom-left">└</div>
+          <div class="frame-corner bottom-right">┘</div>
+          <img src="assets/card_03.png" alt="5-Platform Matrix" class="card-img">
+          <div class="card-overlay-badge badge-white">MATRIX</div>
+        </div>
+        <div class="card-info">
+          <div class="card-title glitch-scramble" data-text="5-CHANNEL ALGORITHM AUDIT">5-CHANNEL ALGORITHM AUDIT</div>
+          <div class="card-meta">TIKTOK · REELS · SHORTS · X · LINKEDIN</div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="engine-card reveal-card delay-4" data-engine="mutator">
+        <div class="card-media-box">
+          <div class="frame-corner top-left">┌</div>
+          <div class="frame-corner top-right">┐</div>
+          <div class="frame-corner bottom-left">└</div>
+          <div class="frame-corner bottom-right">┘</div>
+          <img src="assets/card_04.png" alt="Genetic Hook Mutator" class="card-img">
+          <div class="card-overlay-badge badge-green">GROWTH</div>
+        </div>
+        <div class="card-info">
+          <div class="card-title glitch-scramble" data-text="GENETIC HOOK MUTATOR">GENETIC HOOK MUTATOR</div>
+          <div class="card-meta">CONTAGION OPTIMIZER // +28% LIFT</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3-COLUMN BOTTOM HUD & DRIPPING VIRAL EMBLEM -->
+    <section class="spec-grid" id="telemetry">
+      <!-- Left Column: Specs -->
+      <div class="spec-col-info reveal-item delay-1">
+        <div class="col-header glitch-scramble" data-text="// ENGINE_SPECS">// ENGINE_SPECS</div>
+        <ul class="spec-list">
+          <li class="reveal-line delay-1">&gt; COGNITIVE HEURISTICS: 14 VECTORS</li>
+          <li class="reveal-line delay-2">&gt; REAL-TIME AGENTS: 5 PERSONAS</li>
+          <li class="reveal-line delay-3">&gt; MULTI-CHANNEL ADAPTATION:</li>
+          <li class="sub-item reveal-line delay-4">_TIKTOK 2.8X FYP VELOCITY</li>
+          <li class="sub-item reveal-line delay-5">_INSTAGRAM REELS EXPLORE</li>
+          <li class="sub-item reveal-line delay-6">_YOUTUBE SHORTS 70%+ APV</li>
+          <li class="sub-item reveal-line delay-7">_X / TWITTER DEBATE RATIO</li>
+          <li class="sub-item reveal-line delay-8">_LINKEDIN 3-BULLET ROI</li>
+        </ul>
+
+        <div class="globe-container">
+          <canvas id="wireframeGlobeCanvas" class="wireframe-globe"></canvas>
+          <div class="globe-caption">
+            PREDICTING SOCIAL CONTAGION BEFORE YOU POST.
+            <div class="globe-sub">_</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Column: Anthem & Dripping Smiley -->
+      <div class="spec-col-motto reveal-item delay-2">
+        <div class="motto-box-frame">
+          <div class="frame-corner top-left">┌</div>
+          <div class="frame-corner top-right">┐</div>
+          <div class="frame-corner bottom-left">└</div>
+          <div class="frame-corner bottom-right">┘</div>
+
+          <div class="motto-text">
+            I DON'T GUESS<br>
+            ALGORITHMS.<br><br>
+            I ENGINEER<br>
+            <span class="glitch-word" data-word="DISRUPTION.">DISRUPTION.</span>
+          </div>
+
+          <div class="dripping-smiley-wrapper" id="drippingSmiley" title="Click to trigger viral glitch burst">
+            <svg class="dripping-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <g class="smiley-group" filter="url(#neon-glow)">
+                <path d="M 20 45 A 30 30 0 1 1 80 45" fill="none" stroke="#00FF41" stroke-width="4.5" stroke-linecap="round"/>
+                <path d="M 20 45 C 20 70, 30 85, 38 85 C 40 85, 41 108, 42 112 C 43 116, 46 116, 47 110 C 49 104, 50 85, 58 85 C 64 85, 66 102, 68 105 C 70 108, 72 108, 73 102 C 75 96, 78 70, 80 45" fill="none" stroke="#00FF41" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round"/>
+                
+                <line x1="33" y1="32" x2="43" y2="42" stroke="#00FF41" stroke-width="4" stroke-linecap="round"/>
+                <line x1="43" y1="32" x2="33" y2="42" stroke="#00FF41" stroke-width="4" stroke-linecap="round"/>
+                
+                <line x1="57" y1="32" x2="67" y2="42" stroke="#00FF41" stroke-width="4" stroke-linecap="round"/>
+                <line x1="67" y1="32" x2="57" y2="42" stroke="#00FF41" stroke-width="4" stroke-linecap="round"/>
+
+                <path d="M 32 58 Q 50 78 68 58" fill="none" stroke="#00FF41" stroke-width="4.5" stroke-linecap="round"/>
+                
+                <circle cx="43" cy="120" r="2.5" fill="#00FF41" class="drip-particle d1"/>
+                <circle cx="69" cy="115" r="2" fill="#00FF41" class="drip-particle d2"/>
+                <circle cx="28" cy="80" r="1.5" fill="#00FF41" class="drip-particle d3"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Live Telemetry Feed -->
+      <div class="spec-col-feed reveal-item delay-3">
+        <div class="col-header glitch-scramble" data-text="// EXPERIMENTS_FEED">// EXPERIMENTS_FEED</div>
+        
+        <div class="feed-log-list">
+          <div class="feed-log-item reveal-card delay-1">
+            <div class="log-thumb thumb-glitch-1"></div>
+            <div class="log-info">
+              <div class="log-name">HOOK_ANALYSIS_01.LOG</div>
+              <div class="log-meta">98.4% RETENTION · 2.6 MB</div>
+            </div>
+          </div>
+
+          <div class="feed-log-item reveal-card delay-2">
+            <div class="log-thumb thumb-glitch-2"></div>
+            <div class="log-info">
+              <div class="log-name">PERSONA_DEBATE.STREAM</div>
+              <div class="log-meta">1.4K REPLIES/SEC · 1.1 MB</div>
+            </div>
+          </div>
+
+          <div class="feed-log-item reveal-card delay-3">
+            <div class="log-thumb thumb-glitch-3"></div>
+            <div class="log-info">
+              <div class="log-name">PAYOFF_VELOCITY.DAT</div>
+              <div class="log-meta">3.2X ALGO REACH · 3.7 MB</div>
+            </div>
+          </div>
+
+          <div class="feed-log-item reveal-card delay-4">
+            <div class="log-thumb thumb-glitch-4"></div>
+            <div class="log-info">
+              <div class="log-name">GENETIC_OPTIMIZER.EXE</div>
+              <div class="log-meta">SCORE: 94/100 · 4.3 MB</div>
+            </div>
+          </div>
+        </div>
+
+        <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer" class="feed-more-link" id="viewAllLogsBtn">
+          &gt; VIEW LIVE STREAM IN STUDIO [PORT 5173]_
+        </a>
+      </div>
+    </section>
+
+    <!-- GIANT BOTTOM STATEMENT -->
+    <div class="giant-bottom-statement reveal-item">
+      <h2 class="statement-headline glitch-scramble" data-text="ATTENTION IS REBELLION.">
+        ATTENTION IS REBELLION.
+      </h2>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="poster-footer reveal-item">
+      <div class="footer-left">
+        <div class="footer-prompt">LET'S BREAK THE ALGORITHM TOGETHER.</div>
+      </div>
+
+      <div class="footer-center">
+        <a href="mailto:contact@viralitylab.ai" class="footer-email">HELLO@VIRALITYLAB.AI</a>
+      </div>
+
+      <div class="footer-socials">
+        <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer" class="footer-link">[STUDIO]</a>
+        <a href="https://github.com/waibhav-jha/virality-lab" target="_blank" rel="noopener noreferrer" class="footer-link">[GITHUB]</a>
+        <a href="#" class="footer-link" id="footerSimLink">[QUICK AUDIT]</a>
+      </div>
+
+      <div class="footer-barcode-box">
+        <div class="barcode-graphic" aria-label="Barcode VL_ENGINE_2026"></div>
+        <div class="barcode-number">VL_ENGINE_2026</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- INTERACTIVE SIMULATION MODAL TERMINAL -->
+  <div class="terminal-modal" id="simModal">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-window">
+      <div class="modal-header">
+        <span class="modal-title">// VIRALITY LAB // LIVE SPECIMEN AUDITOR</span>
+        <button class="modal-close" id="modalCloseBtn">[ESC / CLOSE]</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="terminal-prompt-line">
+          <span class="prompt-arrow">&gt;</span> ENTER SPECIMEN HOOK OR CAPTION TO SIMULATE:
+        </div>
+        <textarea id="specimenInput" class="terminal-textarea" placeholder="e.g. 3 AI tools that replaced 3 hours of daily work (save this) #productivity #ai"></textarea>
+        
+        <div class="terminal-platform-select">
+          <span class="label">TARGET ALGORITHM:</span>
+          <button class="platform-chip active" data-platform="tiktok">TIKTOK</button>
+          <button class="platform-chip" data-platform="instagram">INSTAGRAM</button>
+          <button class="platform-chip" data-platform="youtube">YOUTUBE SHORTS</button>
+          <button class="platform-chip" data-platform="x">X / TWITTER</button>
+          <button class="platform-chip" data-platform="linkedin">LINKEDIN</button>
+        </div>
+
+        <div class="modal-actions-row">
+          <button id="runQuickSimBtn" class="terminal-execute-btn">
+            ⚡ RUN QUICK 5-AGENT AUDIT
+          </button>
+          <a href="http://localhost:5173/" target="_blank" rel="noopener noreferrer" class="terminal-redirect-btn">
+            🚀 OPEN IN FULL STUDIO APP &gt;&gt;
+          </a>
+        </div>
+
+        <div id="simOutput" class="terminal-output-feed hidden">
+          <div class="output-divider">--- AUDIENCE SIMULATION REPORT ---</div>
+          <div class="output-score-grid">
+            <div class="score-card">
+              <span class="sc-label">VIRALITY INDEX</span>
+              <span class="sc-val" id="resScore">88/100</span>
+            </div>
+            <div class="score-card">
+              <span class="sc-label">HOOK VELOCITY</span>
+              <span class="sc-val" id="resHook">94%</span>
+            </div>
+            <div class="score-card">
+              <span class="sc-label">PEER FORWARDING</span>
+              <span class="sc-val" id="resShare">82%</span>
+            </div>
+            <div class="score-card">
+              <span class="sc-label">COHORT RANK</span>
+              <span class="sc-val text-green" id="resCohort">TOP 6%</span>
+            </div>
+          </div>
+          <div class="output-debates" id="resDebates"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
