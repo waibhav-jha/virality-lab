@@ -54,21 +54,21 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({
       </div>
 
       {/* Laboratory Specimen Screen */}
-      <div className="relative w-full aspect-[4/5] sm:aspect-[9/14] max-h-[500px] bg-[#000000] border border-[#00FF41]/30 corner-ticks overflow-hidden flex flex-col justify-between p-4 shadow-[0_0_20px_rgba(0,255,65,0.15)]">
+      <div className="relative w-full aspect-[16/10] sm:aspect-[16/11] lg:aspect-[16/10] min-h-[220px] max-h-[340px] bg-[#000000] border border-[#00FF41]/30 corner-ticks overflow-hidden flex flex-col justify-between p-3.5 shadow-[0_0_20px_rgba(0,255,65,0.15)]">
         {/* Top Wireframe overlay & Timecode */}
         <div className="relative z-20 flex items-center justify-between font-mono-tech text-[10px] text-white/50">
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-[#00FF41] animate-pulse shadow-[0_0_6px_#00FF41]" />
             <span className="text-white font-semibold">FEED_LIVE_STREAM</span>
           </div>
-          <div className="flex items-center gap-2 text-[#8E9E90]">
+          <div className="flex items-center gap-2 text-[#8E9E90] text-[9px]">
             <span>TC: 00:00:03:12</span>
             <span>|</span>
             <span className="text-[#00FF41]">HOOK EVAL</span>
           </div>
         </div>
 
-        {/* Media Background Content or Typography Grid */}
+        {/* Media Background Content or Diagnostic Telemetry Grid */}
         <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden bg-[#000000]">
           {mediaUrl ? (
             mediaType === 'short_video' ? (
@@ -84,11 +84,12 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({
               <img src={mediaUrl} alt="Specimen creative asset" className="w-full h-full object-cover opacity-85" />
             )
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center relative">
-              <WaveformContour variant="topography" opacity={0.18} className="w-full max-w-xs mb-4" />
-              <span className="font-mono-tech text-xs text-[#8E9E90] uppercase tracking-wider max-w-[240px]">
-                NO MEDIA ATTACHED // EVALUATING HOOK & TRANSCRIPT PROFILE
-              </span>
+            <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center relative">
+              <WaveformContour variant="topography" opacity={0.25} className="w-full max-w-sm mb-2" />
+              <div className="flex items-center gap-2 font-mono-tech text-[10px] text-[#00FF41]/80 tracking-wider">
+                <span className="inline-block w-2 h-2 border border-[#00FF41] bg-[#00FF41]/20 animate-ping" />
+                <span>HOOK_TRANSCRIPT_ANALYZER // ACTIVE</span>
+              </div>
             </div>
           )}
           {/* Subtle Dark Vignette for Text Contrast */}
@@ -96,23 +97,23 @@ export const SocialPreview: React.FC<SocialPreviewProps> = ({
         </div>
 
         {/* Specimen Inspection Overlay */}
-        <div className="relative z-20 flex flex-col gap-2 mt-auto">
+        <div className="relative z-20 flex flex-col gap-1.5 mt-auto">
           {/* Diagnostic Parameter Pill */}
           <div className="flex items-center gap-2 font-mono-tech text-[9px] text-[#8E9E90] uppercase">
-            <span className="bg-[#00FF41]/15 border border-[#00FF41]/30 px-1.5 py-0.5 text-white">TARGET: {meta.targetSec}</span>
+            <span className="bg-[#00FF41]/15 border border-[#00FF41]/30 px-1.5 py-0.2 text-white">TARGET: {meta.targetSec}</span>
             <span>·</span>
             <span>{wordCount} WORDS</span>
             <span>·</span>
-            <span>{charCount} CHARACTERS</span>
+            <span>{charCount} CHARS</span>
           </div>
 
           {/* Rendered Caption / Script Specimen */}
-          <div className="bg-[#000000]/90 backdrop-blur-xs border border-[#00FF41]/30 p-3 max-h-36 overflow-y-auto shadow-[2px_2px_0px_0px_#000]">
-            <p className="text-xs sm:text-sm text-[#F4F6F8] font-sans leading-relaxed">
+          <div className="bg-[#000000]/90 backdrop-blur-xs border border-[#00FF41]/30 p-2.5 max-h-28 overflow-y-auto shadow-[1px_1px_0px_0px_#000]">
+            <p className="text-xs text-[#F4F6F8] font-sans leading-relaxed">
               {caption.trim() ? (
                 caption
               ) : (
-                <span className="text-[#526355] font-mono-tech text-xs italic">
+                <span className="text-[#526355] font-mono-tech text-[11px] italic">
                   &lt; Input caption or hook script in parameters panel to initiate specimen analysis &gt;
                 </span>
               )}

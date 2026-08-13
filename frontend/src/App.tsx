@@ -123,7 +123,7 @@ export function App() {
         onReset={exp.resetExperiment}
       />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col gap-8 relative z-10" role="main">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-3 sm:px-5 lg:px-6 py-3 sm:py-4 flex flex-col gap-4 relative z-10" role="main">
         {/* Editorial Inquiry & Specimen Presets */}
         <HeroSection onLoadSample={exp.loadSample} onRunDemo={handleDemo} />
 
@@ -161,7 +161,7 @@ export function App() {
 
         {/* Demo Mode Indicator */}
         {exp.isDemo && hasResults && (
-          <div className="w-full bg-[#050805] border border-[#00FF41]/40 p-3 flex items-center justify-between text-xs font-mono-tech text-[#00FF41] shadow-[0_0_15px_rgba(0,255,65,0.15)]" role="status">
+          <div className="w-full bg-[#050805] border border-[#00FF41]/40 p-2.5 flex items-center justify-between text-xs font-mono-tech text-[#00FF41] shadow-[0_0_15px_rgba(0,255,65,0.15)]" role="status">
             <div className="flex items-center gap-2">
               <span className="font-bold uppercase">[ DEMO BENCHMARK DATASET ]</span>
               <span className="text-white/40">·</span>
@@ -175,16 +175,16 @@ export function App() {
 
         {/* ───── Studio: Content & Parameter Configuration ───── */}
         {exp.phase === 'setup' && (
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" aria-label="Content workspace">
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start" aria-label="Content workspace">
             {/* Left 7 Cols: Experiment Parameter Controls */}
-            <div className="lg:col-span-7 cyber-card corner-ticks p-5 sm:p-7 flex flex-col gap-5">
-              <div className="flex items-center justify-between border-b-2 border-[#00FF41]/20 pb-3 font-mechanismo text-[11px] text-[#8E9E90] uppercase tracking-widest">
+            <div className="lg:col-span-7 cyber-card corner-ticks p-4 sm:p-5 flex flex-col gap-4">
+              <div className="flex items-center justify-between border-b-2 border-[#00FF41]/20 pb-2.5 font-mechanismo text-[10px] text-[#8E9E90] uppercase tracking-widest">
                 <div className="flex items-center gap-2">
                   <span className="text-[#00FF41] font-black bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40 shadow-[0_0_8px_rgba(0,255,65,0.2)]">01 // PARAMETERS</span>
                   <span className="text-white/40">::</span>
                   <span className="text-white font-bold">SPECIMEN & AUDIENCE CONFIGURATION</span>
                 </div>
-                <span className="bg-[#000000] px-2 py-0.5 border border-[#00FF41]/30 text-[#00F0FF] font-bold text-[10px]">CONFIG MODE</span>
+                <span className="bg-[#000000] px-2 py-0.5 border border-[#00FF41]/30 text-[#00F0FF] font-bold text-[9px]">CONFIG MODE</span>
               </div>
 
               <ExperimentControls

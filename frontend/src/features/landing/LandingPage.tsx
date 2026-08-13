@@ -5,6 +5,13 @@ interface LandingPageProps {
   onLaunchStudio: (initialPrompt?: string, initialPlatform?: string) => void;
 }
 
+const getAssetUrl = (fileName: string): string => {
+  const base = import.meta.env.BASE_URL || './';
+  const cleanBase = base.endsWith('/') ? base : `${base}/`;
+  const cleanFile = fileName.replace(/^\/?assets\//, '');
+  return `${cleanBase}assets/${cleanFile}`;
+};
+
 export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -538,7 +545,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
 
               <div className="avatar-image-container">
                 <img
-                  src="/assets/hero_agent.png"
+                  src={getAssetUrl('hero_agent.png')}
                   alt="Virality Lab Neural Persona Agent"
                   className="avatar-glitch-img"
                   id="heroAgentImg"
@@ -588,7 +595,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
                 <div className="frame-corner bottom-left">└</div>
                 <div className="frame-corner bottom-right">┘</div>
                 <div className="persona-portrait-box">
-                  <img src="/assets/persona_01.png" alt="Casual Scroller" className="persona-dither-img" />
+                  <img src={getAssetUrl('persona_01.png')} alt="Casual Scroller" className="persona-dither-img" />
                   <div className="target-reticle red-reticle" />
                   <div className="scan-grid-overlay" />
                   <div className="biometric-tag">TARGET // 01 [LOCKED]</div>
@@ -661,7 +668,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
                 <div className="frame-corner bottom-left">└</div>
                 <div className="frame-corner bottom-right">┘</div>
                 <div className="persona-portrait-box">
-                  <img src="/assets/persona_02.png" alt="Skeptic Analyst" className="persona-dither-img" />
+                  <img src={getAssetUrl('persona_02.png')} alt="Skeptic Analyst" className="persona-dither-img" />
                   <div className="target-reticle cyan-reticle" />
                   <div className="scan-grid-overlay" />
                   <div className="biometric-tag">TARGET // 02 [VERIFYING]</div>
@@ -734,7 +741,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
                 <div className="frame-corner bottom-left">└</div>
                 <div className="frame-corner bottom-right">┘</div>
                 <div className="persona-portrait-box">
-                  <img src="/assets/persona_03.png" alt="Trend Hunter" className="persona-dither-img" />
+                  <img src={getAssetUrl('persona_03.png')} alt="Trend Hunter" className="persona-dither-img" />
                   <div className="target-reticle yellow-reticle" />
                   <div className="scan-grid-overlay" />
                   <div className="biometric-tag">TARGET // 03 [CATALYZING]</div>
@@ -807,7 +814,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
                 <div className="frame-corner bottom-left">└</div>
                 <div className="frame-corner bottom-right">┘</div>
                 <div className="persona-portrait-box">
-                  <img src="/assets/persona_04.png" alt="Fast Forwarder" className="persona-dither-img" />
+                  <img src={getAssetUrl('persona_04.png')} alt="Fast Forwarder" className="persona-dither-img" />
                   <div className="target-reticle red-reticle" />
                   <div className="scan-grid-overlay" />
                   <div className="biometric-tag">TARGET // 04 [SPEED_2X]</div>
@@ -880,7 +887,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
                 <div className="frame-corner bottom-left">└</div>
                 <div className="frame-corner bottom-right">┘</div>
                 <div className="persona-portrait-box">
-                  <img src="/assets/persona_05.png" alt="Niche Expert" className="persona-dither-img" />
+                  <img src={getAssetUrl('persona_05.png')} alt="Niche Expert" className="persona-dither-img" />
                   <div className="target-reticle green-reticle" />
                   <div className="scan-grid-overlay" />
                   <div className="biometric-tag">TARGET // 05 [ARCHIVING]</div>
@@ -962,7 +969,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               <div className="frame-corner top-right">┐</div>
               <div className="frame-corner bottom-left">└</div>
               <div className="frame-corner bottom-right">┘</div>
-              <img src="/assets/card_01.png" alt="Doomscroller Hook Radar" className="card-img" />
+              <img src={getAssetUrl('card_01.png')} alt="Doomscroller Hook Radar" className="card-img" />
               <div className="card-overlay-badge badge-white">DISRUPT</div>
             </div>
             <div className="card-info">
@@ -983,7 +990,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               <div className="frame-corner top-right">┐</div>
               <div className="frame-corner bottom-left">└</div>
               <div className="frame-corner bottom-right">┘</div>
-              <img src="/assets/card_02.png" alt="Neural Persona Council" className="card-img" />
+              <img src={getAssetUrl('card_02.png')} alt="Neural Persona Council" className="card-img" />
               <div className="card-overlay-badge badge-green">NEURAL</div>
             </div>
             <div className="card-info">
@@ -1004,7 +1011,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               <div className="frame-corner top-right">┐</div>
               <div className="frame-corner bottom-left">└</div>
               <div className="frame-corner bottom-right">┘</div>
-              <img src="/assets/card_03.png" alt="5-Platform Matrix" className="card-img" />
+              <img src={getAssetUrl('card_03.png')} alt="5-Platform Matrix" className="card-img" />
               <div className="card-overlay-badge badge-white">MATRIX</div>
             </div>
             <div className="card-info">
@@ -1025,7 +1032,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               <div className="frame-corner top-right">┐</div>
               <div className="frame-corner bottom-left">└</div>
               <div className="frame-corner bottom-right">┘</div>
-              <img src="/assets/card_04.png" alt="Genetic Hook Mutator" className="card-img" />
+              <img src={getAssetUrl('card_04.png')} alt="Genetic Hook Mutator" className="card-img" />
               <div className="card-overlay-badge badge-green">GROWTH</div>
             </div>
             <div className="card-info">
