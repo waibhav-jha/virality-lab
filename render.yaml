@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: virality-lab-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn virality_lab.api.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SIMULATION_MODE
+        value: mock
+      - key: LLM_PROVIDER
+        value: nvidia
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: MEDIA_STORAGE_DIR
+        value: /tmp/virality_media
