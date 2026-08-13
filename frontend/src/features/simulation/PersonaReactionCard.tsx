@@ -54,7 +54,7 @@ export const PersonaReactionCard: React.FC<PersonaReactionCardProps> = ({ reacti
             </span>
           </div>
           <span className="text-[10px] text-[#8E98AA] mt-0.5 font-bold">
-            STATE: <span className="text-[#00F0FF]">{String(reaction.emotional_response || 'NEUTRAL EVALUATION').toUpperCase()}</span>
+            STATE: <span className="text-[#00FF41]">{String(reaction.emotional_response || 'NEUTRAL EVALUATION').toUpperCase()}</span>
           </span>
         </div>
 
@@ -83,7 +83,7 @@ export const PersonaReactionCard: React.FC<PersonaReactionCardProps> = ({ reacti
         </div>
         <div className="flex flex-col">
           <span className="text-[#646E82] font-bold text-[10px]">SHARE</span>
-          <span className="font-black text-[#00F0FF]">
+          <span className="font-black text-[#00FF41]">
             {Math.round(shareProb * 100)}%
           </span>
         </div>

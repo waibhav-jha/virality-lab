@@ -1,7 +1,6 @@
 import React from 'react';
-import { Play, Beaker, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Platform } from '../api/types';
-import { Button } from '../design-system/Button';
 import { WaveformContour } from './WaveformContour';
 
 export interface SampleContent {
@@ -63,7 +62,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onLoadSample, onRunDem
           <span className="text-white/80 font-bold">PRE-PUBLICATION MULTI-AGENT AUDIT</span>
         </div>
         <div className="hidden sm:flex items-center gap-3">
-          <span className="text-[#00F0FF]">SPECIMEN COHORT: 5+ AGENTS</span>
+          <span className="text-[#00FF41]">SPECIMEN COHORT: 5+ AGENTS</span>
           <span className="text-white/30">|</span>
           <span className="text-[#D4FF00]">CALIBRATION: DETERMINISTIC</span>
         </div>
@@ -78,7 +77,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onLoadSample, onRunDem
               <span>WOULD</span>
               <span>THEY</span>
             </div>
-            <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF00] via-[#00F0FF] to-white/60 flex items-center gap-3 sm:gap-4 flex-wrap pb-3 pt-1 overflow-visible">
+            <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF00] via-[#00FF41] to-white/80 flex items-center gap-3 sm:gap-4 flex-wrap pb-3 pt-1 overflow-visible">
               <span>STOP</span>
               <span>SCROLLING?</span>
             </div>

@@ -234,7 +234,7 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
         </div>
 
         <span className="text-[11px] text-[#8E98AA] uppercase font-bold">
-          SIMULATED FEED FOR: <strong className="text-[#00F0FF] bg-[#00F0FF]/10 px-1.5 py-0.5 border border-[#00F0FF]/40">{platform.toUpperCase()}</strong>
+          SIMULATED FEED FOR: <strong className="text-[#00FF41] bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40">{platform.toUpperCase()}</strong>
         </span>
       </div>
 

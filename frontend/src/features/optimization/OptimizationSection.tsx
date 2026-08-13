@@ -140,7 +140,7 @@ export const OptimizationSection: React.FC<OptimizationSectionProps> = ({
               </div>
               <div className="flex items-baseline gap-1">
                 <span className="font-mechanismo font-black text-3xl text-[#D4FF00]">{bestScore}</span>
-                <span className="text-xs text-[#00F0FF] font-bold">/100 (+{delta > 0 ? delta : 0})</span>
+                <span className="text-xs text-[#00FF41] font-bold">/100 (+{delta > 0 ? delta : 0})</span>
               </div>
             </div>
 

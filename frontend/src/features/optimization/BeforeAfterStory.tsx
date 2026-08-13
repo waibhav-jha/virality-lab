@@ -90,7 +90,7 @@ export const BeforeAfterStory: React.FC<BeforeAfterStoryProps> = ({
           <span className="text-[10px] text-[#D4FF00] uppercase font-black">OPTIMIZED VARIANT SCORE</span>
           <div className="flex items-baseline gap-1 mt-1">
             <span className="font-mechanismo font-black text-3xl sm:text-4xl text-[#D4FF00]">{bestTotal}</span>
-            <span className="text-xs text-[#00F0FF] font-bold">/100</span>
+            <span className="text-xs text-[#00FF41] font-bold">/100</span>
           </div>
         </div>
       </div>

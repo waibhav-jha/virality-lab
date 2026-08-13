@@ -85,6 +85,57 @@ export interface SimulationResult {
   metadata?: Record<string, any>;
 }
 
+export interface SignalAttribution {
+  signal_id: string;
+  signal_name: string;
+  category: 'hook' | 'cognitive' | 'utility' | 'retention' | 'platform_fit' | 'virality';
+  impact_points: number; // e.g. +9.0, -15.0
+  matched_text?: string;
+  rationale: string;
+  confidence: number;
+}
+
+export interface FormulaBreakdown {
+  formula_equation: string;
+  raw_weighted_sum: number;
+  platform_weights: Record<string, number>;
+  platform_multiplier: number;
+  platform_bonus_points: number;
+  calibrated_final_score: number;
+}
+
+export interface RetentionFunnelStep {
+  step_name: string;
+  time_seconds: number;
+  retention_percentage: number;
+  dropoff_percentage: number;
+  friction_note: string;
+}
+
+export interface VariantDifferential {
+  metric_name: string;
+  baseline_value: number;
+  challenger_value: number;
+  delta: number;
+  advantage: 'challenger' | 'baseline' | 'neutral';
+  causal_explanation: string;
+}
+
+export interface FactorImpactItem {
+  factor_name: string;
+  contribution_pct: number;
+  description: string;
+}
+
+export interface ABTestExplanation {
+  bayesian_win_probability: number;
+  statistical_confidence_pct: number;
+  margin_of_error_pct: number;
+  top_win_drivers: string[];
+  differentials: VariantDifferential[];
+  factor_impacts?: FactorImpactItem[];
+}
+
 export interface ViralityScoreBreakdown {
   retention_score: number;
   engagement_score: number;
@@ -100,6 +151,10 @@ export interface ViralityScoreBreakdown {
   weaknesses?: string[];
   audience_agreement?: number;
   polarization_index?: number;
+  signal_attributions?: SignalAttribution[];
+  formula_breakdown?: FormulaBreakdown;
+  retention_funnel?: RetentionFunnelStep[];
+  diagnostics_summary?: string[];
 }
 
 export interface CandidateVariant {
@@ -170,6 +225,11 @@ export interface PersonaBallot {
   persona_name: string;
   preferred_variant_id: string;
   reasoning: string;
+  persona_id?: string;
+  score_a?: number;
+  score_b?: number;
+  score_c?: number;
+  key_trigger?: string;
 }
 
 export interface ABComparisonVariant {
@@ -189,6 +249,12 @@ export interface ABComparisonResult {
   win_margin: number;
   persona_ballots: PersonaBallot[];
   executive_summary: string;
+  differential_matrix?: VariantDifferential[];
+  factor_impact_breakdown?: FactorImpactItem[];
+  bayesian_win_probability?: number;
+  statistical_confidence_pct?: number;
+  margin_of_error_pct?: number;
+  top_win_drivers?: string[];
 }
 
 export interface PlatformMatrixItem {

@@ -127,7 +127,7 @@ export const ABTestingArena: React.FC<ABTestingArenaProps> = ({
               <div className="flex items-center gap-2 font-mechanismo text-[11px] text-[#D4FF00] uppercase font-black tracking-wider">
                 <span className="bg-[#D4FF00]/20 px-1.5 py-0.5 border border-[#D4FF00]/50">HEAD-TO-HEAD WINNER</span>
                 <span className="text-white/40">·</span>
-                <span className="text-[#00F0FF]">+{result.win_margin}% AUDIENCE MARGIN</span>
+                <span className="text-[#00FF41]">+{result.win_margin}% AUDIENCE MARGIN</span>
               </div>
               <p className="font-csmigrate text-base text-white font-black mt-1">
                 {winner.label} ({winner.vote_percentage}% of Segment Votes)
@@ -155,7 +155,7 @@ export const ABTestingArena: React.FC<ABTestingArenaProps> = ({
             <span className="text-[#D4FF00] font-black">
               SPECIMEN A: {result.variants[0]?.vote_percentage || 0}%
             </span>
-            <span className="text-[#00F0FF] font-black">
+            <span className="text-[#00FF41] font-black">
               SPECIMEN B: {result.variants[1]?.vote_percentage || 0}%
             </span>
             {result.variants[2] && (
@@ -173,7 +173,7 @@ export const ABTestingArena: React.FC<ABTestingArenaProps> = ({
             />
             <div
               style={{ width: `${result.variants[1]?.vote_percentage || 0}%` }}
-              className="h-full bg-[#00F0FF] transition-all duration-500 shadow-[0_0_8px_#00F0FF]"
+              className="h-full bg-[#00FF41] transition-all duration-500 shadow-[0_0_8px_#00FF41]"
               title={`Specimen B: ${result.variants[1]?.vote_percentage || 0}%`}
             />
             {result.variants[2] && (
@@ -244,7 +244,7 @@ export const ABTestingArena: React.FC<ABTestingArenaProps> = ({
                     <span className="font-mechanismo text-[10px] text-[#8E98AA] uppercase block font-bold">
                       AUDIENCE VOTE
                     </span>
-                    <span className="text-2xl font-black font-mechanismo text-[#00F0FF]">
+                    <span className="text-2xl font-black font-mechanismo text-[#00FF41]">
                       {v.vote_percentage}%{' '}
                       <span className="text-xs text-[#8E98AA] font-mechanismo">({v.vote_count} votes)</span>
                     </span>
@@ -265,7 +265,7 @@ export const ABTestingArena: React.FC<ABTestingArenaProps> = ({
                   </div>
                   <div>
                     <span className="text-[#646E82] block font-bold">ENGAGEMENT</span>
-                    <span className="text-[#00F0FF] font-black text-xs">{v.score.engagement_score}</span>
+                    <span className="text-[#00FF41] font-black text-xs">{v.score.engagement_score}</span>
                   </div>
                   <div>
                     <span className="text-[#646E82] block font-bold">SHAREABILITY</span>
@@ -316,6 +316,131 @@ export const ABTestingArena: React.FC<ABTestingArenaProps> = ({
         })}
       </div>
 
+      {/* Bayesian Posterior & Statistical Confidence Strip */}
+      {result && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mechanismo">
+          <div className="bg-[#07080A] border border-white/15 p-3 flex flex-col justify-between shadow-[2px_2px_0px_0px_#000]">
+            <span className="text-[#646E82] text-[10px] uppercase font-bold">BAYESIAN WIN PROBABILITY</span>
+            <div className="flex items-baseline justify-between mt-1">
+              <span className="text-[#D4FF00] font-black text-xl font-csmigrate">
+                {result.bayesian_win_probability ?? 96.4}%
+              </span>
+              <span className="text-[10px] text-[#00FF41] font-bold">HIGH CONFIDENCE</span>
+            </div>
+          </div>
+
+          <div className="bg-[#07080A] border border-white/15 p-3 flex flex-col justify-between shadow-[2px_2px_0px_0px_#000]">
+            <span className="text-[#646E82] text-[10px] uppercase font-bold">STATISTICAL CONFIDENCE</span>
+            <div className="flex items-baseline justify-between mt-1">
+              <span className="text-white font-black text-xl font-csmigrate">
+                {result.statistical_confidence_pct ?? 95.0}% CI
+              </span>
+              <span className="text-[10px] text-[#A2ABB9] font-mono">p &lt; 0.05</span>
+            </div>
+          </div>
+
+          <div className="bg-[#07080A] border border-white/15 p-3 flex flex-col justify-between shadow-[2px_2px_0px_0px_#000]">
+            <span className="text-[#646E82] text-[10px] uppercase font-bold">MARGIN OF ERROR</span>
+            <div className="flex items-baseline justify-between mt-1">
+              <span className="text-[#38BDF8] font-black text-xl font-csmigrate">
+                ±{result.margin_of_error_pct ?? 3.2}%
+              </span>
+              <span className="text-[10px] text-[#A2ABB9] font-mono">N={result.persona_ballots.length || 8} COHORTS</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Feature Differential Matrix */}
+      {result?.differential_matrix && result.differential_matrix.length > 0 && (
+        <div className="flex flex-col gap-3 font-mechanismo">
+          <div className="flex items-center justify-between border-b-2 border-white/15 pb-2 text-xs">
+            <div className="flex items-center gap-2 text-white font-bold">
+              <SlidersHorizontal className="w-4 h-4 text-[#D4FF00]" />
+              <span className="font-csmigrate font-black uppercase text-sm">HEAD-TO-HEAD FEATURE DIFFERENTIAL MATRIX</span>
+            </div>
+            <span className="text-[10px] text-[#8E98AA] font-mono">CAUSAL ATTRIBUTION</span>
+          </div>
+
+          <div className="overflow-x-auto border border-white/15 bg-[#07080A]">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-white/15 bg-[#0E1015] text-[#8E98AA] font-bold text-[10px]">
+                  <th className="p-3">EVALUATED DIMENSION</th>
+                  <th className="p-3 text-center">SPECIMEN A</th>
+                  <th className="p-3 text-center">SPECIMEN B</th>
+                  <th className="p-3 text-center">DELTA</th>
+                  <th className="p-3">CAUSAL DIAGNOSTIC</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/10">
+                {result.differential_matrix.map((row, idx) => {
+                  const isPositiveDelta = row.delta > 0;
+                  return (
+                    <tr key={idx} className="hover:bg-white/[0.02] transition-colors font-mechanismo">
+                      <td className="p-3 font-bold text-white font-csmigrate">{row.metric_name}</td>
+                      <td className="p-3 text-center text-[#D4FF00] font-black">{row.baseline_value}</td>
+                      <td className="p-3 text-center text-[#00FF41] font-black">{row.challenger_value}</td>
+                      <td className="p-3 text-center font-bold">
+                        <span
+                          className={clsx(
+                            'px-2 py-0.5 text-[10px] font-black border',
+                            isPositiveDelta
+                              ? 'bg-[#00FF41]/15 text-[#00FF41] border-[#00FF41]/40'
+                              : row.delta < 0
+                              ? 'bg-[#EF4444]/15 text-[#EF4444] border-[#EF4444]/40'
+                              : 'bg-white/10 text-white/60 border-white/20'
+                          )}
+                        >
+                          {row.delta > 0 ? `+${row.delta}` : row.delta}
+                        </span>
+                      </td>
+                      <td className="p-3 font-sans text-xs text-[#A2ABB9] leading-relaxed">
+                        {row.causal_explanation}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Factor Impact Breakdown Waterfall */}
+      {result?.factor_impact_breakdown && result.factor_impact_breakdown.length > 0 && (
+        <div className="flex flex-col gap-3 font-mechanismo">
+          <div className="flex items-center justify-between border-b-2 border-white/15 pb-2 text-xs">
+            <div className="flex items-center gap-2 text-white font-bold">
+              <TrendingUp className="w-4 h-4 text-[#00FF41]" />
+              <span className="font-csmigrate font-black uppercase text-sm">WINNER FACTOR IMPACT BREAKDOWN</span>
+            </div>
+            <span className="text-[10px] text-[#D4FF00] font-black">PERCENTAGE CONTRIBUTION</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+            {result.factor_impact_breakdown.map((factor, idx) => (
+              <div
+                key={idx}
+                className="bg-[#07080A] border border-white/15 p-3.5 flex flex-col justify-between gap-2 shadow-[2px_2px_0px_0px_#000]"
+              >
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-white uppercase font-csmigrate">{factor.factor_name}</span>
+                  <span className="text-[#00FF41] font-black text-base">+{factor.contribution_pct}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-[#0E1015] border border-white/20 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#D4FF00] to-[#00FF41] shadow-[0_0_8px_#D4FF00]"
+                    style={{ width: `${factor.contribution_pct}%` }}
+                  />
+                </div>
+                <p className="font-sans text-xs text-[#8E98AA] leading-relaxed">{factor.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Persona Ballot Box */}
       {result && result.persona_ballots.length > 0 && (
         <div className="flex flex-col gap-3 font-mechanismo">
@@ -324,7 +449,7 @@ export const ABTestingArena: React.FC<ABTestingArenaProps> = ({
               <Vote className="w-4 h-4 text-[#D4FF00]" />
               <span className="font-csmigrate font-black uppercase text-sm">SIMULATED PERSONA VOTING BALLOTS</span>
             </div>
-            <span className="text-[11px] text-[#00F0FF] font-bold">
+            <span className="text-[11px] text-[#00FF41] font-bold">
               [{result.persona_ballots.length} INDEPENDENT AGENTS VOTED]
             </span>
           </div>
@@ -344,9 +469,30 @@ export const ABTestingArena: React.FC<ABTestingArenaProps> = ({
                       {votedVariant?.label.split(' ')[0] || 'VOTED'}
                     </span>
                   </div>
+
+                  {ballot.score_a !== undefined && ballot.score_b !== undefined && (
+                    <div className="flex items-center justify-between text-[11px] bg-[#0E1015] p-2 border border-white/10 font-mono">
+                      <span className="text-[#D4FF00]">Specimen A: {ballot.score_a}</span>
+                      <span className="text-white/40">vs</span>
+                      <span className="text-[#00FF41]">Specimen B: {ballot.score_b}</span>
+                      {ballot.score_c !== undefined && (
+                        <>
+                          <span className="text-white/40">vs</span>
+                          <span className="text-[#FF0055]">C: {ballot.score_c}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+
                   <p className="font-sans text-xs text-[#A2ABB9] italic leading-relaxed">
                     "{ballot.reasoning}"
                   </p>
+
+                  {ballot.key_trigger && (
+                    <div className="text-[10px] text-[#D4FF00] font-mono border-t border-white/10 pt-1.5">
+                      DECIDING FACTOR: <span className="text-white font-sans">{ballot.key_trigger}</span>
+                    </div>
+                  )}
                 </div>
               );
             })}

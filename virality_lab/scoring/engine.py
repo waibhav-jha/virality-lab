@@ -247,11 +247,34 @@ class ViralityScoringEngine(BaseScoringEngine):
             weaknesses=weaknesses,
         )
 
+        caption_text = ""
+        transcript_text = ""
+        if content_profile is not None:
+            if hasattr(content_profile, "media_info") and getattr(content_profile.media_info, "caption", None):
+                caption_text = str(content_profile.media_info.caption)
+            elif hasattr(content_profile, "hook_analysis") and getattr(content_profile.hook_analysis, "hook_text", None):
+                caption_text = str(content_profile.hook_analysis.hook_text)
+            elif isinstance(getattr(content_profile, "caption", None), str):
+                caption_text = content_profile.caption
+
+            if hasattr(content_profile, "media_info") and getattr(content_profile.media_info, "transcript", None):
+                transcript_text = str(content_profile.media_info.transcript)
+            elif hasattr(content_profile, "transcript_analysis") and getattr(content_profile.transcript_analysis, "transcript_text", None):
+                transcript_text = str(content_profile.transcript_analysis.transcript_text)
+            elif isinstance(getattr(content_profile, "transcript", None), str):
+                transcript_text = content_profile.transcript
+
+        platform_str = str(active_platform) if active_platform else None
+
         explanation = self.explanation_engine.generate_explanation(
             overall_score=overall_score,
             components=components,
             raw_metrics=distributions,
             persona_scores=persona_scores_dict,
+            caption=caption_text,
+            transcript=transcript_text,
+            platform=platform_str,
+            platform_weights=component_weights,
         )
 
         # 9. Audience Summary
@@ -275,4 +298,7 @@ class ViralityScoringEngine(BaseScoringEngine):
             explanation=explanation,
             confidence=confidence,
             raw_metrics=distributions,
+            signal_attributions=explanation.signal_attributions,
+            formula_breakdown=explanation.formula_breakdown,
+            retention_funnel=explanation.retention_funnel,
         )

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './LandingPage.css';
 
 interface LandingPageProps {
@@ -37,6 +38,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
   const bgCanvasRef = useRef<HTMLCanvasElement>(null);
   const globeCanvasRef = useRef<HTMLCanvasElement>(null);
   const waveCanvasRef = useRef<HTMLCanvasElement>(null);
+
+  // =========================================================================
+  // Hacker Text Scramble Engine
+  // =========================================================================
+  const GLITCH_CHARS = '01010101#@$%&*<>~/[]_+=XZY!';
+
+  const triggerTextScramble = (el: HTMLElement) => {
+    if (!el || el.dataset.scrambling === 'true') return;
+    const originalText = el.dataset.text || el.textContent || '';
+    if (!originalText.trim()) return;
+    el.dataset.scrambling = 'true';
+    let iteration = 0;
+    const maxIterations = 14;
+
+    const interval = window.setInterval(() => {
+      el.textContent = originalText
+        .split('')
+        .map((char, index) => {
+          if (char === ' ' || char === '\n') return char;
+          if (index < (iteration / maxIterations) * originalText.length) {
+            return originalText[index];
+          }
+          return GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+        })
+        .join('');
+
+      iteration++;
+      if (iteration >= maxIterations) {
+        window.clearInterval(interval);
+        el.textContent = originalText;
+        el.dataset.scrambling = 'false';
+      }
+    }, 28);
+  };
 
   // Sound Synth Functions
   const initAudio = () => {
@@ -104,18 +139,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
     }
   };
 
-  // Cursor & Scroll Depth Tracking
+  // Cursor & Scroll Depth Tracking (Hardware-Accelerated Viewport Tracker)
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (cursorRef.current) {
-        cursorRef.current.style.left = `${e.clientX}px`;
-        cursorRef.current.style.top = `${e.clientY}px`;
+    let mouseX = -100;
+    let mouseY = -100;
+
+    const updateCursorPosition = () => {
+      if (cursorRef.current && mouseX >= 0) {
+        cursorRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
       }
-      if (cursorHudRef.current) {
-        const x = String(e.clientX).padStart(4, '0');
-        const y = String(e.clientY).padStart(4, '0');
+      if (cursorHudRef.current && mouseX >= 0) {
+        const x = String(Math.round(mouseX)).padStart(4, '0');
+        const y = String(Math.round(mouseY)).padStart(4, '0');
         cursorHudRef.current.textContent = `X:${x} Y:${y}`;
       }
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      updateCursorPosition();
     };
 
     const handleScroll = () => {
@@ -123,10 +166,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const pct = docHeight > 0 ? Math.min(100, Math.round((scrollTop / docHeight) * 100)) : 0;
       setScrollDepth(pct);
+      updateCursorPosition();
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
@@ -272,7 +316,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
 
       if (Math.random() < 0.2) {
         const spikeX = Math.random() * w;
-        ctx.strokeStyle = '#00F0FF';
+        ctx.strokeStyle = '#D4FF00';
         ctx.beginPath();
         ctx.moveTo(spikeX, mid - 18);
         ctx.lineTo(spikeX, mid + 18);
@@ -289,13 +333,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
     };
   }, []);
 
-  // Scroll Reveals Observer
+  // Scroll Reveals Observer & Glitch Scramble Trigger
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('is-visible');
+            const scrambles = entry.target.querySelectorAll<HTMLElement>('.glitch-scramble');
+            scrambles.forEach(triggerTextScramble);
+            if (entry.target.classList.contains('glitch-scramble')) {
+              triggerTextScramble(entry.target as HTMLElement);
+            }
             observer.unobserve(entry.target);
           }
         });
@@ -308,6 +357,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
 
     return () => observer.disconnect();
   }, []);
+
+  // Smooth Scroll Handler
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   // Card Flip Toggle
   const toggleFlip = (index: number) => {
@@ -387,7 +445,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
       attn: '2.8s',
       skep: '92%',
       img: 'assets/persona_02.png',
-      reticleClass: 'target-reticle cyan-reticle',
+      reticleClass: 'target-reticle green-reticle',
       tag: 'TARGET // 02 [AUDITING]',
       bias: 'Methodology & receipts',
       drop: 'Clickbait exaggeration',
@@ -455,38 +513,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
 
   return (
     <div className="landing-page-root">
-      {/* Background Matrix Particles Canvas */}
-      <canvas ref={bgCanvasRef} className="bg-particle-canvas" aria-hidden="true" />
+      {/* Portaled Global HUD & FX Layers mounted directly on document.body */}
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <>
+            {/* Background Matrix Particles Canvas */}
+            <canvas ref={bgCanvasRef} className="bg-particle-canvas" aria-hidden="true" />
 
-      {/* CRT Scanline & Noise Shaders */}
-      <div className="crt-overlay" aria-hidden="true" />
-      <div className="noise-overlay" aria-hidden="true" />
+            {/* CRT Scanline & Noise Shaders */}
+            <div className="crt-overlay" aria-hidden="true" />
+            <div className="noise-overlay" aria-hidden="true" />
 
-      {/* Custom Crosshair Cursor HUD */}
-      <div ref={cursorRef} className="cursor-crosshair" aria-hidden="true">
-        <div className="cursor-dot" />
-        <span ref={cursorHudRef} className="cursor-hud">
-          X:0000 Y:0000
-        </span>
-      </div>
+            {/* Custom Crosshair Cursor HUD */}
+            <div ref={cursorRef} className="cursor-crosshair" aria-hidden="true">
+              <div className="cursor-dot" />
+              <span ref={cursorHudRef} className="cursor-hud">
+                X:0000 Y:0000
+              </span>
+            </div>
 
-      {/* Scroll Depth HUD Indicator */}
-      <div className="scroll-hud-tracker" aria-hidden="true">
-        <div className="scroll-bar">
-          <div className="scroll-fill" style={{ height: `${scrollDepth}%` }} />
-        </div>
-        <span className="scroll-val">DEPTH: {String(scrollDepth).padStart(2, '0')}%</span>
-      </div>
+            {/* Scroll Depth HUD Indicator */}
+            <div className="scroll-hud-tracker" aria-hidden="true">
+              <div className="scroll-bar">
+                <div className="scroll-fill" style={{ height: `${scrollDepth}%` }} />
+              </div>
+              <span className="scroll-val">DEPTH: {String(scrollDepth).padStart(2, '0')}%</span>
+            </div>
 
-      {/* Floating Audio Toggle */}
-      <button
-        onClick={toggleAudio}
-        className={`hud-audio-btn ${audioEnabled ? 'active' : ''}`}
-        aria-label="Toggle Cyber Synth Audio"
-      >
-        <span className="audio-pulse" />
-        <span>{audioEnabled ? 'AUDIO: [LIVE]' : 'AUDIO: [OFF]'}</span>
-      </button>
+            {/* Floating Audio Toggle */}
+            <button
+              onClick={toggleAudio}
+              className={`hud-audio-btn ${audioEnabled ? 'active' : ''}`}
+              aria-label="Toggle Cyber Synth Audio"
+            >
+              <span className="audio-pulse" />
+              <span>{audioEnabled ? 'AUDIO: [LIVE]' : 'AUDIO: [OFF]'}</span>
+            </button>
+          </>,
+          document.body
+        )}
 
       {/* Main Cyber Poster Container */}
       <div className="poster-container">
@@ -495,24 +560,61 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
             ================================================================= */}
         <header className="poster-header reveal-item delay-1">
           <div className="header-left">
-            <span className="tag-title">VIRALITY LAB // PRE-FLIGHT SIMULATION LAB</span>
+            <span
+              className="tag-title glitch-scramble"
+              data-text="VIRALITY LAB // PRE-FLIGHT SIMULATION LAB"
+              onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+            >
+              VIRALITY LAB // PRE-FLIGHT SIMULATION LAB
+            </span>
             <span className="tag-sub">AESTHETIC ARCHIVE // POSTER 001 // AGENT COUNCIL MATRIX</span>
           </div>
 
           <nav className="header-nav">
-            <a href="#council" className="nav-link" onMouseEnter={() => playTone(500)}>
+            <a
+              href="#council"
+              onClick={(e) => handleSmoothScroll(e, 'council')}
+              className="nav-link glitch-scramble"
+              data-text="[COUNCIL]"
+              onMouseEnter={(e) => {
+                triggerTextScramble(e.currentTarget);
+                playTone(500);
+              }}
+            >
               [COUNCIL]
             </a>
-            <a href="#engines" className="nav-link" onMouseEnter={() => playTone(550)}>
+            <a
+              href="#engines"
+              onClick={(e) => handleSmoothScroll(e, 'engines')}
+              className="nav-link glitch-scramble"
+              data-text="[ENGINES]"
+              onMouseEnter={(e) => {
+                triggerTextScramble(e.currentTarget);
+                playTone(550);
+              }}
+            >
               [ENGINES]
             </a>
-            <a href="#specs" className="nav-link" onMouseEnter={() => playTone(600)}>
+            <a
+              href="#specs"
+              onClick={(e) => handleSmoothScroll(e, 'specs')}
+              className="nav-link glitch-scramble"
+              data-text="[SPECS]"
+              onMouseEnter={(e) => {
+                triggerTextScramble(e.currentTarget);
+                playTone(600);
+              }}
+            >
               [SPECS]
             </a>
             <button
               onClick={() => onLaunchStudio()}
-              className="nav-link btn-terminal main-app-link"
-              onMouseEnter={() => playTone(650)}
+              className="nav-link btn-terminal main-app-link glitch-scramble"
+              data-text="⚡ LAUNCH STUDIO"
+              onMouseEnter={(e) => {
+                triggerTextScramble(e.currentTarget);
+                playTone(650);
+              }}
             >
               ⚡ LAUNCH STUDIO
             </button>
@@ -548,7 +650,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
             </div>
 
             <div className="hero-subline-box">
-              <div className="highlight-badge">MULTI-AGENT PREDICTIVE SIMULATION</div>
+              <div
+                className="highlight-badge glitch-scramble"
+                data-text="MULTI-AGENT PREDICTIVE SIMULATION"
+                onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+              >
+                MULTI-AGENT PREDICTIVE SIMULATION
+              </div>
               <p className="sub-motto">
                 AUTONOMOUS AUDIENCE INTELLIGENCE <span className="separator-line">/</span> PRE-PUBLICATION ALGORITHM AUDITOR
               </p>
@@ -605,7 +713,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
             5 PERSONA 3D FLIP CARD SURVEILLANCE MATRIX
             ================================================================= */}
         <div id="council" className="section-tag-bar reveal-line delay-3">
-          <span className="section-tag">_05_AUTONOMOUS_PERSONA_COUNCIL</span>
+          <span
+            className="section-tag glitch-scramble"
+            data-text="_05_AUTONOMOUS_PERSONA_COUNCIL"
+            onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+          >
+            _05_AUTONOMOUS_PERSONA_COUNCIL
+          </span>
           <div className="section-tag-line" />
           <span className="section-tag-meta">[FLIP CARDS TO DECRYPT DOSSIER ↻]</span>
         </div>
@@ -641,7 +755,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
                     <span className="persona-id-badge">
                       AGENT_{p.id} // {p.code}
                     </span>
-                    <span className="persona-front-name">{p.name}</span>
+                    <span
+                      className="persona-front-name glitch-scramble"
+                      data-text={p.name}
+                      onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+                    >
+                      {p.name}
+                    </span>
                     <div className="persona-mini-stats">
                       <span>
                         ATTN: <strong>{p.attn}</strong>
@@ -700,7 +820,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
             4 CORE INTELLIGENCE ENGINES GRID
             ================================================================= */}
         <div id="engines" className="section-tag-bar reveal-line delay-4">
-          <span className="section-tag">_CORE INTELLIGENCE ENGINES</span>
+          <span
+            className="section-tag glitch-scramble"
+            data-text="_CORE INTELLIGENCE ENGINES"
+            onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+          >
+            _CORE INTELLIGENCE ENGINES
+          </span>
           <div className="section-tag-line" />
         </div>
 
@@ -719,7 +845,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               <span className="card-overlay-badge badge-white">DISRUPT</span>
             </div>
             <div className="card-info">
-              <span className="card-title">DOOMSCROLLER RADAR</span>
+              <span
+                className="card-title glitch-scramble"
+                data-text="DOOMSCROLLER RADAR"
+                onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+              >
+                DOOMSCROLLER RADAR
+              </span>
               <span className="card-meta">ATTENTION SPAN: 1.2S // 2026</span>
             </div>
           </div>
@@ -738,7 +870,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               <span className="card-overlay-badge badge-green">NEURAL</span>
             </div>
             <div className="card-info">
-              <span className="card-title">PERSONA DEBATE STREAM</span>
+              <span
+                className="card-title glitch-scramble"
+                data-text="PERSONA DEBATE STREAM"
+                onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+              >
+                PERSONA DEBATE STREAM
+              </span>
               <span className="card-meta">SYNTHETIC CONSENSUS // COGNITIVE LAB</span>
             </div>
           </div>
@@ -757,7 +895,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               <span className="card-overlay-badge badge-white">MATRIX</span>
             </div>
             <div className="card-info">
-              <span className="card-title">5-CHANNEL ALGORITHM AUDIT</span>
+              <span
+                className="card-title glitch-scramble"
+                data-text="5-CHANNEL ALGORITHM AUDIT"
+                onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+              >
+                5-CHANNEL ALGORITHM AUDIT
+              </span>
               <span className="card-meta">TIKTOK · REELS · SHORTS · X · LINKEDIN</span>
             </div>
           </div>
@@ -776,7 +920,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               <span className="card-overlay-badge badge-green">GROWTH</span>
             </div>
             <div className="card-info">
-              <span className="card-title">GENETIC HOOK MUTATOR</span>
+              <span
+                className="card-title glitch-scramble"
+                data-text="GENETIC HOOK MUTATOR"
+                onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+              >
+                GENETIC HOOK MUTATOR
+              </span>
               <span className="card-meta">CONTAGION OPTIMIZER // +28% LIFT</span>
             </div>
           </div>
@@ -787,7 +937,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
             ================================================================= */}
         <section id="specs" className="spec-grid reveal-item delay-5">
           <div className="spec-col-info">
-            <div className="col-header">_SYSTEM MATRIX SPECIFICATIONS</div>
+            <div
+              className="col-header glitch-scramble"
+              data-text="_SYSTEM MATRIX SPECIFICATIONS"
+              onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+            >
+              _SYSTEM MATRIX SPECIFICATIONS
+            </div>
             <ul className="spec-list">
               <li>01 / MULTI-AGENT DELIBERATION</li>
               <li className="sub-item">→ 5 Deterministic Personas</li>
@@ -863,7 +1019,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
           </div>
 
           <div className="spec-col-feed">
-            <div className="col-header">_ACTIVE SPECIMEN LOGS</div>
+            <div
+              className="col-header glitch-scramble"
+              data-text="_ACTIVE SPECIMEN LOGS"
+              onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+            >
+              _ACTIVE SPECIMEN LOGS
+            </div>
             <div className="feed-log-list">
               <div
                 className="feed-log-item"
@@ -920,7 +1082,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
             GIANT BOTTOM STATEMENT
             ================================================================= */}
         <section className="giant-bottom-statement reveal-item delay-6">
-          <h2 className="statement-headline">SIMULATE BEFORE BROADCAST</h2>
+          <h2
+            className="statement-headline glitch-scramble"
+            data-text="SIMULATE BEFORE BROADCAST"
+            onMouseEnter={(e) => triggerTextScramble(e.currentTarget)}
+          >
+            SIMULATE BEFORE BROADCAST
+          </h2>
         </section>
 
         {/* =================================================================
@@ -930,9 +1098,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
           <div className="footer-left">VIRALITY LAB // AESTHETIC INSTRUMENTS</div>
 
           <div className="footer-center">
-            <a href="mailto:studio@viralitylab.ai" className="footer-email">
-              STUDIO@VIRALITYLAB.AI
-            </a>
+            <span className="footer-meta-tag">AUTONOMOUS AUDIENCE SIMULATION SUITE</span>
           </div>
 
           <div className="footer-socials">
@@ -959,100 +1125,104 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
       {/* =================================================================
           QUICK SPECIMEN SIMULATION TERMINAL MODAL
           ================================================================= */}
-      <div className={`terminal-modal ${isModalOpen ? 'active' : ''}`}>
-        <div className="modal-backdrop" onClick={() => setIsModalOpen(false)} />
-        <div className="modal-window">
-          <div className="modal-header">
-            <span className="modal-title">⚡ VIRALITY LAB // QUICK SPECIMEN AUDITOR</span>
-            <button onClick={() => setIsModalOpen(false)} className="modal-close">
-              [ESC / CLOSE ✕]
-            </button>
-          </div>
-
-          <div className="modal-body">
-            <div className="terminal-prompt-line">
-              <span className="prompt-arrow">&gt;</span> ENTER SPECIMEN HOOK OR SCRIPT:
-            </div>
-
-            <textarea
-              value={modalInput}
-              onChange={(e) => setModalInput(e.target.value)}
-              className="terminal-textarea"
-              placeholder="Type or paste your hook, script, or tweet..."
-            />
-
-            <div className="terminal-platform-select">
-              <span className="label">TARGET ALGORITHM:</span>
-              {['tiktok', 'instagram', 'youtube', 'x', 'linkedin'].map((plat) => (
-                <button
-                  key={plat}
-                  type="button"
-                  onClick={() => setSelectedPlatform(plat)}
-                  className={`platform-chip ${selectedPlatform === plat ? 'active' : ''}`}
-                >
-                  {plat.toUpperCase()}
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <div className={`terminal-modal ${isModalOpen ? 'active' : ''}`}>
+            <div className="modal-backdrop" onClick={() => setIsModalOpen(false)} />
+            <div className="modal-window">
+              <div className="modal-header">
+                <span className="modal-title">⚡ VIRALITY LAB // QUICK SPECIMEN AUDITOR</span>
+                <button onClick={() => setIsModalOpen(false)} className="modal-close">
+                  [ESC / CLOSE ✕]
                 </button>
-              ))}
-            </div>
+              </div>
 
-            <div className="modal-actions-row">
-              <button
-                onClick={handleRunQuickSim}
-                disabled={isSimulating}
-                className="terminal-execute-btn"
-              >
-                {isSimulating ? '⚡ SYNTHESIZING AGENT COUNCIL...' : '⚡ RUN QUICK 5-AGENT AUDIT'}
-              </button>
-
-              <button
-                onClick={() => {
-                  setIsModalOpen(false);
-                  onLaunchStudio(modalInput);
-                }}
-                className="terminal-redirect-btn"
-              >
-                ⚡ OPEN IN STUDIO →
-              </button>
-            </div>
-
-            {simResults && (
-              <div className="terminal-output-feed">
-                <div className="output-divider">
-                  ━━━━━━━━━ AUDIT TELEMETRY RESULTS ━━━━━━━━━
+              <div className="modal-body">
+                <div className="terminal-prompt-line">
+                  <span className="prompt-arrow">&gt;</span> ENTER SPECIMEN HOOK OR SCRIPT:
                 </div>
 
-                <div className="output-score-grid">
-                  <div className="score-card">
-                    <span className="sc-label">VIRALITY SCORE</span>
-                    <span className="sc-val text-green">{simResults.score}/100</span>
-                  </div>
-                  <div className="score-card">
-                    <span className="sc-label">0-3s RETENTION</span>
-                    <span className="sc-val">{simResults.hookPct}%</span>
-                  </div>
-                  <div className="score-card">
-                    <span className="sc-label">SHARE MULTIPLIER</span>
-                    <span className="sc-val">{simResults.sharePct}%</span>
-                  </div>
-                  <div className="score-card">
-                    <span className="sc-label">BENCHMARK TIER</span>
-                    <span className="sc-val text-green">TOP {simResults.topPct}%</span>
-                  </div>
-                </div>
+                <textarea
+                  value={modalInput}
+                  onChange={(e) => setModalInput(e.target.value)}
+                  className="terminal-textarea"
+                  placeholder="Type or paste your hook, script, or tweet..."
+                />
 
-                <div className="output-debates">
-                  {simResults.debates.map((d, i) => (
-                    <div key={i} className="debate-bubble">
-                      <span className="db-persona">&gt; {d.name}</span>
-                      <span className="db-text">"{d.text}"</span>
-                    </div>
+                <div className="terminal-platform-select">
+                  <span className="label">TARGET ALGORITHM:</span>
+                  {['tiktok', 'instagram', 'youtube', 'x', 'linkedin'].map((plat) => (
+                    <button
+                      key={plat}
+                      type="button"
+                      onClick={() => setSelectedPlatform(plat)}
+                      className={`platform-chip ${selectedPlatform === plat ? 'active' : ''}`}
+                    >
+                      {plat.toUpperCase()}
+                    </button>
                   ))}
                 </div>
+
+                <div className="modal-actions-row">
+                  <button
+                    onClick={handleRunQuickSim}
+                    disabled={isSimulating}
+                    className="terminal-execute-btn"
+                  >
+                    {isSimulating ? '⚡ SYNTHESIZING AGENT COUNCIL...' : '⚡ RUN QUICK 5-AGENT AUDIT'}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      onLaunchStudio(modalInput);
+                    }}
+                    className="terminal-redirect-btn"
+                  >
+                    ⚡ OPEN IN STUDIO →
+                  </button>
+                </div>
+
+                {simResults && (
+                  <div className="terminal-output-feed">
+                    <div className="output-divider">
+                      ━━━━━━━━━ AUDIT TELEMETRY RESULTS ━━━━━━━━━
+                    </div>
+
+                    <div className="output-score-grid">
+                      <div className="score-card">
+                        <span className="sc-label">VIRALITY SCORE</span>
+                        <span className="sc-val text-green">{simResults.score}/100</span>
+                      </div>
+                      <div className="score-card">
+                        <span className="sc-label">0-3s RETENTION</span>
+                        <span className="sc-val">{simResults.hookPct}%</span>
+                      </div>
+                      <div className="score-card">
+                        <span className="sc-label">SHARE MULTIPLIER</span>
+                        <span className="sc-val">{simResults.sharePct}%</span>
+                      </div>
+                      <div className="score-card">
+                        <span className="sc-label">BENCHMARK TIER</span>
+                        <span className="sc-val text-green">TOP {simResults.topPct}%</span>
+                      </div>
+                    </div>
+
+                    <div className="output-debates">
+                      {simResults.debates.map((d, i) => (
+                        <div key={i} className="debate-bubble">
+                          <span className="db-persona">&gt; {d.name}</span>
+                          <span className="db-text">"{d.text}"</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
-      </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

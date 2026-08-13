@@ -145,7 +145,7 @@ export const PlatformAlgorithmTelemetry: React.FC<PlatformAlgorithmTelemetryProp
         </div>
         <div className="flex flex-col">
           <span className="text-[9px] text-[#646E82] uppercase tracking-wider font-bold">INITIAL SEED BATCH</span>
-          <span className="text-[#00F0FF] font-bold text-xs">{algo.seedBatchSize}</span>
+          <span className="text-[#00FF41] font-bold text-xs">{algo.seedBatchSize}</span>
         </div>
       </div>
 
@@ -159,7 +159,7 @@ export const PlatformAlgorithmTelemetry: React.FC<PlatformAlgorithmTelemetryProp
         {/* Stacked Percentage Bar */}
         <div className="h-2.5 w-full flex bg-[#0E1015] overflow-hidden border-2 border-white/20 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
           {algo.weights.map((w, idx) => {
-            const colors = ['bg-[#D4FF00]', 'bg-[#00F0FF]', 'bg-[#FF0055]', 'bg-[#8E98AA]'];
+            const colors = ['bg-[#D4FF00]', 'bg-[#00FF41]', 'bg-[#FF0055]', 'bg-[#8E98AA]'];
             return (
               <div
                 key={w.label}
@@ -174,7 +174,7 @@ export const PlatformAlgorithmTelemetry: React.FC<PlatformAlgorithmTelemetryProp
         {/* Weight Labels Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1.5 font-mechanismo">
           {algo.weights.map((w, idx) => {
-            const dotColors = ['text-[#D4FF00]', 'text-[#00F0FF]', 'text-[#FF0055]', 'text-[#8E98AA]'];
+            const dotColors = ['text-[#D4FF00]', 'text-[#00FF41]', 'text-[#FF0055]', 'text-[#8E98AA]'];
             return (
               <div
                 key={w.label}

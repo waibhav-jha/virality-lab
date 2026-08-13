@@ -73,12 +73,69 @@ class ScoreDiagnostics(BaseModel):
     consensus_weaknesses: List[str] = Field(default_factory=list, description="Key drop-off or friction triggers.")
 
 
+class SignalAttribution(BaseModel):
+    """Specific positive boost or negative friction signal detected in the content."""
+
+    signal_id: str = Field(..., description="Unique machine identifier for the signal.")
+    signal_name: str = Field(..., description="Human-readable title of the signal.")
+    category: str = Field(..., description="Signal category: 'hook', 'cognitive', 'utility', 'retention', 'platform_fit', etc.")
+    impact_points: float = Field(..., description="Points added (+) or deducted (-) from base quality score.")
+    matched_text: Optional[str] = Field(default=None, description="Exact phrase or pattern extracted from content.")
+    rationale: str = Field(..., description="Behavioral justification for why this signal influences human feed behavior.")
+    confidence: float = Field(default=0.90, ge=0.0, le=1.0, description="Detection confidence score.")
+
+
+class FormulaBreakdown(BaseModel):
+    """Transparent mathematical derivation of how the overall virality score was computed."""
+
+    formula_equation: str = Field(..., description="Algebraic formula string (e.g. '0.45*Retention + 0.25*Sharing + 0.15*Engagement + 0.15*Conversion').")
+    raw_weighted_sum: float = Field(..., ge=0.0, le=100.0, description="Weighted sum of component dimensions before platform multiplier.")
+    platform_weights: Dict[str, float] = Field(..., description="Platform-specific algorithmic weights applied.")
+    platform_multiplier: float = Field(default=1.0, description="Platform calibration scaling multiplier.")
+    platform_bonus_points: float = Field(default=0.0, description="Bonus or penalty points applied for platform-specific format fit.")
+    calibrated_final_score: float = Field(..., ge=0.0, le=100.0, description="Final 0-100 calibrated virality score.")
+
+
+class RetentionFunnelStep(BaseModel):
+    """Telemetry stage along the viewer cognitive attention funnel."""
+
+    step_name: str = Field(..., description="Funnel stage label (e.g. '0.0s Feed Impression', '1.5s Hook Window', '10s Pacing').")
+    time_seconds: float = Field(..., description="Timestamp in seconds along playback or reading timeline.")
+    retention_percentage: float = Field(..., ge=0.0, le=100.0, description="Estimated percentage of viewers remaining.")
+    dropoff_percentage: float = Field(..., ge=0.0, le=100.0, description="Drop-off loss rate at this juncture.")
+    friction_note: str = Field(..., description="Behavioral explanation for retention or drop-off.")
+
+
+class VariantDifferential(BaseModel):
+    """Comparative differential for a specific metric between two specimens."""
+
+    metric_name: str = Field(..., description="Name of dimension or signal (e.g. 'Hook Velocity', 'Bookmark Probability').")
+    baseline_value: float = Field(..., description="Value for baseline specimen.")
+    challenger_value: float = Field(..., description="Value for challenger specimen.")
+    delta: float = Field(..., description="Challenger minus baseline delta.")
+    advantage: str = Field(..., description="'challenger', 'baseline', or 'neutral'.")
+    causal_explanation: str = Field(..., description="Explanation of why this difference occurred.")
+
+
+class ABTestExplanation(BaseModel):
+    """Explainable intelligence breakdown for A/B/C head-to-head testing."""
+
+    bayesian_win_probability: float = Field(..., ge=0.0, le=100.0, description="Bayesian posterior probability that the winner outperforms in live feeds (0-100%).")
+    statistical_confidence_pct: float = Field(default=95.0, ge=0.0, le=100.0, description="Statistical sample reliability confidence index.")
+    margin_of_error_pct: float = Field(default=3.5, ge=0.0, description="Margin of error range (+/- %).")
+    top_win_drivers: List[str] = Field(default_factory=list, description="Ranked factors that drove the winner's victory margin.")
+    differentials: List[VariantDifferential] = Field(default_factory=list, description="Head-to-head feature matrix.")
+
+
 class ScoreExplanation(BaseModel):
     """Deterministic, rule-generated explanation of the score without LLM hallucination."""
 
     positive_drivers: List[str] = Field(default_factory=list, description="Primary metrics driving score up.")
     negative_drivers: List[str] = Field(default_factory=list, description="Primary metrics pulling score down.")
     audience_verdict: str = Field(..., description="High-level descriptive summary of audience reaction.")
+    signal_attributions: List[SignalAttribution] = Field(default_factory=list, description="Itemized positive and negative signal detections.")
+    formula_breakdown: Optional[FormulaBreakdown] = Field(default=None, description="Mathematical derivation ledger.")
+    retention_funnel: List[RetentionFunnelStep] = Field(default_factory=list, description="Viewer drop-off funnel telemetry.")
 
 
 class ScoreConfidence(BaseModel):
@@ -104,6 +161,9 @@ class ViralityScore(BaseModel):
     explanation: ScoreExplanation = Field(..., description="Deterministic causal explanation.")
     confidence: ScoreConfidence = Field(..., description="Coverage and uncertainty metrics.")
     raw_metrics: Dict[str, MetricDistribution] = Field(default_factory=dict, description="Underlying probability distributions.")
+    signal_attributions: List[SignalAttribution] = Field(default_factory=list, description="Direct access to signal detections.")
+    formula_breakdown: Optional[FormulaBreakdown] = Field(default=None, description="Direct access to formula breakdown.")
+    retention_funnel: List[RetentionFunnelStep] = Field(default_factory=list, description="Direct access to retention funnel.")
     disclaimer: str = Field(
         default=(
             "This score represents simulated audience response within our heuristic behavioral model, "

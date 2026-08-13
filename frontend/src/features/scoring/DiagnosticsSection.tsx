@@ -46,7 +46,7 @@ export const DiagnosticsSection: React.FC<DiagnosticsSectionProps> = ({
           <span className="text-white/40">::</span>
           <span className="text-white/80 font-bold">CONTENT DIAGNOSTICS & SIGNAL FRICTION</span>
         </div>
-        <span className="text-[#00F0FF] font-bold">[DIAGNOSTIC ENGINE: DETERMINISTIC]</span>
+        <span className="text-[#00FF41] font-bold">[DIAGNOSTIC ENGINE: DETERMINISTIC]</span>
       </div>
 
       {/* Hook & Cognitive Signal Deck */}
@@ -82,13 +82,13 @@ export const DiagnosticsSection: React.FC<DiagnosticsSectionProps> = ({
               <div className="flex flex-col gap-1.5 bg-[#07080A]/60 p-3 border border-white/10">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-[#A2ABB9] font-bold">CURIOSITY GAP INDEX</span>
-                  <span className="font-black text-[#00F0FF]">
+                  <span className="font-black text-[#00FF41]">
                     {Math.round(curiosityGap <= 1.0 ? curiosityGap * 100 : curiosityGap)}/100
                   </span>
                 </div>
                 <div className="h-2 bg-[#0E1015] border border-white/20 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#00F0FF] to-white shadow-[0_0_8px_#00F0FF]"
+                    className="h-full bg-gradient-to-r from-[#00FF41] to-white shadow-[0_0_8px_#00FF41]"
                     style={{ width: `${Math.min(100, curiosityGap <= 1.0 ? curiosityGap * 100 : curiosityGap)}%` }}
                   />
                 </div>

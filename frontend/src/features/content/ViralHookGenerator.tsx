@@ -142,7 +142,7 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
                     <span className="font-black text-[#D4FF00] uppercase bg-[#D4FF00]/10 px-2 py-0.5 border border-[#D4FF00]/30 font-csmigrate">
                       {h.archetype_label}
                     </span>
-                    <span className="text-[#00F0FF] font-black">
+                    <span className="text-[#00FF41] font-black">
                       ⚡ {h.predicted_stop_scroll}% STOP-SCROLL
                     </span>
                   </div>

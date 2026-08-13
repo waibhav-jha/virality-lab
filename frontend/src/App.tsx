@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import {
   AlertCircle,
   Beaker,
@@ -6,7 +6,6 @@ import {
   X,
   ArrowRight,
   ArrowLeft,
-  Sparkles,
   Swords,
   Globe2,
   Layers,
@@ -31,6 +30,7 @@ import { OptimizationSection } from './features/optimization/OptimizationSection
 import { BeforeAfterStory } from './features/optimization/BeforeAfterStory';
 import { Button } from './design-system/Button';
 import { LandingPage } from './features/landing/LandingPage';
+import { CyberPortalCurtain } from './components/CyberPortalCurtain';
 
 export function App() {
   const exp = useExperiment();
@@ -50,38 +50,106 @@ export function App() {
   };
 
   const [currentView, setCurrentView] = useState<'landing' | 'studio'>(getInitialView);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+  const [transitionTarget, setTransitionTarget] = useState<'landing' | 'studio'>('studio');
+  const [transitionTelemetry, setTransitionTelemetry] = useState<string>('ENGAGING SIMULATION STUDIO');
+  const [viewAnimationClass, setViewAnimationClass] = useState<string>('portal-view-enter');
+
+  // Launch Studio action with smooth portal warp
+  const handleLaunchStudio = useCallback(
+    (presetPrompt?: string) => {
+      if (presetPrompt) {
+        exp.setCaption(presetPrompt);
+      }
+
+      if (currentView === 'studio') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // Initiate Portal Warp Sequence
+      setTransitionTarget('studio');
+      setTransitionTelemetry('ENGAGING AUDIENCE SIMULATION MATRIX // 05 AGENTS ONLINE');
+      setIsTransitioning(true);
+      setViewAnimationClass('portal-view-exit');
+
+      setTimeout(() => {
+        window.location.hash = 'studio';
+        setCurrentView('studio');
+        setViewAnimationClass('portal-view-enter');
+        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      }, 500);
+
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 1050);
+    },
+    [currentView, exp]
+  );
+
+  // Return to Landing Portal action with smooth portal warp
+  const handleNavigateToLanding = useCallback(() => {
+    if (currentView === 'landing') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setTransitionTarget('landing');
+    setTransitionTelemetry('SYNCHRONIZING PORTAL // RETURNING TO MISSION ARCHIVE');
+    setIsTransitioning(true);
+    setViewAnimationClass('portal-view-exit');
+
+    setTimeout(() => {
+      window.location.hash = '';
+      setCurrentView('landing');
+      setViewAnimationClass('portal-view-enter');
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    }, 500);
+
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 1050);
+  }, [currentView]);
 
   // Synchronize hash changes (e.g. browser back/forward buttons)
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.toLowerCase();
-      if (hash.includes('studio') || hash.includes('app')) {
-        setCurrentView('studio');
-      } else {
-        setCurrentView('landing');
+      const target = hash.includes('studio') || hash.includes('app') ? 'studio' : 'landing';
+      if (target !== currentView && !isTransitioning) {
+        if (target === 'studio') {
+          handleLaunchStudio();
+        } else {
+          handleNavigateToLanding();
+        }
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [currentView, isTransitioning, handleLaunchStudio, handleNavigateToLanding]);
 
-  // Launch Studio action (optionally injecting a prompt preset)
-  const handleLaunchStudio = (presetPrompt?: string) => {
-    if (presetPrompt) {
-      exp.setCaption(presetPrompt);
-    }
-    window.location.hash = 'studio';
-    setCurrentView('studio');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  // Studio Scroll Reveal Observer
+  useEffect(() => {
+    if (currentView !== 'studio') return;
 
-  // Return to Landing Portal action
-  const handleNavigateToLanding = () => {
-    window.location.hash = '';
-    setCurrentView('landing');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    const elements = document.querySelectorAll('.reveal-item, .reveal-card, .reveal-line');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [currentView, exp.phase, exp.status, activeDeckTab, result]);
 
   // Automatically reset to 'all' modules whenever a new run or rerun starts or results arrive
   useEffect(() => {
@@ -105,34 +173,53 @@ export function App() {
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth' }), 300);
   };
 
-  // Render Landing Page as Default Primary View
+  // Render Landing Page as Default Primary View with Smooth Portal Transition
   if (currentView === 'landing') {
-    return <LandingPage onLaunchStudio={handleLaunchStudio} />;
+    return (
+      <>
+        <CyberPortalCurtain
+          isActive={isTransitioning}
+          targetView={transitionTarget}
+          telemetryText={transitionTelemetry}
+        />
+        <div className={`cyber-view-transition ${viewAnimationClass}`}>
+          <LandingPage onLaunchStudio={handleLaunchStudio} />
+        </div>
+      </>
+    );
   }
 
-  // Render Full Virality Lab Simulation Studio
+  // Render Full Virality Lab Simulation Studio with Smooth Portal Fade
   return (
-    <div className="min-h-screen bg-[#07080A] text-[#F4F6F8] flex flex-col relative overflow-x-hidden contour-grid-bg selection:bg-[#D4FF00] selection:text-[#07080A]">
-      {/* Header Masthead */}
-      <Header
-        health={exp.health}
-        historyCount={exp.history.length}
-        showBack={hasResults}
-        onBackToStudio={exp.backToStudio}
-        onNavigateToLanding={handleNavigateToLanding}
-        onOpenHistory={() => exp.setIsHistoryOpen(true)}
-        onReset={exp.resetExperiment}
+    <>
+      <CyberPortalCurtain
+        isActive={isTransitioning}
+        targetView={transitionTarget}
+        telemetryText={transitionTelemetry}
       />
+      <div className={`cyber-view-transition ${viewAnimationClass} min-h-screen bg-[#07080A] text-[#F4F6F8] flex flex-col relative overflow-x-hidden contour-grid-bg selection:bg-[#D4FF00] selection:text-[#07080A]`}>
+        {/* Header Masthead */}
+        <Header
+          health={exp.health}
+          historyCount={exp.history.length}
+          showBack={hasResults}
+          onBackToStudio={exp.backToStudio}
+          onNavigateToLanding={handleNavigateToLanding}
+          onOpenHistory={() => exp.setIsHistoryOpen(true)}
+          onReset={exp.resetExperiment}
+        />
 
       {/* Main Studio Content Area - Expanded to max-w-[1640px] to eliminate empty side voids */}
       <main className="flex-1 w-full max-w-[1640px] mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex flex-col gap-8" role="main">
-        {/* Editorial Inquiry & Specimen Presets */}
-        <HeroSection onLoadSample={exp.loadSample} onRunDemo={handleDemo} />
+        {/* Editorial Inquiry & Specimen Presets with Scroll Reveal */}
+        <div className="reveal-item is-visible">
+          <HeroSection onLoadSample={exp.loadSample} onRunDemo={handleDemo} />
+        </div>
 
         {/* Error Alert Bar */}
         {exp.error && (
           <div
-            className="w-full bg-[#0E1013] border border-red-500/40 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left font-mono-tech"
+            className="w-full bg-[#0E1013] border border-red-500/40 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left font-mono-tech reveal-item is-visible"
             role="alert"
           >
             <div className="flex items-start gap-3 flex-1">
@@ -163,7 +250,7 @@ export function App() {
 
         {/* Demo Mode Indicator */}
         {exp.isDemo && hasResults && (
-          <div className="w-full bg-white/[0.02] border border-[#D4FF00]/40 p-3 flex items-center justify-between text-xs font-mono-tech text-[#D4FF00]" role="status">
+          <div className="w-full bg-white/[0.02] border border-[#D4FF00]/40 p-3 flex items-center justify-between text-xs font-mono-tech text-[#D4FF00] reveal-item is-visible" role="status">
             <div className="flex items-center gap-2">
               <span className="font-bold uppercase">[ DEMO BENCHMARK DATASET ]</span>
               <span className="text-white/40">·</span>
@@ -177,7 +264,7 @@ export function App() {
 
         {/* ───── Studio: Content & Parameter Configuration ───── */}
         {exp.phase === 'setup' && (
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" aria-label="Content workspace">
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start reveal-item delay-1 is-visible" aria-label="Content workspace">
             {/* Left 7 Cols: Experiment Parameter Controls */}
             <div className="lg:col-span-7 cyber-card corner-ticks p-5 sm:p-7 flex flex-col gap-5">
               <div className="flex items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest">
@@ -186,7 +273,7 @@ export function App() {
                   <span className="text-white/40">::</span>
                   <span className="text-white font-bold">SPECIMEN & AUDIENCE CONFIGURATION</span>
                 </div>
-                <span className="bg-[#07080A] px-2 py-0.5 border border-white/15 text-[#00F0FF] font-bold text-[10px]">CONFIG MODE</span>
+                <span className="bg-[#07080A] px-2 py-0.5 border border-[#00FF41]/40 text-[#00FF41] font-bold text-[10px]">CONFIG MODE</span>
               </div>
 
               <ExperimentControls
@@ -235,7 +322,7 @@ export function App() {
 
         {/* Pipeline Telemetry Progress */}
         {isSimulating && (
-          <div ref={resultsRef} className="w-full">
+          <div ref={resultsRef} className="w-full reveal-item is-visible">
             <SimulationProgress
               status={exp.status} stage={exp.stage} progress={exp.progress}
               message={exp.message} runId={exp.currentRunId}
@@ -247,7 +334,7 @@ export function App() {
         {hasResults && result && (
           <div ref={resultsRef} className="w-full flex flex-col gap-8 pt-2" aria-label="Simulation results">
             {/* Top Quick Navigation Bar */}
-            <div className="w-full cyber-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 corner-ticks">
+            <div className="w-full cyber-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 corner-ticks reveal-card is-visible">
               <div className="flex items-center gap-3 font-mechanismo">
                 <Button
                   variant="viral"
@@ -279,7 +366,7 @@ export function App() {
             </div>
 
             {/* Sub-Module Navigation Switcher */}
-            <div className="w-full flex flex-wrap items-center gap-2 border-b-2 border-white/15 pb-3 font-mechanismo text-xs">
+            <div className="w-full flex flex-wrap items-center gap-2 border-b-2 border-white/15 pb-3 font-mechanismo text-xs reveal-line is-visible">
               <span className="text-[#8E98AA] text-[10px] uppercase font-bold mr-2">LAB MODULE:</span>
               
               <button
@@ -350,7 +437,7 @@ export function App() {
 
             {/* 1. Virality Potential Score & Audit Deck */}
             {(activeDeckTab === 'all' || activeDeckTab === 'audit') && (
-              <>
+              <div className="flex flex-col gap-8 reveal-item is-visible">
                 {result.score && (
                   <ViralityScoreSection
                     score={result.score}
@@ -399,49 +486,53 @@ export function App() {
                     platform={exp.platform}
                   />
                 )}
-              </>
+              </div>
             )}
 
             {/* 2. Feature B: Live Multi-Variant A/B Head-to-Head Arena */}
             {(activeDeckTab === 'all' || activeDeckTab === 'ab_arena') && (
-              <ABTestingArena
-                originalCaption={exp.caption}
-                candidateVariants={result.optimization?.candidate_variants}
-                platform={exp.platform}
-                mediaType={exp.mediaType}
-                selectedPersonas={exp.selectedPersonas}
-                objective={exp.objective}
-                onApplyVariant={(newCap) => {
-                  exp.setCaption(newCap);
-                  exp.backToStudio();
-                }}
-              />
+              <div className="reveal-card is-visible">
+                <ABTestingArena
+                  originalCaption={exp.caption}
+                  candidateVariants={result.optimization?.candidate_variants}
+                  platform={exp.platform}
+                  mediaType={exp.mediaType}
+                  selectedPersonas={exp.selectedPersonas}
+                  objective={exp.objective}
+                  onApplyVariant={(newCap) => {
+                    exp.setCaption(newCap);
+                    exp.backToStudio();
+                  }}
+                />
+              </div>
             )}
 
             {/* 3. Feature C: Cross-Platform Compatibility Matrix */}
             {(activeDeckTab === 'all' || activeDeckTab === 'matrix') && (
-              <CrossPlatformMatrix
-                caption={exp.caption}
-                transcript={exp.transcript}
-                currentPlatform={exp.platform}
-                mediaType={exp.mediaType}
-                selectedPersonas={exp.selectedPersonas}
-                objective={exp.objective}
-                onSelectPlatform={(newPlat) => {
-                  exp.setPlatform(newPlat);
-                  exp.backToStudio();
-                }}
-                onApplyAdaptedSpecimen={(newPlat, adaptedCaption) => {
-                  exp.setPlatform(newPlat);
-                  exp.setCaption(adaptedCaption);
-                  exp.backToStudio();
-                }}
-              />
+              <div className="reveal-card is-visible">
+                <CrossPlatformMatrix
+                  caption={exp.caption}
+                  transcript={exp.transcript}
+                  currentPlatform={exp.platform}
+                  mediaType={exp.mediaType}
+                  selectedPersonas={exp.selectedPersonas}
+                  objective={exp.objective}
+                  onSelectPlatform={(newPlat) => {
+                    exp.setPlatform(newPlat);
+                    exp.backToStudio();
+                  }}
+                  onApplyAdaptedSpecimen={(newPlat, adaptedCaption) => {
+                    exp.setPlatform(newPlat);
+                    exp.setCaption(adaptedCaption);
+                    exp.backToStudio();
+                  }}
+                />
+              </div>
             )}
 
             {/* 4. Genetic Candidate Optimizer */}
             {(activeDeckTab === 'all' || activeDeckTab === 'optimizer') && (
-              <>
+              <div className="flex flex-col gap-8 reveal-item is-visible">
                 {result.optimization && result.score && (
                   <BeforeAfterStory
                     originalScore={result.score}
@@ -456,11 +547,11 @@ export function App() {
                     onApplyWinner={exp.applyWinner}
                   />
                 )}
-              </>
+              </div>
             )}
 
             {/* Bottom Actions Bar */}
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-4 pb-8">
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-4 pb-8 reveal-item is-visible">
               <Button
                 variant="viral"
                 size="md"
@@ -497,7 +588,8 @@ export function App() {
           <span className="text-[#7E8798]">DETERMINISTIC SIMULATION ENGINE · FASTAPI + REACT</span>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 }
 

@@ -213,7 +213,7 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
             <button
               type="button"
               onClick={() => setIsPersonaModalOpen(true)}
-              className="text-[#00F0FF] hover:underline cursor-pointer uppercase font-black flex items-center gap-1 font-csmigrate text-xs"
+              className="text-[#00FF41] hover:underline cursor-pointer uppercase font-black flex items-center gap-1 font-csmigrate text-xs"
             >
               <UserPlus className="w-3.5 h-3.5" />
               + SYNTHESIZE AGENT
@@ -243,7 +243,7 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
                   'p-3 border-2 transition-all cursor-pointer flex items-center justify-between gap-3 select-none text-xs shadow-[2px_2px_0px_0px_#000]',
                   isChecked
                     ? isCustom
-                      ? 'bg-[#0D1017] border-[#00F0FF] text-white shadow-[2px_2px_0px_0px_#00F0FF]'
+                      ? 'bg-[#0D1017] border-[#00FF41] text-white shadow-[2px_2px_0px_0px_#00FF41]'
                       : 'bg-[#0E1219] border-[#D4FF00] text-white shadow-[2px_2px_0px_0px_#D4FF00]'
                     : 'bg-[#07080A] border-white/15 text-[#646E82] opacity-60 hover:opacity-100 hover:border-white/30'
                 )}
@@ -254,7 +254,7 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
                     <span
                       className={clsx(
                         'text-[10px] font-mechanismo font-bold px-1.5 py-0.2 border',
-                        isCustom ? 'text-[#00F0FF] border-[#00F0FF]/40 bg-[#00F0FF]/10' : 'text-[#8E98AA] border-white/10'
+                        isCustom ? 'text-[#00FF41] border-[#00FF41]/40 bg-[#00FF41]/10' : 'text-[#8E98AA] border-white/10'
                       )}
                     >
                       [{persona.archetype}]
@@ -281,7 +281,7 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
                       'text-xs font-black font-csmigrate px-2 py-0.5 border',
                       isChecked
                         ? isCustom
-                          ? 'bg-[#00F0FF] text-[#060709] border-[#00F0FF]'
+                          ? 'bg-[#00FF41] text-[#060709] border-[#00FF41]'
                           : 'bg-[#D4FF00] text-[#060709] border-[#D4FF00]'
                         : 'bg-transparent text-white/30 border-white/15'
                     )}

@@ -21,6 +21,7 @@
   font-display: swap;
 }
 
+:root,
 .landing-page-root {
   --bg-pure: #000000;
   --bg-card: #050705;
@@ -43,7 +44,9 @@
   --font-mono: 'Space Mono', 'JetBrains Mono', monospace;
   --font-mechanismo: 'Mechanismo', 'JetBrains Mono', monospace;
   --font-csmigrate: 'CsMigrate', 'Space Mono', monospace;
+}
 
+.landing-page-root {
   min-height: 100vh;
   width: 100%;
   background-color: var(--bg-pure);
@@ -58,6 +61,7 @@
 }
 
 /* Background Particle Canvas */
+.bg-particle-canvas,
 .landing-page-root .bg-particle-canvas {
   position: fixed;
   top: 0;
@@ -70,6 +74,7 @@
 }
 
 /* CRT Scanlines & Noise */
+.crt-overlay,
 .landing-page-root .crt-overlay {
   position: fixed;
   top: 0;
@@ -91,6 +96,7 @@
   opacity: 0.65;
 }
 
+.noise-overlay,
 .landing-page-root .noise-overlay {
   position: fixed;
   top: 0;
@@ -104,17 +110,22 @@
 }
 
 /* Custom Interactive Cursor HUD */
+.cursor-crosshair,
 .landing-page-root .cursor-crosshair {
   position: fixed;
+  top: 0;
+  left: 0;
   pointer-events: none;
   z-index: 10000;
-  transform: translate(-50%, -50%);
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  will-change: transform;
 }
 
+.cursor-dot,
 .landing-page-root .cursor-dot {
   width: 6px;
   height: 6px;
@@ -122,6 +133,7 @@
   box-shadow: 0 0 8px var(--neon-green);
 }
 
+.cursor-hud,
 .landing-page-root .cursor-hud {
   font-family: var(--font-mechanismo);
   font-size: 9px;
@@ -133,12 +145,14 @@
 }
 
 @media (max-width: 768px) {
+  .cursor-crosshair,
   .landing-page-root .cursor-crosshair {
     display: none;
   }
 }
 
 /* Scroll Depth HUD Tracker */
+.scroll-hud-tracker,
 .landing-page-root .scroll-hud-tracker {
   position: fixed;
   left: 18px;
@@ -152,6 +166,7 @@
   pointer-events: none;
 }
 
+.scroll-bar,
 .landing-page-root .scroll-bar {
   width: 2px;
   height: 90px;
@@ -160,6 +175,7 @@
   overflow: hidden;
 }
 
+.scroll-fill,
 .landing-page-root .scroll-fill {
   position: absolute;
   top: 0;
@@ -170,6 +186,7 @@
   transition: height 0.1s ease-out;
 }
 
+.scroll-val,
 .landing-page-root .scroll-val {
   font-family: var(--font-mechanismo);
   font-size: 9px;
@@ -181,12 +198,14 @@
 }
 
 @media (max-width: 1280px) {
+  .scroll-hud-tracker,
   .landing-page-root .scroll-hud-tracker {
     display: none;
   }
 }
 
 /* Floating Audio Toggle */
+.hud-audio-btn,
 .landing-page-root .hud-audio-btn {
   position: fixed;
   bottom: 24px;
@@ -207,12 +226,14 @@
   transition: all 0.2s ease;
 }
 
+.hud-audio-btn:hover,
 .landing-page-root .hud-audio-btn:hover {
   background: var(--neon-green);
   color: var(--bg-pure);
   box-shadow: 0 0 16px var(--neon-green);
 }
 
+.audio-pulse,
 .landing-page-root .audio-pulse {
   width: 7px;
   height: 7px;
@@ -220,6 +241,7 @@
   border-radius: 50%;
 }
 
+.hud-audio-btn.active .audio-pulse,
 .landing-page-root .hud-audio-btn.active .audio-pulse {
   animation: pulse-audio 1s infinite alternate;
 }
@@ -1383,6 +1405,7 @@
 }
 
 /* Terminal Modal */
+.terminal-modal,
 .landing-page-root .terminal-modal {
   position: fixed;
   inset: 0;
@@ -1395,11 +1418,13 @@
   transition: opacity 0.25s ease;
 }
 
+.terminal-modal.active,
 .landing-page-root .terminal-modal.active {
   opacity: 1;
   pointer-events: auto;
 }
 
+.modal-backdrop,
 .landing-page-root .modal-backdrop {
   position: absolute;
   inset: 0;
@@ -1407,6 +1432,7 @@
   backdrop-filter: blur(4px);
 }
 
+.modal-window,
 .landing-page-root .modal-window {
   position: relative;
   width: 90%;

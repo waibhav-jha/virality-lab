@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ViralityScoreBreakdown } from '../../api/types';
 import { ScoreGauge } from '../../design-system/ScoreGauge';
 import { MetricBar } from '../../design-system/MetricBar';
+import { ScoreMathInspector } from './ScoreMathInspector';
+import { Calculator, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ViralityScoreSectionProps {
   score: ViralityScoreBreakdown | any;
   optimizedScore?: ViralityScoreBreakdown | any;
+  platform?: string;
 }
 
 export const ViralityScoreSection: React.FC<ViralityScoreSectionProps> = ({
   score,
   optimizedScore,
+  platform = 'tiktok',
 }) => {
+  const [showInspector, setShowInspector] = useState<boolean>(true);
   if (!score) return null;
 
   const normalize = (val?: any): number => {
@@ -86,101 +91,118 @@ export const ViralityScoreSection: React.FC<ViralityScoreSectionProps> = ({
   };
 
   return (
-    <section
-      className="w-full cyber-card corner-ticks p-6 sm:p-8 text-left flex flex-col gap-6"
-      aria-label="Virality potential score and breakdown"
-    >
-      {/* Section Header */}
-      <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest">
-        <div className="flex items-center gap-2">
-          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
-            02 // AUDIENCE CALIBRATION
-          </span>
-          <span className="text-white/40">::</span>
-          <span className="text-white/80 font-bold">VIRALITY POTENTIAL REPORT</span>
-        </div>
-        <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
-          <span className="text-[#00F0FF] font-black font-csmigrate">TIER: {performanceTier}</span>
-        </div>
-      </div>
-
-      {/* Main Score & Dimension Ledger */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        {/* Left 5 Columns: Massive Master Gauge */}
-        <div className="lg:col-span-5 border-2 border-white/20 bg-[#07080A] flex flex-col justify-between shadow-[3px_3px_0px_0px_#000]">
-          <ScoreGauge
-            score={calibratedScore}
-            confidence={confidence}
-            percentile={score.percentile_estimate}
-            tier={performanceTier}
-            size="lg"
-          />
-          <div className="p-4 border-t-2 border-white/15 font-mechanismo text-xs text-[#A2ABB9] bg-[#0A0D14]">
-            <span className="text-[#646E82] block uppercase text-[10px] font-bold">PRIMARY PERFORMANCE VECTORS:</span>
-            <span className="text-[#D4FF00] font-black uppercase font-csmigrate text-sm">{topDrivers.join(' + ')}</span>
+    <div className="flex flex-col gap-6 w-full">
+      <section
+        className="w-full cyber-card corner-ticks p-6 sm:p-8 text-left flex flex-col gap-6"
+        aria-label="Virality potential score and breakdown"
+      >
+        {/* Section Header */}
+        <div className="flex flex-wrap items-center justify-between border-b-2 border-white/15 pb-3 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
+              02 // AUDIENCE CALIBRATION
+            </span>
+            <span className="text-white/40">::</span>
+            <span className="text-white/80 font-bold">VIRALITY POTENTIAL REPORT</span>
           </div>
-        </div>
-
-        {/* Right 7 Columns: Core Performance Vectors */}
-        <div className="lg:col-span-7 flex flex-col justify-between gap-4 p-5 sm:p-6 bg-[#07080A] border-2 border-white/20 shadow-[3px_3px_0px_0px_#000]">
-          <div className="flex items-center justify-between border-b-2 border-white/15 pb-2 font-mechanismo font-bold">
-            <span className="text-xs text-white/90 font-csmigrate uppercase tracking-wider">DIMENSION VECTORS</span>
-            <span className="text-[10px] text-[#8E98AA]">SCALE 00–100</span>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <MetricBar
-              label="RETENTION & COMPLETION CADENCE"
-              value={retention}
-              previousValue={getOptScoreComponent(optimizedScore, 'retention', 'retention_score')}
-              color="accent"
-              description="Sustained viewer attention through the opening 3-5 second hook window."
-            />
-            <MetricBar
-              label="PEER PROPAGATION & FORWARDING"
-              value={shareability}
-              previousValue={getOptScoreComponent(optimizedScore, 'sharing', 'shareability_score')}
-              color="accent"
-              description="Probability of viewer sending specimen via DM or reposting to network."
-            />
-            <MetricBar
-              label="ACTIVE ENGAGEMENT DENSITY"
-              value={engagement}
-              previousValue={getOptScoreComponent(optimizedScore, 'engagement', 'engagement_score')}
-              color="accent"
-              description="Frictionless prompt for commentary, controversy, or feedback."
-            />
-            <MetricBar
-              label="CONVERSION & AUDIENCE CAPTURE"
-              value={conversion}
-              previousValue={getOptScoreComponent(optimizedScore, 'conversion', 'conversion_score')}
-              color="accent"
-              description="Propensity of first-time viewers to tap profile and subscribe."
-            />
-          </div>
-
-          {/* Polarization & Consensus Telemetry */}
-          <div className="pt-3 border-t-2 border-white/15 flex flex-col gap-2 font-mechanismo">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-[#A2ABB9] uppercase font-bold">
-                {polarization > 40 ? 'POLARIZATION INDEX' : 'COHORT CONSENSUS'}
-              </span>
-              <span className="font-black text-[#D4FF00]">{agreement}% AGREEMENT</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
+              <span className="text-[#00FF41] font-black font-csmigrate">TIER: {performanceTier}</span>
             </div>
-            <div className="relative h-2 w-full bg-[#0E1015] border border-white/20 overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
-              <div
-                className="h-full bg-[#D4FF00] shadow-[0_0_8px_#D4FF00] transition-all duration-500"
-                style={{ width: `${agreement}%` }}
+            <button
+              onClick={() => setShowInspector(!showInspector)}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-[#D4FF00]/15 text-[#D4FF00] border border-[#D4FF00]/50 hover:bg-[#D4FF00] hover:text-[#060709] transition-all font-mechanismo font-bold text-[10px] uppercase shadow-[1px_1px_0px_0px_#000]"
+            >
+              <Calculator className="w-3.5 h-3.5" />
+              <span>{showInspector ? 'HIDE EXPLAINABLE LEDGER' : 'VIEW SCORE FORMULA & LEDGER'}</span>
+              {showInspector ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Main Score & Dimension Ledger */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          {/* Left 5 Columns: Massive Master Gauge */}
+          <div className="lg:col-span-5 border-2 border-white/20 bg-[#07080A] flex flex-col justify-between shadow-[3px_3px_0px_0px_#000]">
+            <ScoreGauge
+              score={calibratedScore}
+              confidence={confidence}
+              percentile={score.percentile_estimate}
+              tier={performanceTier}
+              size="lg"
+            />
+            <div className="p-4 border-t-2 border-white/15 font-mechanismo text-xs text-[#A2ABB9] bg-[#0A0D14]">
+              <span className="text-[#646E82] block uppercase text-[10px] font-bold">PRIMARY PERFORMANCE VECTORS:</span>
+              <span className="text-[#D4FF00] font-black uppercase font-csmigrate text-sm">{topDrivers.join(' + ')}</span>
+            </div>
+          </div>
+
+          {/* Right 7 Columns: Core Performance Vectors */}
+          <div className="lg:col-span-7 flex flex-col justify-between gap-4 p-5 sm:p-6 bg-[#07080A] border-2 border-white/20 shadow-[3px_3px_0px_0px_#000]">
+            <div className="flex items-center justify-between border-b-2 border-white/15 pb-2 font-mechanismo font-bold">
+              <span className="text-xs text-white/90 font-csmigrate uppercase tracking-wider">DIMENSION VECTORS</span>
+              <span className="text-[10px] text-[#8E98AA]">SCALE 00–100</span>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <MetricBar
+                label="RETENTION & COMPLETION CADENCE"
+                value={retention}
+                previousValue={getOptScoreComponent(optimizedScore, 'retention', 'retention_score')}
+                color="accent"
+                description="Sustained viewer attention through the opening 3-5 second hook window."
+              />
+              <MetricBar
+                label="PEER PROPAGATION & FORWARDING"
+                value={shareability}
+                previousValue={getOptScoreComponent(optimizedScore, 'sharing', 'shareability_score')}
+                color="accent"
+                description="Probability of viewer sending specimen via DM or reposting to network."
+              />
+              <MetricBar
+                label="ACTIVE ENGAGEMENT DENSITY"
+                value={engagement}
+                previousValue={getOptScoreComponent(optimizedScore, 'engagement', 'engagement_score')}
+                color="accent"
+                description="Frictionless prompt for commentary, controversy, or feedback."
+              />
+              <MetricBar
+                label="CONVERSION & AUDIENCE CAPTURE"
+                value={conversion}
+                previousValue={getOptScoreComponent(optimizedScore, 'conversion', 'conversion_score')}
+                color="accent"
+                description="Propensity of first-time viewers to tap profile and subscribe."
               />
             </div>
-            <span className="text-[11px] text-[#8E98AA] font-sans leading-tight">
-              {polarization > 40
-                ? 'High audience polarization: Content divides cohorts, driving debate at the cost of unified reach.'
-                : 'Broad cross-persona consensus: Similar retention signals across diverse audience demographics.'}
-            </span>
+
+            {/* Polarization & Consensus Telemetry */}
+            <div className="pt-3 border-t-2 border-white/15 flex flex-col gap-2 font-mechanismo">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[#A2ABB9] uppercase font-bold">
+                  {polarization > 40 ? 'POLARIZATION INDEX' : 'COHORT CONSENSUS'}
+                </span>
+                <span className="font-black text-[#D4FF00]">{agreement}% AGREEMENT</span>
+              </div>
+              <div className="relative h-2 w-full bg-[#0E1015] border border-white/20 overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+                <div
+                  className="h-full bg-[#D4FF00] shadow-[0_0_8px_#D4FF00] transition-all duration-500"
+                  style={{ width: `${agreement}%` }}
+                />
+              </div>
+              <span className="text-[11px] text-[#8E98AA] font-sans leading-tight">
+                {polarization > 40
+                  ? 'High audience polarization: Content divides cohorts, driving debate at the cost of unified reach.'
+                  : 'Broad cross-persona consensus: Similar retention signals across diverse audience demographics.'}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Itemized Explainable Intelligence Inspector */}
+      {showInspector && (
+        <ScoreMathInspector score={score} platform={platform} />
+      )}
+    </div>
   );
 };

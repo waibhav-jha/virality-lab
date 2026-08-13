@@ -28,6 +28,10 @@
   font-display: swap;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   :root {
     --font-astroda: 'Astroda', 'Space Grotesk', sans-serif;
@@ -51,9 +55,10 @@
     --color-text-secondary: #9DA7B8;
     --color-text-muted: #646E82;
 
-    /* Cyber Brutalist Neon Accents */
+    /* Cyber Brutalist Neon Accents (Green & Volt Focus) */
     --color-accent: #D4FF00;
-    --color-accent-cyan: #00F0FF;
+    --color-accent-green: #00FF41;
+    --color-accent-cyan: #00FF41;
     --color-accent-magenta: #FF0055;
     --color-accent-subtle: rgba(212, 255, 0, 0.08);
     --color-accent-border: rgba(212, 255, 0, 0.35);
@@ -163,8 +168,8 @@
   box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.9), 3px 3px 0px 1px rgba(255, 255, 255, 0.12);
 }
 
-.brutal-shadow-cyan {
-  box-shadow: 3px 3px 0px 0px #00F0FF;
+.brutal-shadow-green {
+  box-shadow: 3px 3px 0px 0px #00FF41;
 }
 
 /* Cyber Action Buttons */
@@ -211,6 +216,7 @@
 .corner-ticks {
   position: relative;
 }
+
 .corner-ticks::before {
   content: '';
   position: absolute;
@@ -223,6 +229,7 @@
   pointer-events: none;
   z-index: 10;
 }
+
 .corner-ticks::after {
   content: '';
   position: absolute;
@@ -236,11 +243,7 @@
   z-index: 10;
 }
 
-.hud-crosshair {
-  position: relative;
-}
-.hud-crosshair::before {
-  content: '+';
+.hud-code {
   position: absolute;
   top: 4px;
   right: 4px;
@@ -251,11 +254,12 @@
 }
 
 /* CRT Cathode Scanline Effect */
-.cyber-scanline {
+.crt-scanlines {
   position: relative;
   overflow: hidden;
 }
-.cyber-scanline::after {
+
+.crt-scanlines::after {
   content: " ";
   display: block;
   position: absolute;
@@ -291,6 +295,126 @@
   background-size: 32px 32px;
 }
 
+/* ──── Smooth View Transition (Landing to Studio) ──── */
+.cyber-view-transition {
+  animation: cyber-portal-fade 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform, filter;
+}
+
+.portal-view-enter {
+  animation: cyber-portal-enter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform, filter;
+}
+
+.portal-view-exit {
+  animation: cyber-portal-exit 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+  will-change: opacity, transform, filter;
+}
+
+@keyframes cyber-portal-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.98) translateY(18px);
+    filter: blur(6px);
+  }
+  60% {
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0px);
+  }
+}
+
+@keyframes cyber-portal-exit {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.98) translateY(-14px);
+    filter: blur(6px);
+  }
+}
+
+@keyframes cyber-portal-fade {
+  0% {
+    opacity: 0;
+    transform: scale(0.985) translateY(14px);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0px);
+  }
+}
+
+@keyframes laser-scan-fast {
+  0% {
+    top: -5%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 105%;
+    opacity: 0;
+  }
+}
+
+.animate-laser-scan-fast {
+  animation: laser-scan-fast 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ──── Scroll Reveal Classes for Studio ──── */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-card {
+  opacity: 0;
+  transform: translateY(28px) scale(0.97);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-card.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.reveal-line {
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.reveal-line.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.delay-1 { transition-delay: 0.08s; }
+.delay-2 { transition-delay: 0.16s; }
+.delay-3 { transition-delay: 0.24s; }
+.delay-4 { transition-delay: 0.32s; }
+.delay-5 { transition-delay: 0.40s; }
 
 /* ──── Keyframe Animations ──── */
 @keyframes cyber-pulse {
@@ -328,7 +452,7 @@
 
 .glitch-hover:hover {
   animation: glitch-skew 0.3s ease infinite;
-  text-shadow: 1.5px 0 #D4FF00, -1.5px 0 #00F0FF;
+  text-shadow: 1.5px 0 #D4FF00, -1.5px 0 #00FF41;
 }
 
 @keyframes tech-fade {
@@ -356,22 +480,10 @@
 
 /* ──── Reduced Motion Accessibility ──── */
 @media (prefers-reduced-motion: reduce) {
-  .animate-tech-fade,
-  .animate-metric-reveal,
-  .animate-bar-expand,
-  .animate-cyber-pulse,
-  .animate-scan-sweep,
-  .glitch-hover:hover {
-    animation: none !important;
-  }
-
-  .cyber-btn-primary:hover,
-  .cyber-btn-secondary:hover {
-    transform: none !important;
-  }
-
-  * {
-    transition-duration: 0.001ms !important;
-    animation-duration: 0.001ms !important;
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -108,13 +108,13 @@ export const AudienceMap: React.FC<AudienceMapProps> = ({
                 <div className="flex-1 max-w-xs sm:max-w-md hidden sm:flex flex-col gap-1">
                   <div className="flex justify-between text-[10px] text-[#A2ABB9] font-bold">
                     <span>INDEX: <strong className="text-white">{persona.overallScore}/100</strong></span>
-                    <span>WATCH: <strong className="text-[#00F0FF]">{pct(persona.watch_probability)}%</strong></span>
+                    <span>WATCH: <strong className="text-[#00FF41]">{pct(persona.watch_probability)}%</strong></span>
                   </div>
                   <div className="h-2 w-full bg-[#0E1015] border border-white/20 overflow-hidden">
                     <div
                       className={clsx(
                         'h-full transition-all duration-500',
-                        isHigh ? 'bg-[#D4FF00] shadow-[0_0_6px_#D4FF00]' : isLow ? 'bg-[#EF4444]' : 'bg-[#00F0FF]'
+                        isHigh ? 'bg-[#D4FF00] shadow-[0_0_6px_#D4FF00]' : isLow ? 'bg-[#EF4444]' : 'bg-[#00FF41]'
                       )}
                       style={{ width: `${persona.overallScore}%` }}
                     />

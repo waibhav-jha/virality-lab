@@ -109,7 +109,7 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
             <div className="flex items-center gap-2 font-mechanismo text-[11px] text-[#D4FF00] uppercase font-black tracking-wider">
               <span className="bg-[#D4FF00]/20 px-1.5 py-0.5 border border-[#D4FF00]/50">HIGHEST ALGORITHMIC SYNERGY</span>
               <span className="text-white/40">·</span>
-              <span className="text-[#00F0FF]">RANK #1: {bestItem.platform_name.toUpperCase()}</span>
+              <span className="text-[#00FF41]">RANK #1: {bestItem.platform_name.toUpperCase()}</span>
             </div>
             <p className="font-csmigrate text-base text-white font-black mt-1">
               Score: {bestItem.score}/100 ({bestItem.tier}) · {bestItem.reach_multiplier}
@@ -148,7 +148,7 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
                 isBest
                   ? 'border-[#D4FF00] bg-[#07080A] shadow-[4px_4px_0px_0px_#D4FF00]'
                   : isCurrent
-                  ? 'border-[#00F0FF] bg-[#07080A] shadow-[3px_3px_0px_0px_#00F0FF]'
+                  ? 'border-[#00FF41] bg-[#07080A] shadow-[3px_3px_0px_0px_#00FF41]'
                   : 'border-white/15 bg-[#07080A] hover:border-[#D4FF00]/50'
               )}
             >
@@ -162,7 +162,7 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
                       isBest
                         ? 'border-[#D4FF00] bg-[#D4FF00] text-[#060709]'
                         : isCurrent
-                        ? 'border-[#00F0FF] bg-[#00F0FF]/20 text-[#00F0FF]'
+                        ? 'border-[#00FF41] bg-[#00FF41]/20 text-[#00FF41]'
                         : 'border-white/20 text-[#8E98AA]'
                     )}
                   >

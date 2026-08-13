@@ -102,7 +102,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
       <div className="w-full mt-4">
         <div className="relative h-3 w-full bg-[#0E1015] border border-white/20 overflow-hidden shadow-[inset_0_1px_4px_rgba(0,0,0,0.8)]">
           <div
-            className="h-full bg-gradient-to-r from-[#D4FF00] via-[#E2FF44] to-[#00F0FF] transition-all duration-700 ease-out shadow-[0_0_12px_rgba(212,255,0,0.6)]"
+            className="h-full bg-gradient-to-r from-[#D4FF00] via-[#E2FF44] to-[#00FF41] transition-all duration-700 ease-out shadow-[0_0_12px_rgba(212,255,0,0.6)]"
             style={{ width: `${Math.min(100, Math.max(0, isNaN(displayScore) ? 0 : displayScore))}%` }}
           />
         </div>
@@ -118,7 +118,7 @@ export const ScoreGauge: React.FC<ScoreGaugeProps> = ({
       <div className="grid grid-cols-2 gap-4 w-full mt-4 pt-3 border-t border-white/15 font-mechanismo text-xs">
         <div className="bg-[#07080A]/60 p-2 border border-white/10">
           <span className="text-[#646E82] text-[10px] block uppercase font-bold">CONFIDENCE CALIBRATION</span>
-          <span className="text-[#00F0FF] font-black tracking-wider">{confPct}% RELIABILITY</span>
+          <span className="text-[#00FF41] font-black tracking-wider">{confPct}% RELIABILITY</span>
         </div>
         <div className="bg-[#07080A]/60 p-2 border border-white/10">
           <span className="text-[#646E82] text-[10px] block uppercase font-bold">COHORT PERCENTILE</span>
