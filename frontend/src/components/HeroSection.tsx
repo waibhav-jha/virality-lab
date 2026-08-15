@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { Platform } from '../api/types';
 import { WaveformContour } from './WaveformContour';
 
@@ -53,15 +53,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onLoadSample, onRunDem
       </div>
 
       {/* Top Cyber Index & Meta Ticks */}
-      <div className="flex flex-wrap items-center justify-between border-b border-white/15 pb-3 mb-6 font-mechanismo text-[11px] text-[#8E98AA] uppercase tracking-widest">
+      <div className="flex flex-wrap items-center justify-between border-b border-white/15 pb-3 mb-6 font-mono text-[11px] text-[#8E9E90] uppercase tracking-widest">
         <div className="flex items-center gap-2">
-          <span className="text-[#D4FF00] font-black bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
-            00 // INQUIRY
+          <span className="text-[#00FF41] font-black bg-[#00FF41]/10 px-2 py-0.5 border border-[#00FF41]/40">
+            00 // SPECIMEN INQUIRY
           </span>
           <span className="text-white/40">::</span>
-          <span className="text-white/80 font-bold">PRE-PUBLICATION MULTI-AGENT AUDIT</span>
+          <span className="text-white font-bold">PRE-PUBLICATION MULTI-AGENT AUDIT</span>
         </div>
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-3 font-mechanismo">
           <span className="text-[#00FF41]">SPECIMEN COHORT: 5+ AGENTS</span>
           <span className="text-white/30">|</span>
           <span className="text-[#D4FF00]">CALIBRATION: DETERMINISTIC</span>
@@ -71,31 +71,42 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onLoadSample, onRunDem
       {/* Main Grid: Left Inquiry × Right Specimen Presets */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left 7 Columns: Cyber Brutalist Headline */}
-        <div className="lg:col-span-7 flex flex-col gap-3">
-          <h1 className="font-astroda font-black text-3xl sm:text-5xl lg:text-6xl xl:text-7xl text-white tracking-wider leading-[1.3] uppercase flex flex-col gap-3 sm:gap-4 overflow-visible">
-            <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-              <span>WOULD</span>
-              <span>THEY</span>
-            </div>
-            <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF00] via-[#00FF41] to-white/80 flex items-center gap-3 sm:gap-4 flex-wrap pb-3 pt-1 overflow-visible">
-              <span>STOP</span>
-              <span>SCROLLING?</span>
-            </div>
-          </h1>
-          <p className="text-xs sm:text-sm text-[#A2ABB9] max-w-xl font-mechanismo leading-relaxed mt-2">
+        <div className="lg:col-span-7 flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <h1 className="font-astroda font-black text-3xl sm:text-5xl lg:text-6xl xl:text-7xl text-white tracking-wider leading-[1.3] uppercase flex flex-col gap-2 sm:gap-3 overflow-visible">
+              <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                <span className="text-white drop-shadow-[0_2px_12px_rgba(255,255,255,0.15)]">WOULD</span>
+                <span className="text-white drop-shadow-[0_2px_12px_rgba(255,255,255,0.15)]">THEY</span>
+              </div>
+              <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF41] via-[#D4FF00] to-white/90 flex items-center gap-3 sm:gap-4 flex-wrap pb-2 pt-0.5 overflow-visible">
+                <span>STOP</span>
+                <span>SCROLLING?</span>
+              </div>
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-2 font-csmigrate text-xs uppercase">
+            <span className="bg-[#00FF41] text-black font-black px-2 py-0.5 shadow-[2px_2px_0px_#000]">
+              SIMULATE WITHOUT GUESSWORK
+            </span>
+            <span className="text-white/40">·</span>
+            <span className="text-white font-bold">PREDICT BEFORE POSTING</span>
+          </div>
+
+          <p className="text-xs sm:text-sm text-[#A2B0A5] max-w-xl font-mono leading-relaxed mt-1">
             Simulate your hook, script, video, or caption against an autonomous behavioral panel.
             Diagnose drop-off friction, measure scroll-stop velocity, and synthesize winning variants.
           </p>
         </div>
 
         {/* Right 5 Columns: Specimen Quick-Picks & Demo Trigger */}
-        <div className="lg:col-span-5 flex flex-col gap-3 cyber-card corner-ticks p-4">
+        <div className="lg:col-span-5 flex flex-col gap-3 cyber-card p-4">
           <div className="flex items-center justify-between border-b border-white/15 pb-2">
-            <span className="font-csmigrate text-xs text-white/80 uppercase font-black tracking-wider flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-[#D4FF00] inline-block" />
+            <span className="font-mono text-xs text-white uppercase font-black tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-[#00FF41] inline-block shadow-[0_0_6px_#00FF41]" />
               PRESET SPECIMENS
             </span>
-            <span className="font-mechanismo text-[10px] text-[#D4FF00] font-bold tracking-wider">
+            <span className="font-mechanismo text-[10px] text-[#00FF41] font-bold tracking-wider">
               [CLICK TO INJECT]
             </span>
           </div>
@@ -106,18 +117,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onLoadSample, onRunDem
                 key={idx}
                 type="button"
                 onClick={() => onLoadSample(sample)}
-                className="flex items-center justify-between p-2.5 bg-[#07080A]/60 hover:bg-[#11141B] border border-white/10 hover:border-[#D4FF00]/60 transition-all text-left cursor-pointer group shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#D4FF00]"
+                className="flex items-center justify-between p-2.5 bg-[#000000] hover:bg-[#0A140A] border border-[#142116] hover:border-[#00FF41] transition-all text-left cursor-pointer group shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#00FF41]"
                 aria-label={`Load specimen: ${sample.title}`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="font-mechanismo text-[11px] text-white/40 group-hover:text-[#D4FF00] font-black">
+                  <span className="font-mechanismo text-[11px] text-[#00FF41]/70 group-hover:text-[#00FF41] font-black">
                     [0{idx + 1}]
                   </span>
-                  <span className="text-xs font-bold font-csmigrate text-[#E2E6EC] group-hover:text-white truncate">
+                  <span className="text-xs font-bold font-mono text-[#E2E6EC] group-hover:text-white truncate">
                     {sample.title}
                   </span>
                 </div>
-                <span className="font-mechanismo text-[10px] text-[#D4FF00] bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/30 uppercase shrink-0 ml-2 font-bold">
+                <span className="font-mechanismo text-[10px] text-[#00FF41] bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/30 uppercase shrink-0 ml-2 font-bold">
                   {sample.platform}
                 </span>
               </button>
@@ -126,11 +137,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onLoadSample, onRunDem
 
           {onRunDemo && (
             <div className="pt-2.5 border-t border-white/15 flex items-center justify-between">
-              <span className="font-mechanismo text-[10px] text-[#8E98AA] font-bold">INSTANT BENCHMARK:</span>
+              <span className="font-mono text-[10px] text-[#8E9E90] font-bold">INSTANT BENCHMARK:</span>
               <button
                 type="button"
                 onClick={onRunDemo}
-                className="inline-flex items-center gap-2 font-csmigrate text-xs text-[#060709] bg-[#D4FF00] hover:bg-[#E2FF44] font-black px-2.5 py-1 border border-[#D4FF00] shadow-[2px_2px_0px_0px_#000] cursor-pointer transition-all hover:scale-105"
+                className="inline-flex items-center gap-2 font-csmigrate text-xs text-black bg-[#00FF41] hover:bg-white font-black px-3 py-1.5 border border-[#00FF41] shadow-[2px_2px_0px_0px_#000] cursor-pointer transition-all hover:scale-105"
               >
                 <span>RUN DEMO SIMULATION</span>
                 <ArrowRight className="w-3.5 h-3.5" />

@@ -192,12 +192,16 @@ export function App() {
   // Render Full Virality Lab Simulation Studio with Smooth Portal Fade
   return (
     <>
+      {/* CRT Scanline & Noise Overlays */}
+      <div className="crt-overlay" aria-hidden="true" />
+      <div className="noise-overlay" aria-hidden="true" />
+
       <CyberPortalCurtain
         isActive={isTransitioning}
         targetView={transitionTarget}
         telemetryText={transitionTelemetry}
       />
-      <div className={`cyber-view-transition ${viewAnimationClass} min-h-screen bg-[#07080A] text-[#F4F6F8] flex flex-col relative overflow-x-hidden contour-grid-bg selection:bg-[#D4FF00] selection:text-[#07080A]`}>
+      <div className={`cyber-view-transition ${viewAnimationClass} min-h-screen bg-[#000000] text-white flex flex-col relative overflow-x-hidden selection:bg-[#00FF41] selection:text-[#000000]`}>
         {/* Header Masthead */}
         <Header
           health={exp.health}
@@ -209,12 +213,12 @@ export function App() {
           onReset={exp.resetExperiment}
         />
 
-      {/* Main Studio Content Area - Expanded to max-w-[1640px] to eliminate empty side voids */}
-      <main className="flex-1 w-full max-w-[1640px] mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex flex-col gap-8" role="main">
-        {/* Editorial Inquiry & Specimen Presets with Scroll Reveal */}
-        <div className="reveal-item is-visible">
-          <HeroSection onLoadSample={exp.loadSample} onRunDemo={handleDemo} />
-        </div>
+        {/* Main Studio Content Area - Poster Container with Dashed Cyber Perimeter */}
+        <main className="flex-1 w-full max-w-[1520px] mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex flex-col gap-8 border-l border-r border-dashed border-[#00FF41]/20 bg-[#000000]/88 shadow-[0_0_50px_rgba(0,0,0,0.95)] relative z-10" role="main">
+          {/* Editorial Inquiry & Specimen Presets with Scroll Reveal */}
+          <div className="reveal-item is-visible">
+            <HeroSection onLoadSample={exp.loadSample} onRunDemo={handleDemo} />
+          </div>
 
         {/* Error Alert Bar */}
         {exp.error && (

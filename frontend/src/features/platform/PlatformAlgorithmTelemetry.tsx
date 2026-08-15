@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { clsx } from 'clsx';
-import { Cpu, ShieldAlert, Zap, ChevronDown, ChevronUp } from 'lucide-react';
+import { Cpu, ShieldAlert, Zap, ChevronDown, ChevronUp, Layers, Sliders } from 'lucide-react';
 import { Platform } from '../../api/types';
+import { PlatformAlgorithmPipelineSimulator } from './PlatformAlgorithmPipelineSimulator';
 
 interface PlatformAlgorithmTelemetryProps {
   platform: Platform;
+  caption?: string;
+  transcript?: string;
+  onApplyOptimizedFix?: (fixPrompt: string) => void;
 }
 
 interface AlgorithmProfile {
@@ -106,117 +110,149 @@ const PLATFORM_ALGORITHMS: Record<Platform, AlgorithmProfile> = {
 
 export const PlatformAlgorithmTelemetry: React.FC<PlatformAlgorithmTelemetryProps> = ({
   platform,
+  caption = '',
+  transcript = '',
+  onApplyOptimizedFix,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showFullSimulator, setShowFullSimulator] = useState(false);
   const algo = PLATFORM_ALGORITHMS[platform] || PLATFORM_ALGORITHMS.tiktok;
 
   return (
-    <div
-      className="w-full bg-[#07080A] border-2 border-white/15 p-4 font-mechanismo flex flex-col gap-3.5 transition-all text-left shadow-[2px_2px_0px_0px_#000]"
-      aria-label="Platform Algorithm Weight Telemetry"
-    >
-      {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
-        <div className="flex items-center gap-2">
-          <Cpu className="w-3.5 h-3.5 text-[#D4FF00]" />
-          <span className="text-xs font-black text-white uppercase tracking-wider font-csmigrate">
-            {algo.name}
-          </span>
-          <span className="text-[10px] text-[#D4FF00] bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40 font-black uppercase">
-            {algo.codename}
-          </span>
+    <div className="flex flex-col gap-3 w-full">
+      <div
+        className="w-full bg-[#07080A] border-2 border-white/15 p-4 font-mechanismo flex flex-col gap-3.5 transition-all text-left shadow-[2px_2px_0px_0px_#000]"
+        aria-label="Platform Algorithm Weight Telemetry"
+      >
+        {/* Header Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2.5">
+          <div className="flex items-center gap-2">
+            <Cpu className="w-3.5 h-3.5 text-[#D4FF00]" />
+            <span className="text-xs font-black text-white uppercase tracking-wider font-csmigrate">
+              {algo.name}
+            </span>
+            <span className="text-[10px] text-[#D4FF00] bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40 font-black uppercase">
+              {algo.codename}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setShowFullSimulator(!showFullSimulator)}
+              className={clsx(
+                'flex items-center gap-1.5 text-[10px] px-2 py-0.5 border font-black uppercase transition-all cursor-pointer shadow-[1px_1px_0px_0px_#000]',
+                showFullSimulator
+                  ? 'border-[#00FF41] bg-[#00FF41] text-black shadow-[2px_2px_0px_0px_#00FF41]'
+                  : 'border-[#D4FF00]/50 bg-[#D4FF00]/10 text-[#D4FF00] hover:bg-[#D4FF00] hover:text-black'
+              )}
+            >
+              <Layers className="w-3 h-3" />
+              <span>{showFullSimulator ? '⚡ CLOSE SIMULATOR' : '⚡ 3-STAGE ALGORITHM PIPELINE'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex items-center gap-1 text-[10px] text-[#8E98AA] hover:text-[#D4FF00] cursor-pointer uppercase transition-colors font-bold"
+            >
+              <span>{isExpanded ? '[ HIDE SPEC ]' : '[ WEIGHT MATRIX ]'}</span>
+              {isExpanded ? <ChevronUp className="w-3 h-3 text-[#D4FF00]" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+          </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-1 text-[10px] text-[#8E98AA] hover:text-[#D4FF00] cursor-pointer uppercase transition-colors font-bold"
-        >
-          <span>{isExpanded ? '[ HIDE SPEC SHEET ]' : '[ INSPECT WEIGHT MATRIX ]'}</span>
-          {isExpanded ? <ChevronUp className="w-3 h-3 text-[#D4FF00]" /> : <ChevronDown className="w-3 h-3" />}
-        </button>
-      </div>
-
-      {/* Primary Archetype & Focus Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-        <div className="flex flex-col">
-          <span className="text-[9px] text-[#646E82] uppercase tracking-wider font-bold">ALGORITHMIC ARCHETYPE</span>
-          <span className="text-white font-black text-xs font-csmigrate">{algo.archetype}</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] text-[#646E82] uppercase tracking-wider font-bold">INITIAL SEED BATCH</span>
-          <span className="text-[#00FF41] font-bold text-xs">{algo.seedBatchSize}</span>
-        </div>
-      </div>
-
-      {/* Algorithmic Weight Distribution Bar Strip */}
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between text-[10px] text-[#8E98AA] uppercase font-bold">
-          <span>ALGORITHM SCORING WEIGHTS</span>
-          <span>100% COMPOSITE VECTOR</span>
+        {/* Primary Archetype & Focus Summary */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div className="flex flex-col">
+            <span className="text-[9px] text-[#646E82] uppercase tracking-wider font-bold">ALGORITHMIC ARCHETYPE</span>
+            <span className="text-white font-black text-xs font-csmigrate">{algo.archetype}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] text-[#646E82] uppercase tracking-wider font-bold">INITIAL SEED BATCH</span>
+            <span className="text-[#00FF41] font-bold text-xs">{algo.seedBatchSize}</span>
+          </div>
         </div>
 
-        {/* Stacked Percentage Bar */}
-        <div className="h-2.5 w-full flex bg-[#0E1015] overflow-hidden border-2 border-white/20 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
-          {algo.weights.map((w, idx) => {
-            const colors = ['bg-[#D4FF00]', 'bg-[#00FF41]', 'bg-[#FF0055]', 'bg-[#8E98AA]'];
-            return (
-              <div
-                key={w.label}
-                className={clsx('h-full transition-all duration-500', colors[idx % colors.length])}
-                style={{ width: `${w.pct}%` }}
-                title={`${w.label}: ${w.pct}%`}
-              />
-            );
-          })}
-        </div>
+        {/* Algorithmic Weight Distribution Bar Strip */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-[10px] text-[#8E98AA] uppercase font-bold">
+            <span>ALGORITHM SCORING WEIGHTS</span>
+            <span>100% COMPOSITE VECTOR</span>
+          </div>
 
-        {/* Weight Labels Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1.5 font-mechanismo">
-          {algo.weights.map((w, idx) => {
-            const dotColors = ['text-[#D4FF00]', 'text-[#00FF41]', 'text-[#FF0055]', 'text-[#8E98AA]'];
-            return (
-              <div
-                key={w.label}
-                className="flex items-start gap-1.5 p-2 bg-[#060709] border border-white/10 text-[10px] shadow-[1px_1px_0px_0px_#000]"
-              >
-                <span className={clsx('font-black mt-0.5', dotColors[idx % dotColors.length])}>●</span>
-                <div className="flex flex-col min-w-0">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-white font-black">{w.pct}%</span>
-                    <span className="text-[#A2ABB9] font-bold truncate">{w.label}</span>
+          {/* Stacked Percentage Bar */}
+          <div className="h-2.5 w-full flex bg-[#0E1015] overflow-hidden border-2 border-white/20 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+            {algo.weights.map((w, idx) => {
+              const colors = ['bg-[#D4FF00]', 'bg-[#00FF41]', 'bg-[#FF0055]', 'bg-[#8E98AA]'];
+              return (
+                <div
+                  key={w.label}
+                  className={clsx('h-full transition-all duration-500', colors[idx % colors.length])}
+                  style={{ width: `${w.pct}%` }}
+                  title={`${w.label}: ${w.pct}%`}
+                />
+              );
+            })}
+          </div>
+
+          {/* Weight Labels Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1.5 font-mechanismo">
+            {algo.weights.map((w, idx) => {
+              const dotColors = ['text-[#D4FF00]', 'text-[#00FF41]', 'text-[#FF0055]', 'text-[#8E98AA]'];
+              return (
+                <div
+                  key={w.label}
+                  className="flex items-start gap-1.5 p-2 bg-[#060709] border border-white/10 text-[10px] shadow-[1px_1px_0px_0px_#000]"
+                >
+                  <span className={clsx('font-black mt-0.5', dotColors[idx % dotColors.length])}>●</span>
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-white font-black">{w.pct}%</span>
+                      <span className="text-[#A2ABB9] font-bold truncate">{w.label}</span>
+                    </div>
+                    <span className="text-[9px] text-[#646E82] font-sans line-clamp-1 leading-tight mt-0.5">
+                      {w.desc}
+                    </span>
                   </div>
-                  <span className="text-[9px] text-[#646E82] font-sans line-clamp-1 leading-tight mt-0.5">
-                    {w.desc}
-                  </span>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
+
+        {/* Expanded Spec Sheet (Critical Penalty & Optimization Focus) */}
+        {isExpanded && (
+          <div className="flex flex-col gap-2.5 pt-3 border-t-2 border-white/15 text-xs">
+            {/* Critical Algorithm Penalty Alert */}
+            <div className="p-3 bg-[#1A0505] border-l-2 border-[#EF4444] flex items-start gap-2 shadow-[2px_2px_0px_0px_#000]">
+              <ShieldAlert className="w-3.5 h-3.5 text-[#EF4444] shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[10px] text-[#EF4444] font-black uppercase">CRITICAL ALGORITHMIC PENALTY:</span>
+                <span className="text-[#E2E6EC] font-sans text-xs">{algo.primaryPenalty}</span>
+              </div>
+            </div>
+
+            {/* Optimization Focus */}
+            <div className="p-3 bg-[#0E1508] border-l-2 border-[#D4FF00] flex items-start gap-2 shadow-[2px_2px_0px_0px_#000]">
+              <Zap className="w-3.5 h-3.5 text-[#D4FF00] shrink-0 mt-0.5" />
+              <div className="flex flex-col gap-0.5">
+                <span className="text-[10px] text-[#D4FF00] font-black uppercase">ALGORITHM OPTIMIZATION TARGET:</span>
+                <span className="text-[#E2E6EC] font-sans text-xs">{algo.optimizationFocus}</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Expanded Spec Sheet (Critical Penalty & Optimization Focus) */}
-      {isExpanded && (
-        <div className="flex flex-col gap-2.5 pt-3 border-t-2 border-white/15 text-xs">
-          {/* Critical Algorithm Penalty Alert */}
-          <div className="p-3 bg-[#1A0505] border-l-2 border-[#EF4444] flex items-start gap-2 shadow-[2px_2px_0px_0px_#000]">
-            <ShieldAlert className="w-3.5 h-3.5 text-[#EF4444] shrink-0 mt-0.5" />
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[10px] text-[#EF4444] font-black uppercase">CRITICAL ALGORITHMIC PENALTY:</span>
-              <span className="text-[#E2E6EC] font-sans text-xs">{algo.primaryPenalty}</span>
-            </div>
-          </div>
-
-          {/* Optimization Focus */}
-          <div className="p-3 bg-[#0E1508] border-l-2 border-[#D4FF00] flex items-start gap-2 shadow-[2px_2px_0px_0px_#000]">
-            <Zap className="w-3.5 h-3.5 text-[#D4FF00] shrink-0 mt-0.5" />
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[10px] text-[#D4FF00] font-black uppercase">ALGORITHM OPTIMIZATION TARGET:</span>
-              <span className="text-[#E2E6EC] font-sans text-xs">{algo.optimizationFocus}</span>
-            </div>
-          </div>
-        </div>
+      {/* Full Interactive 3-Stage Algorithmic Pipeline & Sandbox Simulator */}
+      {showFullSimulator && (
+        <PlatformAlgorithmPipelineSimulator
+          platform={platform}
+          caption={caption}
+          transcript={transcript}
+          onApplyOptimizedFix={onApplyOptimizedFix}
+        />
       )}
     </div>
   );

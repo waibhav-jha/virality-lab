@@ -20,6 +20,8 @@ import {
 } from '../../api/types';
 import { runCrossPlatformMatrixSimulation } from '../../engine/browserSimulator';
 import { Button } from '../../design-system/Button';
+import { PlatformAlgorithmPipelineSimulator } from '../platform/PlatformAlgorithmPipelineSimulator';
+import { Layers } from 'lucide-react';
 
 interface CrossPlatformMatrixProps {
   caption: string;
@@ -45,6 +47,7 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
   const [result, setResult] = useState<CrossPlatformMatrixResult | null>(null);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
   const [appliedPlatform, setAppliedPlatform] = useState<Platform | null>(null);
+  const [inspectedPlatform, setInspectedPlatform] = useState<Platform | null>(null);
 
   useEffect(() => {
     runMatrix();
@@ -139,6 +142,7 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
           const isBest = item.is_best_fit;
           const isCurrent = item.platform === currentPlatform;
           const isApplied = appliedPlatform === item.platform;
+          const isInspected = inspectedPlatform === item.platform;
 
           return (
             <div
@@ -260,6 +264,20 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
               <div className="flex flex-col gap-1.5 mt-3">
                 <button
                   type="button"
+                  onClick={() => setInspectedPlatform(isInspected ? null : item.platform)}
+                  className={clsx(
+                    'w-full py-1.5 font-csmigrate text-[11px] uppercase font-black border transition-all flex items-center justify-center gap-1 cursor-pointer shadow-[1px_1px_0px_0px_#000]',
+                    isInspected
+                      ? 'border-[#00FF41] bg-[#00FF41] text-black shadow-[2px_2px_0px_0px_#00FF41]'
+                      : 'border-white/25 bg-[#0D1117] text-[#D4FF00] hover:border-[#D4FF00]'
+                  )}
+                >
+                  <Layers className="w-3 h-3" />
+                  {isInspected ? 'HIDE PIPELINE' : 'INSPECT PIPELINE'}
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => handleApply(item)}
                   className={clsx(
                     'w-full py-2 font-csmigrate text-xs uppercase font-black border-2 transition-all flex items-center justify-center gap-1 cursor-pointer shadow-[2px_2px_0px_0px_#000]',
@@ -284,6 +302,34 @@ export const CrossPlatformMatrix: React.FC<CrossPlatformMatrixProps> = ({
           );
         })}
       </div>
+
+      {/* Expanded Algorithm Pipeline Simulator for the Selected Platform */}
+      {inspectedPlatform && (
+        <div className="flex flex-col gap-2 pt-4 border-t-2 border-white/15">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black text-[#D4FF00] uppercase font-csmigrate">
+              DETAILED RECTIFICATION // {inspectedPlatform.toUpperCase()} COHORT STAGE-GATE SIMULATION
+            </span>
+            <button
+              type="button"
+              onClick={() => setInspectedPlatform(null)}
+              className="text-[10px] text-[#8E98AA] hover:text-white uppercase font-bold cursor-pointer"
+            >
+              ✕ CLOSE INSPECTOR
+            </button>
+          </div>
+          <PlatformAlgorithmPipelineSimulator
+            platform={inspectedPlatform}
+            caption={caption}
+            transcript={transcript}
+            onApplyOptimizedFix={(fix) => {
+              if (onApplyAdaptedSpecimen) {
+                onApplyAdaptedSpecimen(inspectedPlatform, `${caption}\n\n${fix}`);
+              }
+            }}
+          />
+        </div>
+      )}
     </section>
   );
 };

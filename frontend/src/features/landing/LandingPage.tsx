@@ -642,7 +642,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchStudio }) => {
               onClick={() => playGlitchNoise()}
               onMouseEnter={() => playTone(720)}
             >
-              <h1 className="distressed-headline" data-text="VIRALITY LAB">
+              <h1 className="distressed-headline glitch-scramble" data-text={'VIRALITY\nLAB'}>
                 VIRALITY
                 <br />
                 LAB

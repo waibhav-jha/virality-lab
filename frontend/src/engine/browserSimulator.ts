@@ -243,21 +243,47 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
         simulatedComment = `Lacks any domain subject matter, educational payload, or practical utility.`;
       }
     } else {
+      const pickRandom = (options: string[]) => options[Math.floor(Math.random() * options.length)];
+
       if (pLower.includes('gen-z') || pLower.includes('student')) {
         simulatedComment = qualityScore >= 0.70
-          ? `bro cooked with this one fr 🔥 ${hasSaveCTA || hasNumbers ? 'instant bookmark for later' : 'sending this to the gc'}`
-          : `lost me in the first 2 seconds ngl... need a faster punchline or visual cut`;
+          ? pickRandom([
+              `bro cooked with this one fr 🔥 ${hasSaveCTA || hasNumbers ? 'instant bookmark for later' : 'sending this to the gc right now'}`,
+              `nah this is actually valid 🔥 10/10 hook, instant save for later`,
+              `wait this is actually super useful?? finally someone explained ${snippet ? `"${snippet}"` : 'this'} without 10 mins of yapping`,
+              `my attention span is 3 seconds and I actually watched the whole thing 😭 W post`,
+              `the pacing on this is crazy good... save to favorites immediately`,
+            ])
+          : pickRandom([
+              `lost me in the first 2 seconds ngl... need a faster punchline or visual cut 💀`,
+              `too much yapping at the start, skipped in 0.8s on my FYP feed`,
+              `bro literally wrote an essay for a short post 😭 simplify it`,
+              `opening frame had zero visual contrast, thumb swiped past instantly 💀`,
+            ]);
       } else if (pLower.includes('alpha') || pLower.includes('gamer')) {
         simulatedComment = qualityScore >= 0.70
-          ? `nah this is actually valid 🔥 saving for later`
-          : `sub-second scroll past 💀 skipped in 0.5s literally fell asleep`;
+          ? pickRandom([
+              `nah this is actually valid 🔥 saving for later`,
+              `clean cut no filler 🔥 W edit`,
+              `this is fire honestly, instant follow`,
+            ])
+          : pickRandom([
+              `sub-second scroll past 💀 skipped in 0.5s literally fell asleep`,
+              `too slow bro swipe`,
+            ]);
       } else if (pLower.includes('recruiter') || pLower.includes('career')) {
         simulatedComment = qualityScore >= 0.70
-          ? `Clear actionable skillset demonstration. Candidates who lead with concrete outcomes like "${snippet}" stand out immediately.`
+          ? pickRandom([
+              `Clear actionable skillset demonstration. Candidates who lead with concrete outcomes like "${snippet}" stand out immediately.`,
+              `High-leverage practical insights. Demonstrates real execution capability rather than theory.`,
+            ])
           : `Lacks specific deliverables or tangible proof of work. Too generic to showcase competence.`;
       } else if (pLower.includes('quant') || pLower.includes('investor') || pLower.includes('finance') || pLower.includes('vc')) {
         simulatedComment = qualityScore >= 0.75
-          ? `Compelling hook efficiency and structured delivery. The value proposition is backed by tangible signals.`
+          ? pickRandom([
+              `Compelling hook efficiency and structured delivery. The value proposition is backed by tangible signals.`,
+              `High ROI framework. The quantitative structure provides immediate baseline value.`,
+            ])
           : `Where are the underlying metrics and verifiable data points? Need quantitative proof over anecdotal claims.`;
       } else if (pLower.includes('prof') || pLower.includes('academic')) {
         simulatedComment = qualityScore >= 0.70
@@ -265,22 +291,59 @@ export function runBrowserSimulation(input: SimulationInput): FullAnalysisRespon
           : `Lacks methodological citations and structural depth. Claims require empirical references.`;
       } else if (pLower.includes('skeptic') || pLower.includes('analyst')) {
         simulatedComment = qualityScore >= 0.75
-          ? `Specific numbers and timeframe make this credible. Worth evaluating the full breakdown.`
+          ? pickRandom([
+              `Specific numbers and timeframe make this credible. Worth evaluating the full breakdown on "${snippet}".`,
+              `Appreciate that you gave concrete data points rather than vague motivational slogans. Solid proof of concept.`,
+              `The logic holds up under scrutiny. The counter-intuitive framing is backed by tangible utility.`,
+            ])
           : (lower.includes('ai') || lower.includes('tool')
-            ? `Wait, does this actually work or is it another freemium tool paywall in 2 minutes?`
-            : `Where is the empirical data to support "${snippet}"? Need to see tangible proof.`);
+            ? pickRandom([
+                `Wait, does this actually work in practice or is it another freemium tool paywall in 2 minutes?`,
+                `Where is the empirical data to support "${snippet}"? Need to see tangible proof before believing the claim.`,
+                `Sounds like standard algorithm hype. Needs immediate verification in the first 2 seconds.`,
+              ])
+            : pickRandom([
+                `Where is the empirical data to support "${snippet}"? Need to see tangible proof.`,
+                `Correlation vs causation here. You need to control for baseline variables before claiming these numbers.`,
+                `The sample size for this claim is way too small to draw sweeping conclusions.`,
+              ]));
       } else if (pLower.includes('creator') || pLower.includes('content')) {
         simulatedComment = qualityScore >= 0.75
-          ? `Clean opening retention hook. The 3-second pacing + save anchor is going to perform very well on ${input.platform.toUpperCase()}.`
-          : `Good premise, but tighten the opening frame — drop the intro fluff and start right on the payoff reveal.`;
+          ? pickRandom([
+              `Clean opening retention hook. The 3-second pacing + save anchor is going to perform very well on ${input.platform.toUpperCase()}.`,
+              `Notice how the hook creates an immediate open curiosity loop? Masterclass in short-form script architecture for ${input.platform.toUpperCase()}.`,
+              `The seamless transition back to the hook is brilliant for the loop multiplier algorithm. Well structured!`,
+            ])
+          : pickRandom([
+              `Good premise on "${snippet}", but tighten the opening frame — drop the intro fluff and start right on the payoff reveal.`,
+              `Watch out: your retention drop-off will happen around second 4 without a secondary visual pattern interrupt.`,
+              `Needs a clearer bookmark CTA at the ending to trigger platform save utility algorithms on ${input.platform.toUpperCase()}.`,
+            ]);
       } else if (pLower.includes('casual') || pLower.includes('scroller')) {
         simulatedComment = qualityScore >= 0.70
-          ? `Adding this to my saved bookmarks that I tell myself I'll check this weekend 😂`
-          : `Scrolled past after 2 seconds. Too much text to read on mobile feed.`;
+          ? pickRandom([
+              `Adding this to my saved bookmarks that I tell myself I'll check this weekend 😂`,
+              `Paused my scroll immediately when you mentioned "${snippet}"! Super clean format.`,
+              `Straight to the point without any fluff. More posts like this please!`,
+              `Actually learned something new in 15 seconds while waiting for coffee haha`,
+            ])
+          : pickRandom([
+              `Scrolled past after 2 seconds. Too much text to read on mobile feed.`,
+              `Caught my eye briefly, but not provocative enough to stick around to the end.`,
+              `Felt a bit repetitive by the 5-second mark, swiped away.`,
+            ]);
       } else {
         simulatedComment = qualityScore >= 0.70
-          ? `Practical and actionable framework. The breakdown on "${snippet}" has strong reference utility.`
-          : `Needs to go deeper into technical implementation details rather than general surface advice.`;
+          ? pickRandom([
+              `Practical and actionable framework. The breakdown on "${snippet}" has strong reference utility.`,
+              `Accurate breakdown. The distinction made here is often overlooked in mainstream surface-level advice. Bookmarked.`,
+              `High signal-to-noise ratio. Rare to see genuine technical nuance explained so crisply in short-form.`,
+            ])
+          : pickRandom([
+              `Needs to go deeper into technical implementation details rather than general surface advice.`,
+              `Oversimplified. You missed key domain nuance regarding "${snippet}" which undermines the premise.`,
+              `The framework breaks down at enterprise/production scale — add caveats.`,
+            ]);
       }
     }
 

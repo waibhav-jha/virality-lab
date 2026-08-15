@@ -5,19 +5,28 @@
 /* Custom Font Bindings */
 @font-face {
   font-family: 'Astroda';
-  src: url('/fonts/Astroda-gwraY.otf') format('opentype');
+  src: url('../../assets/fonts/Astroda-gwraY.otf') format('opentype'),
+       url('/fonts/Astroda-gwraY.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'CsMigrate';
-  src: url('/fonts/CsMigrateRegularDemo-MAjen.otf') format('opentype');
+  src: url('../../assets/fonts/CsMigrateRegularDemo-MAjen.otf') format('opentype'),
+       url('/fonts/CsMigrateRegularDemo-MAjen.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Mechanismo';
-  src: url('/fonts/MechanismoRegular-p7ywa.otf') format('opentype');
+  src: url('../../assets/fonts/MechanismoRegular-p7ywa.otf') format('opentype'),
+       url('/fonts/MechanismoRegular-p7ywa.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -411,47 +420,99 @@
 .landing-page-root .distressed-headline {
   font-family: var(--font-distressed);
   font-size: clamp(68px, 9.5vw, 120px);
-  line-height: 0.88;
+  line-height: 0.9;
   font-weight: 900;
   text-transform: uppercase;
   color: #FFFFFF;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   position: relative;
+  display: inline-block;
+  white-space: pre-line;
   text-shadow: 
-    3px 3px 0px rgba(0, 255, 65, 0.35),
-    -2px -2px 0px rgba(255, 0, 85, 0.25);
+    3px 3px 0px rgba(0, 255, 65, 0.45),
+    -3px -2px 0px rgba(255, 0, 85, 0.35),
+    0 0 20px rgba(0, 255, 65, 0.25);
   background: linear-gradient(180deg, #FFFFFF 0%, #EEEEEE 70%, #CCCCCC 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
+  user-select: none;
 }
 
 .landing-page-root .distressed-headline:hover {
-  transform: skewX(-2deg);
+  animation: glitch-skew-burst 0.3s infinite ease;
+  text-shadow: 
+    4px 0px 0px rgba(0, 255, 65, 0.7),
+    -4px 0px 0px rgba(255, 0, 85, 0.7),
+    0 0 30px rgba(0, 255, 65, 0.5);
 }
 
+/* Red/Pink Chromatic Glitch Ghost Layer */
+.landing-page-root .distressed-headline::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 100%;
+  height: 100%;
+  color: #FF0055;
+  -webkit-text-fill-color: #FF0055;
+  white-space: pre-line;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  opacity: 0.8;
+  pointer-events: none;
+  animation: glitch-slice-red 3.2s infinite linear alternate-reverse;
+  z-index: -1;
+}
+
+/* Neon Green Chromatic Glitch Ghost Layer */
 .landing-page-root .distressed-headline::after {
   content: attr(data-text);
   position: absolute;
-  left: 2px;
   top: 0;
+  left: 3px;
   width: 100%;
   height: 100%;
   color: var(--neon-green);
-  clip-path: polygon(0 20%, 100% 20%, 100% 26%, 0 26%);
-  opacity: 0.7;
+  -webkit-text-fill-color: var(--neon-green);
+  white-space: pre-line;
+  clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+  opacity: 0.85;
   pointer-events: none;
-  animation: glitch-slice 4s infinite linear alternate-reverse;
+  animation: glitch-slice-green 2.8s infinite linear alternate-reverse;
+  z-index: -1;
 }
 
-@keyframes glitch-slice {
-  0% { transform: translate(0); clip-path: polygon(0 15%, 100% 15%, 100% 22%, 0 22%); }
-  20% { transform: translate(-3px, 1px); clip-path: polygon(0 45%, 100% 45%, 100% 52%, 0 52%); }
-  40% { transform: translate(2px, -1px); clip-path: polygon(0 75%, 100% 75%, 100% 82%, 0 82%); }
-  60% { transform: translate(-2px, 0); clip-path: polygon(0 30%, 100% 30%, 100% 36%, 0 36%); }
-  80% { transform: translate(1px, 2px); clip-path: polygon(0 60%, 100% 60%, 100% 68%, 0 68%); }
-  100% { transform: translate(0); clip-path: polygon(0 10%, 100% 10%, 100% 16%, 0 16%); }
+@keyframes glitch-slice-red {
+  0% { transform: translate(0); clip-path: polygon(0 15%, 100% 15%, 100% 28%, 0 28%); }
+  15% { transform: translate(-3px, 1px); clip-path: polygon(0 60%, 100% 60%, 100% 75%, 0 75%); }
+  30% { transform: translate(2px, -2px); clip-path: polygon(0 5%, 100% 5%, 100% 18%, 0 18%); }
+  45% { transform: translate(-2px, 2px); clip-path: polygon(0 80%, 100% 80%, 100% 95%, 0 95%); }
+  60% { transform: translate(3px, -1px); clip-path: polygon(0 35%, 100% 35%, 100% 48%, 0 48%); }
+  75% { transform: translate(-1px, -2px); clip-path: polygon(0 70%, 100% 70%, 100% 82%, 0 82%); }
+  90% { transform: translate(2px, 1px); clip-path: polygon(0 20%, 100% 20%, 100% 32%, 0 32%); }
+  100% { transform: translate(0); clip-path: polygon(0 50%, 100% 50%, 100% 62%, 0 62%); }
+}
+
+@keyframes glitch-slice-green {
+  0% { transform: translate(0); clip-path: polygon(0 40%, 100% 40%, 100% 52%, 0 52%); }
+  15% { transform: translate(3px, -1px); clip-path: polygon(0 10%, 100% 10%, 100% 24%, 0 24%); }
+  30% { transform: translate(-2px, 2px); clip-path: polygon(0 72%, 100% 72%, 100% 86%, 0 86%); }
+  45% { transform: translate(2px, -1px); clip-path: polygon(0 25%, 100% 25%, 100% 38%, 0 38%); }
+  60% { transform: translate(-3px, 1px); clip-path: polygon(0 85%, 100% 85%, 100% 98%, 0 98%); }
+  75% { transform: translate(1px, 2px); clip-path: polygon(0 48%, 100% 48%, 100% 60%, 0 60%); }
+  90% { transform: translate(-2px, -1px); clip-path: polygon(0 3%, 100% 3%, 100% 16%, 0 16%); }
+  100% { transform: translate(0); clip-path: polygon(0 65%, 100% 65%, 100% 78%, 0 78%); }
+}
+
+@keyframes glitch-skew-burst {
+  0% { transform: skew(0deg); }
+  20% { transform: skew(-3deg) translate(-2px, 1px); }
+  40% { transform: skew(2.5deg) translate(2px, -1px); }
+  60% { transform: skew(-2deg) translate(-1px, 0); }
+  80% { transform: skew(1.5deg) translate(1px, 1px); }
+  100% { transform: skew(0deg); }
 }
 
 .landing-page-root .hero-subline-box {

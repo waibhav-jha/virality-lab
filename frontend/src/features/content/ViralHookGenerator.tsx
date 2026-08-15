@@ -5,14 +5,12 @@ import {
   Zap,
   ArrowRight,
   RefreshCw,
-  Flame,
-  HelpCircle,
-  TrendingUp,
   Copy,
   Check,
+  Flame,
+  Shuffle,
 } from 'lucide-react';
 import { Platform, ViralHookCandidate } from '../../api/types';
-import { Button } from '../../design-system/Button';
 
 interface ViralHookGeneratorProps {
   caption: string;
@@ -20,6 +18,107 @@ interface ViralHookGeneratorProps {
   onApplyHook: (hookText: string) => void;
   disabled?: boolean;
 }
+
+interface HookArchetypeTemplate {
+  archetype: 'contrarian' | 'curiosity_framework' | 'story_transformation';
+  archetype_label: string;
+  templates: ((topic: string, tag: string) => string)[];
+  angle_summaries: string[];
+  baseScore: number;
+}
+
+const HOOK_ARCHETYPE_LIBRARY: HookArchetypeTemplate[] = [
+  {
+    archetype: 'contrarian',
+    archetype_label: '01 // POLARIZING CONTRARIAN',
+    templates: [
+      (t, tag) => `Stop scrolling: 95% of people are doing ${t} completely backwards. Here is what the top 1% do instead: ${tag}`,
+      (t, tag) => `Unpopular opinion: Almost everything you were told about ${t} is a trap. Here is the real playbook: ${tag}`,
+      (t, tag) => `Stop wasting hours on ${t}. Most advice in this niche is 3 years outdated — here is what actually moves the needle: ${tag}`,
+      (t, tag) => `Hard truth: If you're struggling with ${t}, it's not a lack of effort — you're using the wrong framework. Let me explain: ${tag}`,
+    ],
+    angle_summaries: [
+      'Challenges status quo orthodoxy, sparking counter-intuitive curiosity and rapid comment debate.',
+      'Exposes industry misconceptions to trigger immediate cognitive dissonance.',
+      'Shatters outdated advice, establishing instant authoritative credibility.',
+    ],
+    baseScore: 94,
+  },
+  {
+    archetype: 'curiosity_framework',
+    archetype_label: '02 // NUMBERED CURIOSITY FRAMEWORK',
+    templates: [
+      (t, tag) => `3 underrated systems for ${t} that saved me 15 hours this week (and #2 feels almost unfair). Bookmark this! ${tag}`,
+      (t, tag) => `The 4-step cheat sheet for ${t} that 99% of beginners skip. (Save this before you start): ${tag}`,
+      (t, tag) => `5 actionable rules for mastering ${t} without burning out. Step 3 is the catalyst: ${tag}`,
+      (t, tag) => `The exact 3-part blueprint we used to scale ${t} in under 30 days. Breakdown below: ${tag}`,
+    ],
+    angle_summaries: [
+      'Anchors specific numerical payoffs and delivers extreme reference/save utility.',
+      'Structured step-by-step clarity reduces cognitive load and maximizes bookmark rates.',
+      'Curiosity loop anchored on a specific bullet point drives full watch-through.',
+    ],
+    baseScore: 92,
+  },
+  {
+    archetype: 'story_transformation',
+    archetype_label: '03 // HIGH-STAKES TRANSFORMATION',
+    templates: [
+      (t, tag) => `I spent 6 months failing at ${t} until I discovered this 1 subtle shift. Here’s the transparent breakdown: ${tag}`,
+      (t, tag) => `From 0 to mastery in ${t}: The 3 costly mistakes I made so you don’t have to. Read this carefully: ${tag}`,
+      (t, tag) => `How one simple change in our approach to ${t} 10x'd our output in 14 days. Full story: ${tag}`,
+      (t, tag) => `If I had to start over with ${t} from zero today, here is the exact 7-day protocol I would follow: ${tag}`,
+    ],
+    angle_summaries: [
+      'Leverages vulnerability and personal experience to build deep empathetic rapport.',
+      'High-stakes transformation arc guarantees audience emotional investment.',
+      'Zero-to-one roadmap framing creates irresistible retention pull.',
+    ],
+    baseScore: 89,
+  },
+  {
+    archetype: 'contrarian',
+    archetype_label: '04 // MISTAKE EXPOSER (ANTI-ADVICE)',
+    templates: [
+      (t, tag) => `If you are still making this #1 mistake with ${t}, you are leaving 80% of your results on the table: ${tag}`,
+      (t, tag) => `Warning: Never do ${t} without checking these 3 critical variables first. (Most people learn the hard way): ${tag}`,
+      (t, tag) => `The 3 toxic habits that are quietly sabotaging your ${t} progress — and how to fix them today: ${tag}`,
+    ],
+    angle_summaries: [
+      'Loss aversion trigger creates an immediate urgency to halt scrolling and avoid penalties.',
+      'Protective warning framing triggers defensive psychological curiosity.',
+    ],
+    baseScore: 93,
+  },
+  {
+    archetype: 'curiosity_framework',
+    archetype_label: '05 // SPEED & EFFICIENCY HACK',
+    templates: [
+      (t, tag) => `How to cut 10+ hours off your ${t} workflow using this simple 2-minute system: ${tag}`,
+      (t, tag) => `The fastest way to achieve breakthrough results in ${t} (no complex tools required): ${tag}`,
+      (t, tag) => `Stop overcomplicating ${t}. Here is the 15-minute daily routine that gets 90% of the outcome: ${tag}`,
+    ],
+    angle_summaries: [
+      'Appeals to modern short attention spans by promising maximum outcome in minimum time.',
+      'De-complexifies intimidating workflows for instant audience gratitude and shares.',
+    ],
+    baseScore: 91,
+  },
+  {
+    archetype: 'story_transformation',
+    archetype_label: '06 // UNFAIR ADVANTAGE / SECRET WEAPON',
+    templates: [
+      (t, tag) => `This feels like a cheat code: The little-known tool stack that makes ${t} effortless: ${tag}`,
+      (t, tag) => `The secret weapon top performers use for ${t} that nobody is talking about publicly: ${tag}`,
+      (t, tag) => `I tested 20+ different methods for ${t}. Only these 2 actually worked: ${tag}`,
+    ],
+    angle_summaries: [
+      'Exclusivity and insider knowledge trigger high DM forwarding and bookmark ratios.',
+      'Curated filter mechanism saves audience trial-and-error friction.',
+    ],
+    baseScore: 95,
+  },
+];
 
 export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
   caption,
@@ -31,55 +130,79 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [hooks, setHooks] = useState<ViralHookCandidate[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [generationCount, setGenerationCount] = useState<number>(0);
+
+  // Extract clean context keywords from caption
+  const extractTopic = (): string => {
+    if (!caption || !caption.trim()) {
+      return 'AI workflow productivity and content systems';
+    }
+    const clean = caption
+      .replace(/#\w+/g, '')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/[^\w\s]/gi, ' ')
+      .trim();
+
+    const words = clean.split(/\s+/).filter((w) => w.length > 2);
+    if (words.length >= 3) {
+      return words.slice(0, 6).join(' ');
+    }
+    return clean.length > 3 ? clean : 'content creation workflows';
+  };
+
+  const getPlatformTag = (): string => {
+    switch (platform) {
+      case 'tiktok':
+        return '#tiktoktips #viral #learnontiktok #fyp';
+      case 'instagram':
+        return '#reelsgrowth #explorepage #productivity #creators';
+      case 'youtube':
+        return '#shorts #trending #techtips #productivity';
+      case 'x':
+        return '#buildinpublic #productivity #tech';
+      case 'linkedin':
+        return '#leadership #innovation #productivity #strategy';
+      default:
+        return `#${platform} #viral #tips`;
+    }
+  };
 
   const generateHooks = () => {
     setIsGenerating(true);
     setIsOpen(true);
 
     setTimeout(() => {
-      const topic = caption.trim()
-        ? caption.replace(/#\w+/g, '').slice(0, 50).trim()
-        : 'AI productivity and study workflows';
+      const topic = extractTopic();
+      const platformTag = getPlatformTag();
 
-      const cleanTopic = topic.length > 5 ? topic : 'study and productivity tools';
+      // Shuffle the archetype library and pick 3 distinct categories
+      const shuffled = [...HOOK_ARCHETYPE_LIBRARY].sort(() => Math.random() - 0.5);
+      const selectedArchetypes = shuffled.slice(0, 3);
 
-      let platformTag = `#${platform}`;
-      if (platform === 'tiktok') platformTag = '#tiktoktips #viral #learnontiktok';
-      else if (platform === 'instagram') platformTag = '#reelsgrowth #explorepage #productivity';
-      else if (platform === 'youtube') platformTag = '#shorts #trending #techtips';
-      else if (platform === 'x') platformTag = '#buildinpublic #productivity #ai';
-      else if (platform === 'linkedin') platformTag = '#leadership #productivity #innovation';
+      const generated: ViralHookCandidate[] = selectedArchetypes.map((arch, index) => {
+        // Pick a random template and summary from this archetype
+        const templateFn = arch.templates[Math.floor(Math.random() * arch.templates.length)];
+        const summary = arch.angle_summaries[Math.floor(Math.random() * arch.angle_summaries.length)];
+        const hookText = templateFn(topic, platformTag);
 
-      const generated: ViralHookCandidate[] = [
-        {
-          id: 'hook_contrarian',
-          archetype: 'contrarian',
-          archetype_label: 'POLARIZING CONTRARIAN',
-          hook_text: `Stop scrolling: Most people are doing ${cleanTopic} completely backwards. Here is what the top 1% actually do instead: ${platformTag}`,
-          predicted_stop_scroll: 94,
-          angle_summary: 'Challenges status quo, sparks counter-intuitive curiosity and comment debate.',
-        },
-        {
-          id: 'hook_framework',
-          archetype: 'curiosity_framework',
-          archetype_label: 'NUMBERED CURIOSITY FRAMEWORK',
-          hook_text: `3 underrated hacks for ${cleanTopic} that saved me 15 hours this week (and #2 feels almost illegal). Save this for later! ${platformTag}`,
-          predicted_stop_scroll: 91,
-          angle_summary: 'Anchors specific numerical payoff and high-utility bookmark trigger.',
-        },
-        {
-          id: 'hook_story',
-          archetype: 'story_transformation',
-          archetype_label: 'TRANSFORMATION STORY',
-          hook_text: `I spent 6 months struggling with ${cleanTopic} until I made this 1 simple shift. Here’s the step-by-step breakdown: ${platformTag}`,
-          predicted_stop_scroll: 88,
-          angle_summary: 'Leverages personal vulnerability and high-stakes transformation payoff.',
-        },
-      ];
+        // Calculate dynamic randomized score with jitter
+        const jitter = Math.floor(Math.random() * 7) - 2;
+        const predictedScore = Math.min(98, Math.max(82, arch.baseScore + jitter));
+
+        return {
+          id: `hook_${generationCount}_${index}_${Date.now()}`,
+          archetype: arch.archetype,
+          archetype_label: arch.archetype_label,
+          hook_text: hookText,
+          predicted_stop_scroll: predictedScore,
+          angle_summary: summary,
+        };
+      });
 
       setHooks(generated);
+      setGenerationCount((c) => c + 1);
       setIsGenerating(false);
-    }, 300);
+    }, 280);
   };
 
   const handleCopy = (text: string, id: string) => {
@@ -106,7 +229,7 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            className="text-[10px] text-[#8E98AA] hover:text-white uppercase font-bold"
+            className="text-[10px] text-[#8E98AA] hover:text-white uppercase font-bold cursor-pointer"
           >
             [HIDE ASSISTANT]
           </button>
@@ -124,10 +247,10 @@ export const ViralHookGenerator: React.FC<ViralHookGeneratorProps> = ({
             <button
               type="button"
               onClick={generateHooks}
-              className="text-[#D4FF00] hover:underline cursor-pointer flex items-center gap-1 font-black text-xs"
+              className="text-[#D4FF00] hover:underline cursor-pointer flex items-center gap-1 font-black text-xs font-csmigrate"
             >
               <RefreshCw className={clsx('w-3 h-3', isGenerating && 'animate-spin')} />
-              RE-GENERATE
+              <span>RE-GENERATE (CYCLE ANGLES)</span>
             </button>
           </div>
 

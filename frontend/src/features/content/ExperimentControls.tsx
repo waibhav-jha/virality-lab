@@ -155,7 +155,12 @@ export const ExperimentControls: React.FC<ExperimentControlsProps> = ({
         </div>
 
         {/* Real-time Platform Algorithm Weights & Telemetry */}
-        <PlatformAlgorithmTelemetry platform={platform} />
+        <PlatformAlgorithmTelemetry
+          platform={platform}
+          caption={caption}
+          transcript={transcript}
+          onApplyOptimizedFix={(fix) => setCaption(caption ? `${caption}\n\n${fix}` : fix)}
+        />
       </div>
 
       {/* 2. Media Asset Dropzone */}

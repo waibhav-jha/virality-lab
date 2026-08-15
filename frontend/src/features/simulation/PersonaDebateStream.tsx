@@ -1,6 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { clsx } from 'clsx';
-import { MessageSquare, Heart, ThumbsUp, CornerDownRight, Filter, Sparkles, Pin } from 'lucide-react';
+import {
+  MessageSquare,
+  Heart,
+  CornerDownRight,
+  Sparkles,
+  Pin,
+  RefreshCw,
+  Flame,
+  ShieldAlert,
+} from 'lucide-react';
 import { PersonaReaction, Platform } from '../../api/types';
 
 interface PersonaDebateStreamProps {
@@ -23,6 +32,86 @@ interface SimulatedComment {
   replies?: SimulatedComment[];
 }
 
+// Rich dynamic commentary bank organized by persona personality & sentiment
+const PERSONA_COMMENT_BANKS = {
+  genZ: {
+    positive: [
+      (topic: string) => `bro cooked with this one fr 🔥 the part about ${topic} was actually insane, sending this to the gc right now`,
+      (topic: string) => `nah this is actually valid 🔥 10/10 hook, instant bookmark for later`,
+      (topic: string) => `wait this is actually super useful?? finally someone explained ${topic} without 10 mins of yapping`,
+      (topic: string) => `my attention span is 3 seconds and I actually watched the whole thing 😭 W post`,
+      (topic: string) => `the pacing on this is crazy good... save to favorites immediately 🔥`,
+      (topic: string) => `no cap this just saved me like 3 hours of trial and error haha W breakdown`,
+    ],
+    critical: [
+      (topic: string) => `lost me in the first 2 seconds ngl... need a faster punchline or visual cut 💀`,
+      (topic: string) => `too much yapping at the start, skipped in 0.8s on my FYP feed`,
+      (topic: string) => `bro literally wrote an essay for a short post 😭 simplify it`,
+      (topic: string) => `opening frame had zero visual contrast, thumb swiped past instantly 💀`,
+      (topic: string) => `feels like every other sponsored ad on my feed, skip in 1.5s`,
+    ],
+  },
+  casualScroller: {
+    positive: [
+      (topic: string) => `Adding this to my saved bookmarks that I tell myself I'll check this weekend 😂`,
+      (topic: string) => `Paused my scroll immediately when you mentioned ${topic}! Super clean format.`,
+      (topic: string) => `Straight to the point without any fluff. More posts like this please!`,
+      (topic: string) => `Actually learned something new in 15 seconds while waiting for coffee haha`,
+      (topic: string) => `Simple, clean, and easy to understand. Shared with a friend.`,
+    ],
+    critical: [
+      (topic: string) => `Scrolled right past after 2 seconds. Too much dense text to read on mobile.`,
+      (topic: string) => `Caught my eye briefly, but not provocative enough to stick around to the end.`,
+      (topic: string) => `Felt a bit repetitive by the 5-second mark, swiped away.`,
+      (topic: string) => `Didn't understand what the main takeaway was before the video moved on.`,
+    ],
+  },
+  creator: {
+    positive: [
+      (topic: string, p: string) => `From a creator standpoint: The opening retention hook + save anchor is textbook. The 3-second pacing curve is going to perform very well on ${p}.`,
+      (topic: string, p: string) => `Notice how the hook creates an immediate open curiosity loop? Masterclass in short-form script architecture for ${p}.`,
+      (topic: string, p: string) => `The seamless transition back to the hook is brilliant for the loop multiplier algorithm. Well structured!`,
+      (topic: string, p: string) => `Visual cue and pattern interrupt in the first 1.2s will pass the seed batch easily on ${p}. High retention score.`,
+      (topic: string, p: string) => `Great use of numbers and specific timeframes to anchor viewer expectations. Stealing this structure!`,
+    ],
+    critical: [
+      (topic: string, p: string) => `Good premise on ${topic}, but tighten the opening frame — drop the intro fluff and start right on the payoff reveal.`,
+      (topic: string, p: string) => `Watch out: your retention drop-off will happen around second 4 without a secondary visual pattern interrupt.`,
+      (topic: string, p: string) => `Needs a clearer bookmark CTA at the ending to trigger platform save utility algorithms on ${p}.`,
+      (topic: string, p: string) => `The pacing dragged in the middle third. Cut 20% of the words to keep viewer velocity high.`,
+    ],
+  },
+  skeptic: {
+    positive: [
+      (topic: string) => `Specific numbers, realistic timeframe, and lack of exaggerated hype make this credible. Worth evaluating the full breakdown on ${topic}.`,
+      (topic: string) => `Appreciate that you gave concrete data points rather than vague motivational slogans. Solid proof of concept.`,
+      (topic: string) => `The logic holds up under scrutiny. The counter-intuitive framing is backed by tangible utility.`,
+      (topic: string) => `Checked the premise against industry standards — surprisingly accurate and grounded. Bookmarking.`,
+    ],
+    critical: [
+      (topic: string) => `Where is the empirical data to support this? The hook makes an outsized promise without tangible backing.`,
+      (topic: string) => `Wait, does this actually work in practice or is it another freemium tool paywall in 2 minutes?`,
+      (topic: string) => `Sounds like standard algorithm hype. Needs immediate verification in the first 2 seconds.`,
+      (topic: string) => `Correlation vs causation here. You need to control for baseline variables before claiming these numbers on ${topic}.`,
+      (topic: string) => `The sample size for this claim is way too small to draw sweeping conclusions.`,
+    ],
+  },
+  nicheExpert: {
+    positive: [
+      (topic: string) => `Practical and actionable framework. The breakdown on ${topic} has strong reference utility that professionals can implement immediately.`,
+      (topic: string) => `Accurate breakdown. The distinction made here is often overlooked in mainstream surface-level advice. Bookmarked.`,
+      (topic: string) => `High signal-to-noise ratio. Rare to see genuine technical nuance explained so crisply in short-form content.`,
+      (topic: string) => `Spot on analysis. This aligns directly with current production best practices in the field.`,
+    ],
+    critical: [
+      (topic: string) => `Oversimplified. You missed key domain nuance regarding ${topic} which undermines the premise for advanced practitioners.`,
+      (topic: string) => `Needs to go deeper into technical implementation details rather than general surface advice.`,
+      (topic: string) => `The framework breaks down at enterprise/production scale — add caveats for edge cases.`,
+      (topic: string) => `Good intro level summary, but seasoned experts will find the conclusions slightly derivative.`,
+    ],
+  },
+};
+
 export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
   reactions = [],
   caption = '',
@@ -31,127 +120,180 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
   const [activeFilter, setActiveFilter] = useState<'all' | 'critical' | 'positive'>('all');
   const [likedComments, setLikedComments] = useState<Record<string, boolean>>({});
   const [customLikes, setCustomLikes] = useState<Record<string, number>>({});
+  const [seed, setSeed] = useState<number>(() => Math.floor(Math.random() * 10000));
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  if (!reactions || reactions.length === 0) {
-    return null;
-  }
+  // Clean topic for contextual comments
+  const cleanTopic = useMemo(() => {
+    if (!caption || !caption.trim()) return 'this strategy';
+    const words = caption
+      .replace(/#\w+/g, '')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/[^\w\s]/gi, ' ')
+      .trim()
+      .split(/\s+/)
+      .filter((w) => w.length > 2);
+    if (words.length >= 2) {
+      return `"${words.slice(0, 4).join(' ')}"`;
+    }
+    return 'this breakdown';
+  }, [caption]);
 
-  // Generate realistic comments from each persona's actual reasoning and reaction signals
-  const buildComments = (): SimulatedComment[] => {
+  // Re-roll seed whenever user requests a fresh debate or reactions change
+  const handleShuffle = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setSeed(Math.floor(Math.random() * 100000));
+      setIsRefreshing(false);
+    }, 200);
+  };
+
+  // Generate dynamic, rotating comments from each persona
+  const comments = useMemo((): SimulatedComment[] => {
+    if (!reactions || reactions.length === 0) return [];
+
     return reactions.map((r, idx) => {
       const pName = r.persona_name || r.name || `Persona 0${idx + 1}`;
+      const pLower = pName.toLowerCase();
       const reasoning = r.reasoning || '';
       const strength = Array.isArray(r.strengths) && r.strengths.length > 0 ? r.strengths[0] : '';
       const weakness = Array.isArray(r.weaknesses) && r.weaknesses.length > 0 ? r.weaknesses[0] : '';
-      const stopScrollProb = Number(r.stop_scroll_probability ?? (typeof r.stop_scroll === 'number' ? r.stop_scroll : (r.stop_scroll ? 1 : 0)));
+      const stopScrollProb = Number(
+        r.stop_scroll_probability ??
+          (typeof r.stop_scroll === 'number' ? r.stop_scroll : r.stop_scroll ? 1 : 0)
+      );
       const stopScroll = typeof r.stop_scroll === 'boolean' ? r.stop_scroll : stopScrollProb >= 0.5;
       const saveProb = Number(r.save_probability || 0);
       const likeProb = Number(r.like_probability || 0);
       const shareProb = Number(r.share_probability || 0);
       const watchProb = Number(r.watch_probability || 0);
 
-      const isMetricsPositive = stopScroll && (watchProb >= 0.45 || saveProb >= 0.3 || likeProb >= 0.3 || shareProb >= 0.25);
+      const isMetricsPositive =
+        stopScroll &&
+        (watchProb >= 0.45 || saveProb >= 0.3 || likeProb >= 0.3 || shareProb >= 0.25);
 
-      // 1. If LLM or simulation agent supplied an authentic simulated_comment, use it directly!
-      let commentText = r.simulated_comment || '';
+      // Determine sentiment
+      const sentiment: 'positive' | 'critical' = isMetricsPositive ? 'positive' : 'critical';
 
-      // 2. Fallback dynamic synthesis if simulated_comment wasn't populated
-      if (!commentText) {
-        const snippet = caption ? `"${caption.slice(0, 40)}..."` : '';
-        if (pName.toLowerCase().includes('gen-z') || pName.toLowerCase().includes('student')) {
-          commentText = isMetricsPositive
-            ? `bro cooked with this one ngl 🔥 ${strength ? `the part about "${strength.slice(0, 45)}" was spot on` : 'instant save for later'}`
-            : `lost me in the first 2 seconds ngl... ${weakness ? weakness.toLowerCase() : 'pacing felt way too slow'}`;
-        } else if (pName.toLowerCase().includes('skeptic') || pName.toLowerCase().includes('analyst')) {
-          commentText = isMetricsPositive
-            ? `Specific numbers and timeframe make this credible. ${strength || 'Solid proof of concept.'}`
-            : `Where's the empirical backing for this claim? ${weakness || 'The hook makes an outsized promise without tangible data.'}`;
-        } else if (pName.toLowerCase().includes('creator')) {
-          commentText = `From a creator standpoint: ${strength ? `Great retention hook with ${strength.toLowerCase()}.` : 'Solid visual framing.'} ${weakness ? `Watch out though: ${weakness.toLowerCase()}` : 'The pacing curve holds strong.'}`;
-        } else if (pName.toLowerCase().includes('niche') || pName.toLowerCase().includes('expert')) {
-          commentText = isMetricsPositive
-            ? `Accurate breakdown. ${strength || 'The distinction made here is often overlooked in mainstream advice.'} Worth bookmarking.`
-            : `Oversimplified. ${weakness || 'You missed key domain nuance which undermines the premise.'}`;
-        } else if (pName.toLowerCase().includes('casual') || pName.toLowerCase().includes('scroller')) {
-          commentText = isMetricsPositive
-            ? `Adding this to my saved bookmarks that I tell myself I'll check this weekend 😂`
-            : `Scrolled right past after 2 seconds. Too much text to read on mobile.`;
+      // Pick from dynamic persona comment bank using pseudo-random seed + index
+      let commentText = '';
+      const sample = <T,>(arr: T[], offset: number): T => {
+        const i = (seed + idx * 7 + offset) % arr.length;
+        return arr[i];
+      };
+
+      if (pLower.includes('gen-z') || pLower.includes('student') || pLower.includes('alpha') || pLower.includes('gamer')) {
+        const pool = isMetricsPositive ? PERSONA_COMMENT_BANKS.genZ.positive : PERSONA_COMMENT_BANKS.genZ.critical;
+        commentText = sample(pool, 1)(cleanTopic);
+      } else if (pLower.includes('casual') || pLower.includes('scroller')) {
+        const pool = isMetricsPositive ? PERSONA_COMMENT_BANKS.casualScroller.positive : PERSONA_COMMENT_BANKS.casualScroller.critical;
+        commentText = sample(pool, 2)(cleanTopic);
+      } else if (pLower.includes('creator') || pLower.includes('content')) {
+        const pool = isMetricsPositive ? PERSONA_COMMENT_BANKS.creator.positive : PERSONA_COMMENT_BANKS.creator.critical;
+        commentText = sample(pool, 3)(cleanTopic, platform.toUpperCase());
+      } else if (pLower.includes('skeptic') || pLower.includes('analyst') || pLower.includes('quant')) {
+        const pool = isMetricsPositive ? PERSONA_COMMENT_BANKS.skeptic.positive : PERSONA_COMMENT_BANKS.skeptic.critical;
+        commentText = sample(pool, 4)(cleanTopic);
+      } else if (pLower.includes('niche') || pLower.includes('expert') || pLower.includes('prof') || pLower.includes('academic')) {
+        const pool = isMetricsPositive ? PERSONA_COMMENT_BANKS.nicheExpert.positive : PERSONA_COMMENT_BANKS.nicheExpert.critical;
+        commentText = sample(pool, 5)(cleanTopic);
+      } else {
+        // Custom Persona fallback
+        if (r.simulated_comment) {
+          commentText = r.simulated_comment;
+        } else if (isMetricsPositive) {
+          commentText = `Evaluated through custom archetype lens: ${strength || 'Solid high-resonance structure.'} Strong alignment with target audience parameters.`;
         } else {
-          commentText = reasoning ? `"${reasoning.slice(0, 120)}..."` : (strength || weakness || 'Evaluated specimen against audience heuristics.');
+          commentText = `Friction identified: ${weakness || 'Requires stronger hook velocity and clearer payoff'} to satisfy this audience profile.`;
         }
       }
 
-      // Check explicit text sentiment triggers
-      const commentLower = commentText.toLowerCase();
-      const hasPositiveCue = /bookmark|saved|saving|cooked|fire|🔥|😂|spot on|love|worth|great|good|clean|pedagogical|compelling|actionable|practical|useful|accurate|agree|solid|subscrib/.test(commentLower);
-      const hasCriticalCue = /scrolled past|scrolled right past|lost me|too much text|too slow|where('s| is) the empirical|paywall|lacks|oversimplified|boring|unrealistic/.test(commentLower);
+      // Dynamic likes calculation
+      const baseLikes = isMetricsPositive ? 35 : 12;
+      const randomizedLikes = baseLikes + ((seed + idx * 13) % 55);
 
-      let sentiment: 'positive' | 'critical' | 'neutral' = 'neutral';
-      if (hasCriticalCue) {
-        sentiment = 'critical';
-      } else if (hasPositiveCue || isMetricsPositive) {
-        sentiment = 'positive';
-      } else if (!stopScroll) {
-        sentiment = 'critical';
-      } else {
-        sentiment = 'positive';
-      }
+      // Timestamps
+      const minutesAgo = ((idx + 1) * 2 + (seed % 3)) + 1;
 
-      // Add structured synthetic replies for rich conversational debate
-      let replies: SimulatedComment[] = [];
-      const firstPersonaFirstName = (reactions[0]?.persona_name || 'Creator').split(' ')[0];
+      // Dynamic replies for cross-persona debate
+      const replies: SimulatedComment[] = [];
+      const isFirst = idx === 0;
+      const isSkeptic = pLower.includes('skeptic') || pLower.includes('analyst');
+      const isCreator = pLower.includes('creator');
 
-      if (idx === 0 && reactions.length > 1) {
+      if (isFirst && reactions.length > 1) {
+        const otherPersona = reactions[1].persona_name || 'Content Creator';
+        const replyPool = [
+          `@${pName.split(' ')[0]} 100% agreed. On ${platform.toUpperCase()}, if you don't nail that first 1.5 seconds, nothing else matters.`,
+          `@${pName.split(' ')[0]} Exactly. The algorithm uses the initial watch-through velocity to decide whether to push to broader cohorts.`,
+          `@${pName.split(' ')[0]} This is why test batches either explode or stall at 250 views. Structure is everything.`,
+        ];
         replies.push({
-          id: `reply_${idx}_1`,
-          personaName: reactions[1].persona_name || 'Content Creator',
+          id: `reply_${idx}_${seed}_1`,
+          personaName: otherPersona,
           avatarLabel: 'CC',
           archetype: 'PEER CREATOR',
           sentiment: 'neutral',
-          commentText: `@${firstPersonaFirstName} Exactly why the 3-second hook structure matters so much on ${platform.toUpperCase()}.`,
-          likes: 24,
-          timeAgo: '4m ago',
+          commentText: sample(replyPool, 11),
+          likes: 18 + (seed % 20),
+          timeAgo: `${minutesAgo - 1}m ago`,
         });
-      } else if (pName.toLowerCase().includes('skeptic') && reactions.length > 2) {
+      } else if (isSkeptic && reactions.length > 2) {
+        const replyPool = [
+          `@${pName.split(' ')[0]} bro chill out not every single post needs a peer-reviewed research paper 😭`,
+          `@${pName.split(' ')[0]} fair point on the metrics, but the core advice is still super actionable for beginners`,
+          `@${pName.split(' ')[0]} actually tested this exact method last week and it worked for me, numbers check out!`,
+        ];
         replies.push({
-          id: `reply_${idx}_2`,
+          id: `reply_${idx}_${seed}_2`,
           personaName: 'Gen-Z Student',
           avatarLabel: 'GZ',
           archetype: 'SPEED FILTER',
           sentiment: 'positive',
-          commentText: `@${pName.split(' ')[0]} bro chill not everything needs a 40-page whitepaper it's a short form post 😭`,
-          likes: 58,
-          timeAgo: '1m ago',
+          commentText: sample(replyPool, 12),
+          likes: 42 + (seed % 30),
+          timeAgo: `${minutesAgo - 1}m ago`,
         });
-      } else if (pName.toLowerCase().includes('creator') && reactions.length > 3) {
+      } else if (isCreator && reactions.length > 3) {
+        const replyPool = [
+          `@${pName.split(' ')[0]} Pacing is great, but make sure the educational substance matches the initial hook promise so saves stay high.`,
+          `@${pName.split(' ')[0]} Great observation on retention curves. The second pattern interrupt is where most creators fail.`,
+        ];
         replies.push({
-          id: `reply_${idx}_3`,
+          id: `reply_${idx}_${seed}_3`,
           personaName: 'Niche Domain Expert',
           avatarLabel: 'NE',
           archetype: 'DOMAIN EXPERT',
           sentiment: 'neutral',
-          commentText: `@${pName.split(' ')[0]} Agree on the pacing, but creators should make sure the educational payoff matches the initial promise.`,
-          likes: 31,
-          timeAgo: '2m ago',
+          commentText: sample(replyPool, 13),
+          likes: 22 + (seed % 15),
+          timeAgo: `${minutesAgo - 1}m ago`,
         });
       }
 
       return {
-        id: r.persona_id || `comment_${idx}`,
+        id: `c_${r.persona_id || idx}_${seed}`,
         personaName: pName,
-        avatarLabel: pName.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase(),
+        avatarLabel: pName
+          .split(' ')
+          .map((w: string) => w[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase(),
         archetype: r.archetype || `AGENT ${String(idx + 1).padStart(2, '0')}`,
         sentiment,
         commentText,
-        likes: Math.floor(Math.random() * 80) + 12,
-        timeAgo: `${(idx + 1) * 3}m ago`,
-        isPinned: idx === 2, // Pin one high-signal comment
+        likes: randomizedLikes,
+        timeAgo: `${minutesAgo}m ago`,
+        isPinned: idx === 1,
         replies,
       };
     });
-  };
+  }, [reactions, caption, platform, cleanTopic, seed]);
 
-  const comments = buildComments();
+  if (!reactions || reactions.length === 0) {
+    return null;
+  }
 
   const filteredComments = comments.filter((c) => {
     if (activeFilter === 'positive') return c.sentiment === 'positive';
@@ -186,9 +328,22 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
           <span className="text-white/40">::</span>
           <span className="text-white/80 font-bold">SYNTHETIC SOCIAL FEED & COMMENT CONVERSATION</span>
         </div>
-        <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
-          <MessageSquare className="w-3.5 h-3.5 text-[#D4FF00]" />
-          <span className="font-bold text-white">{comments.length} AGENTS DELIBERATING</span>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleShuffle}
+            disabled={isRefreshing}
+            className="flex items-center gap-1.5 bg-[#0D1117] hover:bg-[#D4FF00] hover:text-black text-[#D4FF00] border border-[#D4FF00]/50 px-2.5 py-1 text-[11px] font-black font-csmigrate cursor-pointer transition-all shadow-[2px_2px_0px_0px_#000]"
+            title="Cycle dynamic audience conversation angles and replies"
+          >
+            <RefreshCw className={clsx('w-3 h-3', isRefreshing && 'animate-spin')} />
+            <span>ROTATE DEBATE (FRESH COMMENTS)</span>
+          </button>
+
+          <div className="flex items-center gap-2 bg-[#07080A] px-2 py-1 border border-white/15 shadow-[2px_2px_0px_0px_#000]">
+            <MessageSquare className="w-3.5 h-3.5 text-[#D4FF00]" />
+            <span className="font-bold text-white">{comments.length} AGENTS DELIBERATING</span>
+          </div>
         </div>
       </div>
 
@@ -234,12 +389,19 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
         </div>
 
         <span className="text-[11px] text-[#8E98AA] uppercase font-bold">
-          SIMULATED FEED FOR: <strong className="text-[#00FF41] bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40">{platform.toUpperCase()}</strong>
+          SIMULATED FEED FOR:{' '}
+          <strong className="text-[#00FF41] bg-[#00FF41]/10 px-1.5 py-0.5 border border-[#00FF41]/40">
+            {platform.toUpperCase()}
+          </strong>
         </span>
       </div>
 
       {/* Comment Stream List */}
-      <div className="flex flex-col gap-3.5 font-mechanismo" role="feed" aria-label="Persona comments">
+      <div
+        className="flex flex-col gap-3.5 font-mechanismo"
+        role="feed"
+        aria-label="Persona comments"
+      >
         {filteredComments.map((c) => {
           const isLiked = !!likedComments[c.id];
           const likesCount = getLikeCount(c.id, c.likes);
@@ -303,12 +465,16 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
                   )}
                   aria-label="Like comment"
                 >
-                  <Heart className={clsx('w-3 h-3', isLiked && 'fill-[#D4FF00] text-[#D4FF00]')} />
+                  <Heart
+                    className={clsx('w-3 h-3', isLiked && 'fill-[#D4FF00] text-[#D4FF00]')}
+                  />
                   <span>{likesCount}</span>
                 </button>
 
                 <span className="text-white/20">·</span>
-                <span className="uppercase text-[9px] text-[#5B6474]">SIMULATED AGENT RESPONSE</span>
+                <span className="uppercase text-[9px] text-[#5B6474]">
+                  SIMULATED AGENT RESPONSE
+                </span>
               </div>
 
               {/* Threaded Nested Replies */}
@@ -329,7 +495,9 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
                             <span className="font-bold text-white uppercase text-[11px]">
                               {reply.personaName}
                             </span>
-                            <span className="text-[9px] text-[#5B6474]">[{reply.archetype}]</span>
+                            <span className="text-[9px] text-[#5B6474]">
+                              [{reply.archetype}]
+                            </span>
                           </div>
                           <span className="text-[10px] text-[#5B6474]">{reply.timeAgo}</span>
                         </div>
@@ -347,7 +515,12 @@ export const PersonaDebateStream: React.FC<PersonaDebateStreamProps> = ({
                               replyLiked ? 'text-[#D4FF00] font-bold' : 'hover:text-white'
                             )}
                           >
-                            <Heart className={clsx('w-2.5 h-2.5', replyLiked && 'fill-[#D4FF00] text-[#D4FF00]')} />
+                            <Heart
+                              className={clsx(
+                                'w-2.5 h-2.5',
+                                replyLiked && 'fill-[#D4FF00] text-[#D4FF00]'
+                              )}
+                            />
                             <span>{replyLikes}</span>
                           </button>
                         </div>

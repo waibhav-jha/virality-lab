@@ -300,3 +300,44 @@ export interface ViralHookCandidate {
   angle_summary: string;
 }
 
+export interface CohortStage {
+  stage_number: number;
+  stage_name: string;
+  impressions_range: string;
+  gate_metric_name: string;
+  gate_target_threshold: number;
+  gate_actual_value: number;
+  unit?: string;
+  passed: boolean;
+  verdict_reason: string;
+}
+
+export interface AlgorithmBoost {
+  boost_id: string;
+  label: string;
+  multiplier_factor: string;
+  rationale: string;
+}
+
+export interface AlgorithmPenalty {
+  penalty_id: string;
+  label: string;
+  severity: 'critical' | 'moderate' | 'minor';
+  impact: string;
+  rationale: string;
+}
+
+export interface PlatformAlgorithmEvaluation {
+  platform: Platform;
+  algorithm_name: string;
+  codename: string;
+  archetype: string;
+  overall_compatibility_score: number;
+  predicted_reach_tier: string;
+  projected_impressions_estimate: string;
+  cohort_stages: CohortStage[];
+  ranking_weights: Record<string, number>;
+  detected_boosts: AlgorithmBoost[];
+  detected_penalties: AlgorithmPenalty[];
+  primary_actionable_fix: string;
+}

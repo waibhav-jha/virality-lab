@@ -1,5 +1,5 @@
 import React from 'react';
-import { RotateCcw, Database, ArrowLeft, Home } from 'lucide-react';
+import { RotateCcw, Database, ArrowLeft, Home, Terminal } from 'lucide-react';
 import { Button } from '../design-system/Button';
 import { HealthResponse } from '../api/types';
 
@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
   const isLlmMode = health?.simulation_mode === 'llm' || health?.simulation_mode === 'real';
 
   return (
-    <header className="w-full border-b-2 border-white/20 bg-[#060709]/95 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+    <header className="w-full border-b-2 border-[#00FF41] bg-[#000000]/95 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3 flex items-center justify-between shadow-[0_4px_25px_rgba(0,255,65,0.15)]">
       {/* Brand & Editorial Masthead */}
       <div className="flex items-center gap-4 text-left">
         <div 
@@ -34,16 +34,16 @@ export const Header: React.FC<HeaderProps> = ({
           className="flex items-baseline gap-2.5 cursor-pointer group"
           title="Return to Landing Portal"
         >
-          <span className="font-astroda font-black text-xl sm:text-2xl tracking-widest text-white group-hover:text-[#D4FF00] uppercase glitch-hover transition-colors">
+          <span className="font-astroda font-black text-xl sm:text-2xl tracking-widest text-white group-hover:text-[#00FF41] uppercase glitch-hover transition-colors">
             VIRALITY LAB
           </span>
-          <span className="font-mechanismo text-[10px] text-[#D4FF00] tracking-widest uppercase bg-[#D4FF00]/10 px-1.5 py-0.5 border border-[#D4FF00]/40">
-            // SPECIMEN ENGINE v0.9
+          <span className="font-mechanismo text-[10px] text-[#00FF41] tracking-widest uppercase bg-[#00FF41]/10 px-2 py-0.5 border border-[#00FF41]/40">
+            AI STUDIO v1.0
           </span>
         </div>
-        <span className="hidden md:inline-block w-px h-5 bg-white/25" />
-        <span className="hidden md:inline-block text-[11px] font-mechanismo text-[#8E98AA] uppercase tracking-wider">
-          AUTONOMOUS AUDIENCE INTELLIGENCE
+        <span className="hidden md:inline-block w-px h-5 bg-[#00FF41]/30" />
+        <span className="hidden md:inline-block text-[11px] font-mono text-[#8E9E90] uppercase tracking-wider">
+          MULTI-AGENT AUDIENCE ENGINE
         </span>
       </div>
 
@@ -51,67 +51,63 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center gap-2.5 sm:gap-3">
         {/* Return to Landing Page Button */}
         {onNavigateToLanding && (
-          <Button
-            variant="outline"
-            size="sm"
-            leftIcon={<Home className="w-3.5 h-3.5 text-[#D4FF00]" />}
+          <button
+            type="button"
             onClick={onNavigateToLanding}
-            className="font-csmigrate text-xs uppercase"
+            className="btn-terminal font-mono text-xs uppercase cursor-pointer"
           >
-            LANDING PORTAL
-          </Button>
+            <Home className="w-3.5 h-3.5 text-[#00FF41]" />
+            <span>[LANDING PORTAL]</span>
+          </button>
         )}
 
         {/* Back to Studio Button (When viewing results) */}
         {showBack && onBackToStudio && (
-          <Button
-            variant="viral"
-            size="sm"
-            leftIcon={<ArrowLeft className="w-3.5 h-3.5" />}
+          <button
+            type="button"
             onClick={onBackToStudio}
-            className="font-csmigrate font-black uppercase tracking-wider text-[11px] animate-cyber-pulse"
+            className="px-3 py-1.5 bg-[#00FF41] text-black font-black uppercase tracking-wider text-xs font-csmigrate shadow-[2px_2px_0px_0px_#000] hover:bg-white flex items-center gap-1.5 cursor-pointer"
           >
-            ← EDIT SPECIMEN
-          </Button>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>← EDIT SPECIMEN</span>
+          </button>
         )}
 
-        {/* Engine Telemetry Status */}
-        <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-[#0B0D11] border-2 border-white/15 font-mechanismo text-[11px] shadow-[2px_2px_0px_0px_#000]">
-          <span
-            className={`w-2 h-2 rounded-none border border-black ${
-              isOnline ? 'bg-[#D4FF00] animate-pulse shadow-[0_0_8px_#D4FF00]' : 'bg-amber-400'
-            }`}
-          />
-          <span className="text-[#A2ABB9] uppercase font-bold tracking-wider">
-            {isOnline ? (isLlmMode ? `SYS: ${health?.llm_provider || 'LLM'}` : 'SYS: MOCK_CALIBRATED') : 'SYS: LOCAL_MOCK'}
+        {/* System Diodes & Telemetry Status */}
+        <div className="corner-brackets hidden sm:flex">
+          <div className="sys-diodes">
+            <span className="diode"></span>
+            <span className="diode pulse"></span>
+          </div>
+          <span className="sys-text">
+            {isOnline ? (isLlmMode ? `SYS_01 :: ${health?.llm_provider || 'LLM'}` : 'SYS_01 :: ONLINE') : 'SYS_01 :: LOCAL_CALIBRATED'}
           </span>
         </div>
 
         {/* New Experiment Action */}
-        <Button
-          variant="outline"
-          size="sm"
-          leftIcon={<RotateCcw className="w-3 h-3" />}
+        <button
+          type="button"
           onClick={onReset}
-          className="hidden sm:inline-flex font-csmigrate text-xs"
+          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#050705] border border-white/20 text-[#A2B0A5] hover:text-white hover:border-[#00FF41] font-mono text-xs cursor-pointer shadow-[2px_2px_0px_0px_#000]"
         >
-          RESET
-        </Button>
+          <RotateCcw className="w-3 h-3 text-[#00FF41]" />
+          <span>RESET</span>
+        </button>
 
         {/* History Audit Ledger Trigger */}
-        <Button
-          variant="secondary"
-          size="sm"
-          leftIcon={<Database className="w-3.5 h-3.5 text-[#D4FF00]" />}
+        <button
+          type="button"
           onClick={onOpenHistory}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#050705] border border-[#00FF41]/40 text-white hover:border-[#00FF41] hover:bg-[#00FF41]/10 font-mono text-xs cursor-pointer shadow-[2px_2px_0px_0px_#000]"
         >
-          <span className="font-csmigrate">AUDIT LOG</span>
+          <Database className="w-3.5 h-3.5 text-[#00FF41]" />
+          <span>AUDIT LOG</span>
           {historyCount > 0 && (
-            <span className="ml-1.5 font-mechanismo text-[10px] text-[#D4FF00] font-black bg-[#D4FF00]/15 px-1 border border-[#D4FF00]/40">
+            <span className="ml-1 font-mechanismo text-[10px] text-[#00FF41] font-black bg-[#00FF41]/15 px-1 border border-[#00FF41]/40">
               [{historyCount}]
             </span>
           )}
-        </Button>
+        </button>
       </div>
     </header>
   );
